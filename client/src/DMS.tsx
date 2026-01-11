@@ -1,3 +1,6 @@
+import { RouterProvider } from 'react-router';
+import { appRouter } from './router/app.router';
+
 export const DMS = () => {
-  return <div>DMS</div>;
+  return <RouterProvider router={appRouter} />;
 };
