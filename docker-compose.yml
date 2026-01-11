@@ -1,0 +1,45 @@
+services:
+  db:
+    build: ./db
+    image: dms_db
+    container_name: dms_db
+    ports:
+      - 3306:3306
+    networks:
+      - dms_network
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  server:
+    build: ./server
+    image: dms_server
+    container_name: dms_server
+    ports:
+      - 8080:8080
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - dms_network
+  client:
+    build: ./client
+    image: dms_client
+    container_name: dms_client
+    ports:
+      - 5173:5173
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    depends_on:
+      - server
+    networks:
+      - dms_network
+
+networks:
+  dms_network:
+    driver: bridge
