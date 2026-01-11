@@ -2,6 +2,9 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+
+import authRoutes from './routes/auth.routes';
+
 import { errorHandler } from './middlewares/errorHandler';
 
 const app = express();
@@ -13,6 +16,8 @@ app.use(cors({ origin: 'http://localhost:5173', credentials: true })); // CORS c
 app.use(cookieParser()); // Middleware for parsing cookies
 
 app.use(express.json()); // Middleware for parsing JSON request bodies
+
+app.use(authRoutes);
 
 app.use(errorHandler);
 
