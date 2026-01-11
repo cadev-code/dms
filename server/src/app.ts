@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import { errorHandler } from './middlewares/errorHandler';
 
 const app = express();
 const PORT = 8080;
@@ -12,5 +13,7 @@ app.use(cors({ origin: 'http://localhost:5173', credentials: true })); // CORS c
 app.use(cookieParser()); // Middleware for parsing cookies
 
 app.use(express.json()); // Middleware for parsing JSON request bodies
+
+app.use(errorHandler);
 
 app.listen(PORT, () => {});
