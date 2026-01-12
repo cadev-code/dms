@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import prisma from '../prisma_client';
 import { AppError } from '../utils/AppError';
 import { compareEncryptedPassword } from '../helpers/compareEncryptedPassword';
