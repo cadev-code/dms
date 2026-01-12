@@ -1,13 +1,9 @@
+import { useNavigate } from 'react-router';
+import { AxiosError } from 'axios';
+import type { LoginBody, User } from '@/types/auth.types';
+import { useMutation } from '@tanstack/react-query';
 import { poster } from '@/api/queryHelpers';
 import { useAlertStore } from '@/store/useAlertStore';
-import type { LoginBody } from '@/types/auth.types';
-import { useMutation } from '@tanstack/react-query';
-import { AxiosError } from 'axios';
-import { useNavigate } from 'react-router';
-
-interface User {
-  userId: number;
-}
 
 export const useLogin = () => {
   const { showAlert } = useAlertStore();
