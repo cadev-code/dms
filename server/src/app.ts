@@ -3,6 +3,9 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 
+// Ensure TypeScript loads the Express.Request augmentation (type-only, no runtime import)
+import type {} from './types/express';
+
 import authRoutes from './routes/auth.routes';
 
 import { errorHandler } from './middlewares/errorHandler';
