@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useForm } from '@tanstack/react-form';
+import { useLogin } from '@/hooks/useLogin';
 
 import { Eye, EyeOff, FolderOpen, Lock, Mail } from 'lucide-react';
 
@@ -30,6 +31,8 @@ const formSchema = z.object({
 export const Login = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
+  const login = useLogin();
+
   const form = useForm({
     defaultValues: {
       username: '',
@@ -39,8 +42,8 @@ export const Login = () => {
       onSubmit: formSchema,
       onChange: formSchema,
     },
-    onSubmit: () => {
-      console.log('valid form');
+    onSubmit: (values) => {
+      login.mutate(values.value);
     },
   });
 
