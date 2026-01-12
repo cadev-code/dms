@@ -1,15 +1,17 @@
 import { Dashboard } from '@/pages/Dashboard';
 import { Login } from '@/pages/Login';
 import { createBrowserRouter, Navigate } from 'react-router';
+import { PublicRoute } from './PublicRoute';
+import { PrivateRoute } from './PrivateRoute';
 
 export const appRouter = createBrowserRouter([
   {
     index: true,
-    element: <Dashboard />,
+    element: <PrivateRoute element={<Dashboard />} />,
   },
   {
     path: '/login',
-    element: <Login />,
+    element: <PublicRoute element={<Login />} />,
   },
   {
     path: '/*',
