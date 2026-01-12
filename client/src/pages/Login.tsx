@@ -1,3 +1,6 @@
+import React, { useState } from 'react';
+import { useForm } from '@tanstack/react-form';
+
 import { Eye, EyeOff, FolderOpen, Lock, Mail } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -9,14 +12,42 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useState } from 'react';
+import z from 'zod';
+import { FieldGroup, Field, FieldLabel } from '@/components/ui/field';
+
+const formSchema = z.object({
+  username: z
+    .string()
+    .regex(/^[a-z0-9.@-]{4,}$/, 'Nombre de usuario inválido.'),
+  password: z
+    .string()
+    .regex(
+      /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%&*]).{8,}$/,
+      'Contraseña inválida o incorrecta.',
+    ),
+});
 
 export const Login = () => {
-  const [username, setUsername] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
-
   const [showPassword, setShowPassword] = useState<boolean>(false);
+
+  const form = useForm({
+    defaultValues: {
+      username: '',
+      password: '',
+    },
+    validators: {
+      onSubmit: formSchema,
+      onChange: formSchema,
+    },
+    onSubmit: () => {
+      console.log('valid form');
+    },
+  });
+
+  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    form.handleSubmit();
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5 flex items-center justify-center p-4">
@@ -43,55 +74,80 @@ export const Login = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={() => {}} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="username">Usuario</Label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="username"
-                    type="email"
-                    placeholder="username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    className="pl-10"
-                    required
-                  />
-                </div>
-              </div>
+            <form onSubmit={handleFormSubmit} className="space-y-4" id="login">
+              <FieldGroup>
+                <form.Field
+                  name="username"
+                  children={(field) => {
+                    return (
+                      <Field>
+                        <FieldLabel htmlFor={field.name}>Usuario</FieldLabel>
+                        <div className="relative">
+                          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            className="pl-10"
+                            id={field.name}
+                            name={field.name}
+                            type="text"
+                            placeholder="username"
+                            value={field.state.value}
+                            onChange={(e) => field.handleChange(e.target.value)}
+                          />
+                        </div>
+                      </Field>
+                    );
+                  }}
+                />
+              </FieldGroup>
 
-              <div className="space-y-2">
-                <Label htmlFor="password">Contraseña</Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="password"
-                    type={showPassword ? 'text' : 'password'}
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10 pr-10"
-                    required
-                  />
+              <FieldGroup>
+                <form.Field
+                  name="password"
+                  children={(field) => {
+                    return (
+                      <Field>
+                        <FieldLabel htmlFor={field.name}>Contraseña</FieldLabel>
+                        <div className="relative">
+                          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            className="pl-10 pr-10"
+                            id={field.name}
+                            name={field.name}
+                            type={showPassword ? 'text' : 'password'}
+                            placeholder="••••••••"
+                            value={field.state.value}
+                            onChange={(e) => field.handleChange(e.target.value)}
+                          />
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="absolute right-1 top-1/2 -translate-y-1/2 hover:bg-transparent"
+                            onClick={() => setShowPassword((v) => !v)}
+                          >
+                            {showPassword ? (
+                              <EyeOff className="h-4 w-4" />
+                            ) : (
+                              <Eye className="h-4 w-4" />
+                            )}
+                          </Button>
+                        </div>
+                      </Field>
+                    );
+                  }}
+                />
+              </FieldGroup>
+              <form.Subscribe selector={(state) => [state.canSubmit]}>
+                {([canSubmit]) => (
                   <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="absolute right-1 top-1/2 -translate-y-1/2 hover:bg-transparent"
-                    onClick={() => setShowPassword((v) => !v)}
+                    type="submit"
+                    className="w-full"
+                    disabled={!canSubmit} // deshabilitado si el form NO es válido
                   >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
+                    {[].length > 0 ? 'Iniciando sesión...' : 'Iniciar Sesión'}
                   </Button>
-                </div>
-              </div>
-
-              <Button type="submit" className="w-full" disabled={false}>
-                {[''].length === 1 ? 'Iniciando sesión...' : 'Iniciar Sesión'}
-              </Button>
+                )}
+              </form.Subscribe>
             </form>
           </CardContent>
         </Card>
