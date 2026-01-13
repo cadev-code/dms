@@ -7,6 +7,7 @@ import cookieParser from 'cookie-parser';
 import type {} from './types/express';
 
 import authRoutes from './routes/auth.routes';
+import filesRoutes from './routes/files.routes';
 
 import { errorHandler } from './middlewares/errorHandler';
 
@@ -21,6 +22,7 @@ app.use(cookieParser()); // Middleware for parsing cookies
 app.use(express.json()); // Middleware for parsing JSON request bodies
 
 app.use(authRoutes);
+app.use(filesRoutes);
 
 app.use(errorHandler);
 
