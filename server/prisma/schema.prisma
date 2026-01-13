@@ -13,3 +13,11 @@ model User {
   username       String            @unique
   passwordHash   String
 }
+
+model File {
+  id Int @id @default(autoincrement())
+  filename String @unique
+  originalName String
+  mimeType String
+  size Int
+}
