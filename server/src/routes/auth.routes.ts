@@ -14,4 +14,8 @@ router.get('/auth/me', authMiddleware, (req: Request, res: Response) => {
   });
 });
 
+router.post('/auth/logout', (_req: Request, res: Response) => {
+  res.clearCookie('access_token').json({ message: 'Sesión cerrada' });
+});
+
 export default router;
