@@ -1,3 +1,4 @@
+import { DocumentUploadDialog } from '@/components/dms/DocumentUploadDialog';
 import { Sidebar } from '@/components/dms/Sidebar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -6,9 +7,14 @@ import { useState } from 'react';
 
 export const Dashboard = () => {
   const [activeFilter, setActiveFilter] = useState('all');
+  const [isUploadOpen, setIsUploadOpen] = useState(false);
 
   const handleFilterChange = (filter: string) => {
     setActiveFilter(filter);
+  };
+
+  const handleCloseUpload = () => {
+    setIsUploadOpen(false);
   };
 
   const isAdmin = true;
@@ -45,7 +51,7 @@ export const Dashboard = () => {
 
             <div className="flex items-center gap-3">
               {isAdmin && (
-                <Button onClick={() => {}}>
+                <Button onClick={() => setIsUploadOpen(true)}>
                   <Plus className="h-4 w-4 mr-2" />
                   Subir Documento
                 </Button>
@@ -54,6 +60,8 @@ export const Dashboard = () => {
           </div>
         </header>
       </main>
+
+      <DocumentUploadDialog isOpen={isUploadOpen} onClose={handleCloseUpload} />
     </div>
   );
 };
