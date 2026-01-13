@@ -12,6 +12,7 @@ import {
   User,
   Folder,
 } from 'lucide-react';
+import { useLogout } from '@/hooks/useLogout';
 
 interface Props {
   activeFilter: string;
@@ -29,7 +30,6 @@ const categories = [
 
 const user = { name: 'Administrador' };
 const isAdmin = true;
-const logout = () => console.log('logout');
 
 export const Sidebar = ({
   activeFilter,
@@ -63,6 +63,8 @@ export const Sidebar = ({
       count: documentCounts.other || 0,
     },
   ];
+
+  const logout = useLogout();
 
   return (
     <aside className="w-64 bg-sidebar text-sidebar-foreground flex flex-col h-screen sticky top-0">
@@ -176,7 +178,7 @@ export const Sidebar = ({
         <Button
           variant="ghost"
           className="w-full justify-start gap-3 text-sidebar-foreground/70 hover:text-red-400 hover:bg-destructive/10"
-          onClick={logout}
+          onClick={() => logout.mutate()}
         >
           <LogOut className="h-4 w-4" />
           Cerrar Sesión
