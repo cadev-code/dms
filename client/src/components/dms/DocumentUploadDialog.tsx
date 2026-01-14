@@ -29,9 +29,10 @@ export const DocumentUploadDialog = ({ isOpen, onClose }: Props) => {
     handleDrag,
     handleDrop,
     handleFileSelect,
+    handleUploadFile,
     setName,
     setSelectedFile,
-  } = useDocumentUpload();
+  } = useDocumentUpload(onClose);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -109,7 +110,12 @@ export const DocumentUploadDialog = ({ isOpen, onClose }: Props) => {
           <Button variant="outline" onClick={onClose}>
             Cancelar
           </Button>
-          <Button onClick={() => {}}>Subir Documento</Button>
+          <Button
+            onClick={handleUploadFile}
+            disabled={name.trim().length < 3 || !selectedFile}
+          >
+            Subir Documento
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
