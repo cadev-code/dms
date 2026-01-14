@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { AnyZodObject } from 'zod';
-
 import { AppError } from '../utils/AppError';
+import fs from 'fs';
 
 export const validateInput =
   (schema: AnyZodObject) =>
@@ -9,6 +9,14 @@ export const validateInput =
     const result = schema.safeParse(req.body);
 
     if (!result.success) {
+      const file = req.file;
+
+      if (file) {
+        fs.unlink(file.path, (err) => {
+          if (err) throw err;
+        });
+      }
+
       return next(
         new AppError(
           'Datos inválidos o incompletos',
