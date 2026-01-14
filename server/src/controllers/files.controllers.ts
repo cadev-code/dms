@@ -8,6 +8,30 @@ interface FileBody {
   documentName: string;
 }
 
+const getType = (mimetype: string) => {
+  if (mimetype.startsWith('image/')) return 'image';
+  if (mimetype === 'application/pdf') return 'pdf';
+  if (
+    mimetype === 'application/msword' ||
+    mimetype ===
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+  )
+    return 'word';
+  if (
+    mimetype === 'application/vnd.ms-excel' ||
+    mimetype ===
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+  )
+    return 'excel';
+  if (
+    mimetype === 'application/vnd.ms-powerpoint' ||
+    mimetype ===
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+  )
+    return 'powerpoint';
+  return 'other';
+};
+
 export const uploadFile = async (
   req: Request<object, object, FileBody>,
   res: Response,
@@ -56,7 +80,7 @@ export const uploadFile = async (
       data: {
         documentName,
         fileName: filename,
-        mimeType: mimetype,
+        type: getType(mimetype),
         size,
       },
     });
