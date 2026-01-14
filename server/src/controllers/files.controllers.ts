@@ -5,10 +5,7 @@ import { removeUploadedFile } from '../helpers/removeUploadedFile';
 import { logger } from '../helpers/logger';
 
 interface FileBody {
-  filename: string;
-  originalName: string;
-  mimeType: string;
-  size: number;
+  documentName: string;
 }
 
 export const uploadFile = async (
@@ -17,6 +14,9 @@ export const uploadFile = async (
   next: NextFunction,
 ) => {
   try {
+    console.log(req.body);
+    const { documentName } = req.body;
+
     const user = await prisma.user.findFirst({
       where: {
         id: req.userId,
@@ -34,11 +34,11 @@ export const uploadFile = async (
       );
     }
 
-    const { filename, originalname, mimetype, size, path } = file;
+    const { filename, mimetype, size, path } = file;
 
     const existingFile = await prisma.file.findFirst({
       where: {
-        originalName: originalname,
+        documentName: documentName,
       },
     });
 
@@ -55,8 +55,8 @@ export const uploadFile = async (
 
     await prisma.file.create({
       data: {
-        originalName: originalname,
-        filename,
+        documentName,
+        fileName: filename,
         mimeType: mimetype,
         size,
       },

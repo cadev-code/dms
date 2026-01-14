@@ -2,6 +2,8 @@ import { RequestHandler, Router } from 'express';
 import { authMiddleware } from '../middlewares/authMiddleware';
 import { uploadMiddleware } from '../middlewares/uploadMiddleware';
 import { uploadFile } from '../controllers/files.controllers';
+import { validateInput } from '../middlewares/validateInput';
+import { uploadFileSchema } from '../schemas/files.schema';
 
 const router = Router();
 
@@ -22,6 +24,7 @@ router.post(
       'application/vnd.openxmlformats-officedocument.presentationml.presentation',
     ],
   }) as RequestHandler,
+  validateInput(uploadFileSchema),
   uploadFile,
 );
 
