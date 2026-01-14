@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import prisma from '../prisma_client';
 import { AppError } from '../utils/AppError';
 import { removeUploadedFile } from '../helpers/removeUploadedFile';
+import { logger } from '../helpers/logger';
 
 interface FileBody {
   filename: string;
@@ -45,7 +46,7 @@ export const uploadFile = async (
       removeUploadedFile(path);
 
       throw new AppError(
-        `Archivo ya existe`,
+        `El archivo ya existe`,
         400,
         'FILE_ALREADY_EXISTS',
         `Intento de carga de archivo fallido - El archivo ya existe (Intentado por: ${user?.username || 'Unknown'})`,
@@ -60,6 +61,10 @@ export const uploadFile = async (
         size,
       },
     });
+
+    logger.info(
+      `Archivo cargado exitosamente - ${filename} (Cargado por: ${user?.username || 'Unknown'})`,
+    );
 
     res
       .status(201)
