@@ -7,6 +7,7 @@ import {
   Upload,
 } from 'lucide-react';
 import { useRef, useState } from 'react';
+import { useUploadFile } from './useUploadFile';
 
 export const ALLOWED_EXTENSIONS = [
   '.pdf',
@@ -21,11 +22,17 @@ export const ALLOWED_EXTENSIONS = [
   '.gif',
 ];
 
-export const useDocumentUpload = () => {
+export const useDocumentUpload = (onClose: () => void) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [dragActive, setDragActive] = useState<boolean>(false);
   const [name, setName] = useState<string>('');
+
+  const uploadFile = useUploadFile(() => {
+    setSelectedFile(null);
+    setName('');
+    onClose();
+  });
 
   const getFileType = (fileName: string): DocumentType => {
     const ext = fileName.split('.').pop()?.toLowerCase();
@@ -109,6 +116,13 @@ export const useDocumentUpload = () => {
     }
   };
 
+  const handleUploadFile = () => {
+    if (!selectedFile) return;
+    if (name.trim() === '') return;
+
+    uploadFile.mutate({ file: selectedFile, documentName: name.trim() });
+  };
+
   return {
     ALLOWED_EXTENSIONS,
     dragActive,
@@ -119,6 +133,7 @@ export const useDocumentUpload = () => {
     handleDrag,
     handleDrop,
     handleFileSelect,
+    handleUploadFile,
     setName,
     setSelectedFile,
   };
