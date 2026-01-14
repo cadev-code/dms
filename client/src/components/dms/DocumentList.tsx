@@ -99,9 +99,9 @@ export function DocumentList({
         <Button variant="ghost" onClick={() => column.toggleSorting()}>
           Documento
           {column.getIsSorted() === 'asc' ? (
-            <ArrowDown />
+            <ArrowDown className="text-primary" />
           ) : column.getIsSorted() === 'desc' ? (
-            <ArrowUp />
+            <ArrowUp className="text-primary" />
           ) : (
             <ArrowDownUp />
           )}
@@ -122,9 +122,9 @@ export function DocumentList({
         <Button variant="ghost" onClick={() => column.toggleSorting()}>
           Tipo
           {column.getIsSorted() === 'asc' ? (
-            <ArrowDown />
+            <ArrowDown className="text-primary" />
           ) : column.getIsSorted() === 'desc' ? (
-            <ArrowUp />
+            <ArrowUp className="text-primary" />
           ) : (
             <ArrowDownUp />
           )}
@@ -140,9 +140,9 @@ export function DocumentList({
         <Button variant="ghost" onClick={() => column.toggleSorting()}>
           Tamaño
           {column.getIsSorted() === 'asc' ? (
-            <ArrowDown />
+            <ArrowDown className="text-primary" />
           ) : column.getIsSorted() === 'desc' ? (
-            <ArrowUp />
+            <ArrowUp className="text-primary" />
           ) : (
             <ArrowDownUp />
           )}

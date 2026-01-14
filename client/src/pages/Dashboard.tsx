@@ -4,12 +4,15 @@ import { Sidebar } from '@/components/dms/Sidebar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useAllFiles } from '@/hooks/useAllFiles';
+import { useFilesByType } from '@/hooks/useFilesByType';
+import { Document, DocumentType } from '@/types/document.types';
 import { FileText, Plus, Shield } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export const Dashboard = () => {
   const [activeFilter, setActiveFilter] = useState('all');
   const [isUploadOpen, setIsUploadOpen] = useState(false);
+  const [documents, setDocuments] = useState<Document[]>([]);
 
   const handleFilterChange = (filter: string) => {
     setActiveFilter(filter);
@@ -19,7 +22,17 @@ export const Dashboard = () => {
     setIsUploadOpen(false);
   };
 
-  const { data: documents } = useAllFiles();
+  const { data: allDocuments } = useAllFiles();
+  const { data: documentsByType } = useFilesByType(
+    activeFilter as DocumentType & 'all',
+  );
+
+  useEffect(() => {
+    const documentsToShow =
+      activeFilter === 'all' ? allDocuments?.data : documentsByType?.data;
+
+    setDocuments(documentsToShow || []);
+  }, [activeFilter, allDocuments, documentsByType]);
 
   const isAdmin = true;
 
@@ -28,7 +41,23 @@ export const Dashboard = () => {
       <Sidebar
         activeFilter={activeFilter}
         onFilterChange={handleFilterChange}
-        documentCounts={{ excel: 1, word: 5, pdf: 12, other: 15 }}
+        documentCounts={{
+          all: allDocuments?.data.length || 0,
+          excel:
+            allDocuments?.data.filter((doc) => doc.type === 'excel').length ||
+            0,
+          word:
+            allDocuments?.data.filter((doc) => doc.type === 'word').length || 0,
+          pdf:
+            allDocuments?.data.filter((doc) => doc.type === 'pdf').length || 0,
+          powerpoint:
+            allDocuments?.data.filter((doc) => doc.type === 'powerpoint')
+              .length || 0,
+          image:
+            allDocuments?.data.filter((doc) => doc.type === 'image').length ||
+            0,
+          other: 15,
+        }}
       />
 
       <main className="flex-1 p-6 overflow-auto">
@@ -65,7 +94,7 @@ export const Dashboard = () => {
         </header>
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
           <DocumentList
-            documents={documents?.data || []}
+            documents={documents || []}
             isAdmin={false}
             onView={() => {}}
             onDelete={() => {}}

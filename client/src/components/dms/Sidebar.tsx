@@ -11,6 +11,8 @@ import {
   Shield,
   User,
   Folder,
+  Presentation,
+  Image,
 } from 'lucide-react';
 import { useLogout } from '@/hooks/useLogout';
 
@@ -55,6 +57,18 @@ export const Sidebar = ({
       label: 'Excel',
       icon: FileSpreadsheet,
       count: documentCounts.excel || 0,
+    },
+    {
+      id: 'powerpoint',
+      label: 'PowerPoint',
+      icon: Presentation,
+      count: documentCounts.powerpoint || 0,
+    },
+    {
+      id: 'image',
+      label: 'Imágenes',
+      icon: Image,
+      count: documentCounts.image || 0,
     },
     {
       id: 'other',

@@ -35,6 +35,7 @@ export const useUploadFile = (onClose: () => void) => {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['all-files'] });
+      queryClient.invalidateQueries({ queryKey: ['files-by-type'] });
       showAlert(data.message, 'success');
       onClose();
     },
