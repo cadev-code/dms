@@ -1,3 +1,4 @@
+import { DocumentList } from '@/components/dms/DocumentList';
 import { DocumentUploadDialog } from '@/components/dms/DocumentUploadDialog';
 import { Sidebar } from '@/components/dms/Sidebar';
 import { Badge } from '@/components/ui/badge';
@@ -59,6 +60,37 @@ export const Dashboard = () => {
             </div>
           </div>
         </header>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+          <DocumentList
+            documents={[
+              {
+                id: 1,
+                documentName: 'Políticas de Navegación',
+                fileName: 'politicas_navegacion.pdf',
+                type: 'pdf',
+                size: 1245760,
+              },
+              {
+                id: 3,
+                documentName: 'Asistencia de Empleados',
+                fileName: 'asistencia_empleados.docx',
+                type: 'word',
+                size: 2245760,
+              },
+              {
+                id: 2,
+                documentName: 'Control de Accesos',
+                fileName: 'control_accesos.xlsx',
+                type: 'excel',
+                size: 3245760,
+              },
+            ]}
+            isAdmin={false}
+            onView={() => {}}
+            onDelete={() => {}}
+            onDownload={() => {}}
+          />
+        </div>
       </main>
 
       <DocumentUploadDialog isOpen={isUploadOpen} onClose={handleCloseUpload} />
