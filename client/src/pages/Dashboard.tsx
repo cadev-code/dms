@@ -3,6 +3,7 @@ import { DocumentUploadDialog } from '@/components/dms/DocumentUploadDialog';
 import { Sidebar } from '@/components/dms/Sidebar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { useAllFiles } from '@/hooks/useAllFiles';
 import { FileText, Plus, Shield } from 'lucide-react';
 import { useState } from 'react';
 
@@ -17,6 +18,8 @@ export const Dashboard = () => {
   const handleCloseUpload = () => {
     setIsUploadOpen(false);
   };
+
+  const { data: documents } = useAllFiles();
 
   const isAdmin = true;
 
@@ -62,29 +65,7 @@ export const Dashboard = () => {
         </header>
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
           <DocumentList
-            documents={[
-              {
-                id: 1,
-                documentName: 'Políticas de Navegación',
-                fileName: 'politicas_navegacion.pdf',
-                type: 'pdf',
-                size: 1245760,
-              },
-              {
-                id: 3,
-                documentName: 'Asistencia de Empleados',
-                fileName: 'asistencia_empleados.docx',
-                type: 'word',
-                size: 2245760,
-              },
-              {
-                id: 2,
-                documentName: 'Control de Accesos',
-                fileName: 'control_accesos.xlsx',
-                type: 'excel',
-                size: 3245760,
-              },
-            ]}
+            documents={documents?.data || []}
             isAdmin={false}
             onView={() => {}}
             onDelete={() => {}}

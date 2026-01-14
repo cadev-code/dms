@@ -1,5 +1,5 @@
 import { AxiosError } from 'axios';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAlertStore } from '@/store/useAlertStore';
 import { poster } from '@/api/queryHelpers';
 
@@ -15,6 +15,8 @@ interface UploadResponse {
 
 export const useUploadFile = (onClose: () => void) => {
   const { showAlert } = useAlertStore();
+
+  const queryClient = useQueryClient();
 
   return useMutation<
     UploadResponse,
@@ -32,6 +34,7 @@ export const useUploadFile = (onClose: () => void) => {
       showAlert(error.response?.data.message, 'error');
     },
     onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['all-files'] });
       showAlert(data.message, 'success');
       onClose();
     },
