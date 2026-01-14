@@ -14,7 +14,6 @@ export const uploadFile = async (
   next: NextFunction,
 ) => {
   try {
-    console.log(req.body);
     const { documentName } = req.body;
 
     const user = await prisma.user.findFirst({
@@ -69,6 +68,30 @@ export const uploadFile = async (
     res
       .status(201)
       .json({ error: null, message: 'Archivo cargado exitosamente' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getAllFiles = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const user = await prisma.user.findFirst({
+      where: {
+        id: req.userId,
+      },
+    });
+
+    const files = await prisma.file.findMany();
+
+    logger.info(
+      `Recuperación de todos los archivos realizada por el usuario: ${user?.username || 'Unknown'}`,
+    );
+
+    res.status(200).json({ error: null, data: files });
   } catch (error) {
     next(error);
   }

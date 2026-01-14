@@ -1,7 +1,7 @@
 import { RequestHandler, Router } from 'express';
 import { authMiddleware } from '../middlewares/authMiddleware';
 import { uploadMiddleware } from '../middlewares/uploadMiddleware';
-import { uploadFile } from '../controllers/files.controllers';
+import { getAllFiles, uploadFile } from '../controllers/files.controllers';
 import { validateInput } from '../middlewares/validateInput';
 import { uploadFileSchema } from '../schemas/files.schema';
 
@@ -27,5 +27,7 @@ router.post(
   validateInput(uploadFileSchema),
   uploadFile,
 );
+
+router.get('/files/all', authMiddleware, getAllFiles);
 
 export default router;
