@@ -12,11 +12,11 @@ CREATE TABLE `User` (
 -- CreateTable
 CREATE TABLE `File` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `filename` VARCHAR(191) NOT NULL,
-    `originalName` VARCHAR(191) NOT NULL,
+    `documentName` VARCHAR(191) NOT NULL,
+    `fileName` VARCHAR(191) NOT NULL,
     `mimeType` VARCHAR(191) NOT NULL,
     `size` INTEGER NOT NULL,
 
-    UNIQUE INDEX `File_filename_key`(`filename`),
+    UNIQUE INDEX `File_documentName_key`(`documentName`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
