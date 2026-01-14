@@ -19,6 +19,7 @@ import {
   ArrowDown,
   ArrowUp,
   ArrowDownUp,
+  Presentation,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -59,6 +60,8 @@ export function DocumentList({
         return <FileSpreadsheet className="h-5 w-5 text-green-500" />;
       case 'image':
         return <Image className="h-5 w-5 text-sky-500" />;
+      case 'powerpoint':
+        return <Presentation className="h-5 w-5 text-orange-500" />;
       default:
         return <File className="h-5 w-5 text-muted-foreground" />;
     }
@@ -74,6 +77,8 @@ export function DocumentList({
         return 'Excel';
       case 'image':
         return 'Imagen';
+      case 'powerpoint':
+        return 'PowerPoint';
       default:
         return 'Archivo';
     }

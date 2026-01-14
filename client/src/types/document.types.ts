@@ -1,4 +1,10 @@
-export type DocumentType = 'pdf' | 'word' | 'excel' | 'image' | 'other';
+export type DocumentType =
+  | 'pdf'
+  | 'word'
+  | 'excel'
+  | 'image'
+  | 'powerpoint'
+  | 'other';
 
 export interface Document {
   id: number;

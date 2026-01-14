@@ -4,6 +4,7 @@ import {
   FileSpreadsheet,
   FileText,
   Image,
+  Presentation,
   Upload,
 } from 'lucide-react';
 import { useRef, useState } from 'react';
@@ -16,6 +17,7 @@ export const ALLOWED_EXTENSIONS = [
   '.xls',
   '.xlsx',
   '.pptx',
+  '.ppt',
   '.png',
   '.jpg',
   '.jpeg',
@@ -50,6 +52,9 @@ export const useDocumentUpload = (onClose: () => void) => {
       case 'jpeg':
       case 'gif':
         return 'image';
+      case 'pptx':
+      case 'ppt':
+        return 'powerpoint';
       default:
         return 'other';
     }
@@ -111,6 +116,8 @@ export const useDocumentUpload = (onClose: () => void) => {
         return <FileSpreadsheet className="h-12 w-12 text-green-500" />;
       case 'image':
         return <Image className="h-12 w-12 text-sky-500" />;
+      case 'powerpoint':
+        return <Presentation className="h-12 w-12 text-orange-500" />;
       default:
         return <FileIcon className="h-12 w-12 text-muted-foreground" />;
     }
