@@ -14,7 +14,7 @@ CREATE TABLE `File` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `documentName` VARCHAR(191) NOT NULL,
     `fileName` VARCHAR(191) NOT NULL,
-    `mimeType` VARCHAR(191) NOT NULL,
+    `type` VARCHAR(191) NOT NULL,
     `size` INTEGER NOT NULL,
 
     UNIQUE INDEX `File_documentName_key`(`documentName`),
