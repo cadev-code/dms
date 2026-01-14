@@ -3,6 +3,7 @@ import prisma from '../prisma_client';
 import { AppError } from '../utils/AppError';
 import { removeUploadedFile } from '../helpers/removeUploadedFile';
 import { logger } from '../helpers/logger';
+import { FilesParam } from '../schemas/files.schema';
 
 interface FileBody {
   documentName: string;
@@ -113,6 +114,34 @@ export const getAllFiles = async (
 
     logger.info(
       `Recuperación de todos los archivos realizada por el usuario: ${user?.username || 'Unknown'}`,
+    );
+
+    res.status(200).json({ error: null, data: files });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getFilesByType = async (
+  req: Request<FilesParam, object, object>,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const user = await prisma.user.findFirst({
+      where: {
+        id: req.userId,
+      },
+    });
+
+    const files = await prisma.file.findMany({
+      where: {
+        type: req.params.type,
+      },
+    });
+
+    logger.info(
+      `Recuperación de archivos por tipo (${req.params.type}) realizada por el usuario: ${user?.username || 'Unknown'}`,
     );
 
     res.status(200).json({ error: null, data: files });

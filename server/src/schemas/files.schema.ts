@@ -5,3 +5,11 @@ export const uploadFileSchema = z.object({
 });
 
 export type UploadFileBody = z.infer<typeof uploadFileSchema>;
+
+export const filesParamSchema = z.object({
+  type: z.enum(['pdf', 'image', 'word', 'excel', 'powerpoint'], {
+    errorMap: () => ({ message: 'Tipo de archivo inválido' }),
+  }),
+});
+
+export type FilesParam = z.infer<typeof filesParamSchema>;

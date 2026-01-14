@@ -1,9 +1,14 @@
 import { RequestHandler, Router } from 'express';
 import { authMiddleware } from '../middlewares/authMiddleware';
 import { uploadMiddleware } from '../middlewares/uploadMiddleware';
-import { getAllFiles, uploadFile } from '../controllers/files.controllers';
 import { validateInput } from '../middlewares/validateInput';
-import { uploadFileSchema } from '../schemas/files.schema';
+import { filesParamSchema, uploadFileSchema } from '../schemas/files.schema';
+import { validateParam } from '../middlewares/validateParam';
+import {
+  getAllFiles,
+  getFilesByType,
+  uploadFile,
+} from '../controllers/files.controllers';
 
 const router = Router();
 
@@ -29,5 +34,12 @@ router.post(
 );
 
 router.get('/files/all', authMiddleware, getAllFiles);
+
+router.get(
+  '/files/:type',
+  authMiddleware,
+  validateParam(filesParamSchema),
+  getFilesByType,
+);
 
 export default router;
