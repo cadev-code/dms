@@ -21,3 +21,11 @@ model File {
   type String
   size Int
 }
+
+model Folder {
+  id Int @id @default(autoincrement())
+  folderName String @unique
+  parentId Int?
+  parent Folder? @relation("FolderToFolder", fields: [parentId], references: [id])
+  children Folder[] @relation("FolderToFolder") 
+}
