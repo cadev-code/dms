@@ -10,9 +10,15 @@ import { FileText, Plus, Shield } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export const Dashboard = () => {
-  const [activeFilter, setActiveFilter] = useState('all');
+  const [activeFilter, setActiveFilter] = useState(() => {
+    return localStorage.getItem('dms-active-filter') || 'all';
+  });
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [documents, setDocuments] = useState<Document[]>([]);
+
+  useEffect(() => {
+    localStorage.setItem('dms-active-filter', activeFilter);
+  }, [activeFilter]);
 
   const handleFilterChange = (filter: string) => {
     setActiveFilter(filter);
