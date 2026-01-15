@@ -1,26 +1,21 @@
-import { useState } from 'react';
-
 import { useLogout } from '@/hooks/useLogout';
 import { useAllFolders } from '@/hooks/useAllFolders';
+import { FolderTree } from '@/components/dms/FolderTree';
 
 import {
   FolderOpen,
   FileText,
   FileSpreadsheet,
-  File,
   Settings,
   LogOut,
   Shield,
   User,
-  Folder,
   Presentation,
   Image,
-  ChevronRight,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import type { Folder as FolderType } from '@/types/folder.types';
 
 interface Props {
   activeFilter: string;
@@ -36,9 +31,6 @@ export const Sidebar = ({
   onFilterChange,
   documentCounts,
 }: Props) => {
-  const [expandedFolders, setExpandedFolders] = useState<Set<number>>(
-    () => new Set(),
-  );
   const filters = [
     {
       id: 'all',
@@ -71,63 +63,10 @@ export const Sidebar = ({
       icon: Image,
       count: documentCounts.image || 0,
     },
-    {
-      id: 'other',
-      label: 'Otros',
-      icon: File,
-      count: documentCounts.other || 0,
-    },
   ];
 
   const logout = useLogout();
   const { data: folders } = useAllFolders();
-
-  const handleFolderClick = (folder: FolderType) => {
-    onFilterChange(`category:${folder.folderName}`);
-
-    setExpandedFolders((prev) => {
-      const next = new Set(prev);
-      if (next.has(folder.id)) {
-        next.delete(folder.id);
-      } else {
-        next.add(folder.id);
-      }
-      return next;
-    });
-  };
-
-  const renderFolders = (nodes: FolderType[], depth = 0) => {
-    return nodes.map((folder) => (
-      <div key={folder.id} className="w-full">
-        <Button
-          variant="ghost"
-          className={`w-full justify-start gap-3 ${
-            activeFilter === `category:${folder.folderName}`
-              ? 'bg-sidebar-accent text-sidebar-accent-foreground hover:bg-emerald-500 hover:text-sidebar-accent-foreground'
-              : 'text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50'
-          }`}
-          onClick={() => handleFolderClick(folder)}
-        >
-          <div
-            className="flex items-center gap-3 w-full"
-            style={{ paddingLeft: 12 * (depth + 1) }}
-          >
-            {folder.children && folder.children.length > 0 ? (
-              <ChevronRight />
-            ) : (
-              <div className="pl-4"></div>
-            )}
-            <Folder className="h-4 w-4" />
-            <span className="flex-1 text-left">{folder.folderName}</span>
-          </div>
-        </Button>
-        {folder.children &&
-          folder.children.length > 0 &&
-          expandedFolders.has(folder.id) &&
-          renderFolders(folder.children, depth + 1)}
-      </div>
-    ));
-  };
 
   return (
     <aside className="w-64 bg-sidebar text-sidebar-foreground flex flex-col h-screen sticky top-0">
@@ -206,9 +145,15 @@ export const Sidebar = ({
         <Separator className="my-4 bg-sidebar-border" />
 
         <p className="text-xs font-semibold text-sidebar-foreground/50 uppercase tracking-wider mb-2">
-          Categorías
+          Repositorio
         </p>
-        {folders?.data && renderFolders(folders.data)}
+        {folders?.data && (
+          <FolderTree
+            folders={folders.data}
+            activeFilter={activeFilter}
+            onFilterChange={onFilterChange}
+          />
+        )}
       </nav>
 
       <Separator className="bg-sidebar-border" />
