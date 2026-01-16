@@ -29,7 +29,7 @@ export const FolderTree = ({
   }, [expandedFolders]);
 
   const handleFolderClick = (folder: FolderType) => {
-    onFilterChange(`category:${folder.folderName}`);
+    onFilterChange(`folder:${folder.id}`);
 
     setExpandedFolders((prev) => {
       const next = new Set(prev);
@@ -48,7 +48,7 @@ export const FolderTree = ({
         <Button
           variant="ghost"
           className={`w-full justify-start gap-3 ${
-            activeFilter === `category:${folder.folderName}`
+            activeFilter === `folder:${folder.id}`
               ? 'bg-sidebar-accent text-sidebar-accent-foreground hover:bg-emerald-500 hover:text-sidebar-accent-foreground'
               : 'text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50'
           }`}

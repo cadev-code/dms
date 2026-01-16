@@ -18,6 +18,7 @@ export const Dashboard = () => {
 
   useEffect(() => {
     localStorage.setItem('dms-active-filter', activeFilter);
+    console.log(activeFilter);
   }, [activeFilter]);
 
   const handleFilterChange = (filter: string) => {
@@ -89,7 +90,7 @@ export const Dashboard = () => {
             </div>
 
             <div className="flex items-center gap-3">
-              {isAdmin && activeFilter.startsWith('category:') && (
+              {isAdmin && activeFilter.startsWith('folder:') && (
                 <Button onClick={() => setIsUploadOpen(true)}>
                   <Plus className="h-4 w-4 mr-2" />
                   Subir Documento
