@@ -89,7 +89,7 @@ export const Dashboard = () => {
             </div>
 
             <div className="flex items-center gap-3">
-              {isAdmin && (
+              {isAdmin && activeFilter.startsWith('category:') && (
                 <Button onClick={() => setIsUploadOpen(true)}>
                   <Plus className="h-4 w-4 mr-2" />
                   Subir Documento
