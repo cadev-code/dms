@@ -20,6 +20,8 @@ model File {
   fileName String 
   type String
   size Int
+  folderId Int?
+  folder Folder? @relation(fields: [folderId], references: [id])
 }
 
 model Folder {
@@ -28,4 +30,5 @@ model Folder {
   parentId Int?
   parent Folder? @relation("FolderToFolder", fields: [parentId], references: [id])
   children Folder[] @relation("FolderToFolder") 
+  files File[]
 }
