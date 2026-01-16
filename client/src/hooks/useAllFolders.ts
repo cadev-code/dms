@@ -17,6 +17,6 @@ export const useAllFolders = () => {
     queryFn: () => fetcher('/folders/all'),
     retry: 2,
     retryDelay: 1000,
-    staleTime: 1000 * 60, // 1 minute
+    staleTime: 1000 * 5, // 5 seconds
   });
 };
