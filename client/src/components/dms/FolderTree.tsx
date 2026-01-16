@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Folder, ChevronRight, ChevronDown } from 'lucide-react';
@@ -16,9 +16,17 @@ export const FolderTree = ({
   activeFilter,
   onFilterChange,
 }: FolderTreeProps) => {
-  const [expandedFolders, setExpandedFolders] = useState<Set<number>>(
-    () => new Set(),
-  );
+  const [expandedFolders, setExpandedFolders] = useState<Set<number>>(() => {
+    const stored = localStorage.getItem('dms-expanded-folders');
+    return stored ? new Set(JSON.parse(stored)) : new Set();
+  });
+
+  useEffect(() => {
+    localStorage.setItem(
+      'dms-expanded-folders',
+      JSON.stringify([...expandedFolders]),
+    );
+  }, [expandedFolders]);
 
   const handleFolderClick = (folder: FolderType) => {
     onFilterChange(`category:${folder.folderName}`);
