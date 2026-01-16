@@ -19,7 +19,6 @@ export const Dashboard = () => {
 
   useEffect(() => {
     localStorage.setItem('dms-active-filter', activeFilter);
-    console.log(activeFilter);
   }, [activeFilter]);
 
   const handleFilterChange = (filter: string) => {
