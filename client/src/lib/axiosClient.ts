@@ -1,3 +1,4 @@
+import { queryClient } from '@/config/queryClient';
 import axios from 'axios';
 
 export const axiosClient = axios.create({
@@ -22,3 +23,19 @@ axiosClient.interceptors.request.use((config) => {
 
   return config;
 });
+
+axiosClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Solo limpiar y redirigir si NO estamos en /login
+      if (window.location.pathname !== '/login') {
+        queryClient.removeQueries({ queryKey: ['currentUser'] });
+        window.location.href = '/login';
+      }
+    }
+
+    // Propagar el error para que React Query lo detecte
+    return Promise.reject(error);
+  },
+);
