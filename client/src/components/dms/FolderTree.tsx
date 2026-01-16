@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
-import { Folder, ChevronRight, ChevronDown } from 'lucide-react';
 
 import type { Folder as FolderType } from '@/types/folder.types';
+import { FolderIcons } from './FolderIcons';
 
 interface FolderTreeProps {
   folders: FolderType[];
@@ -58,16 +58,10 @@ export const FolderTree = ({
             className="flex items-center gap-3 w-full"
             style={{ paddingLeft: 6 * (depth + 1) }}
           >
-            {folder.children && folder.children.length > 0 ? (
-              expandedFolders.has(folder.id) ? (
-                <ChevronDown />
-              ) : (
-                <ChevronRight />
-              )
-            ) : (
-              <div className="pl-4"></div>
-            )}
-            <Folder className="h-4 w-4" />
+            <FolderIcons
+              isExpanded={expandedFolders.has(folder.id)}
+              hasChildren={folder.children && folder.children.length > 0}
+            />
             <span
               className="flex-1 text-left truncate"
               title={folder.folderName}
