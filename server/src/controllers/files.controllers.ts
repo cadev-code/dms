@@ -3,11 +3,8 @@ import prisma from '../prisma_client';
 import { AppError } from '../utils/AppError';
 import { removeUploadedFile } from '../helpers/removeUploadedFile';
 import { logger } from '../helpers/logger';
-import { FilesParam } from '../schemas/files.schema';
 
-interface FileBody {
-  documentName: string;
-}
+import { UploadFileBody } from '../schemas/files.schema';
 
 const getType = (mimetype: string) => {
   if (mimetype.startsWith('image/')) return 'image';
@@ -34,18 +31,31 @@ const getType = (mimetype: string) => {
 };
 
 export const uploadFile = async (
-  req: Request<object, object, FileBody>,
+  req: Request<object, object, UploadFileBody>,
   res: Response,
   next: NextFunction,
 ) => {
   try {
-    const { documentName } = req.body;
-
     const user = await prisma.user.findFirst({
       where: {
         id: req.userId,
       },
     });
+
+    const { documentName, folderId } = req.body;
+
+    const existingFolder = await prisma.folder.findUnique({
+      where: { id: folderId },
+    });
+
+    if (!existingFolder) {
+      throw new AppError(
+        `La carpeta especificada no existe`,
+        400,
+        'FOLDER_NOT_FOUND',
+        `Intento de carga de archivo fallido - La carpeta especificada no existe - folderId: ${folderId} (Intentado por: ${user?.username || 'Unknown'})`,
+      );
+    }
 
     const file = req.file;
 
@@ -63,6 +73,7 @@ export const uploadFile = async (
     const existingFile = await prisma.file.findFirst({
       where: {
         documentName: documentName,
+        folderId,
       },
     });
 
@@ -83,6 +94,7 @@ export const uploadFile = async (
         fileName: filename,
         type: getType(mimetype),
         size,
+        folderId,
       },
     });
 
@@ -123,7 +135,7 @@ export const getAllFiles = async (
 };
 
 export const getFilesByType = async (
-  req: Request<FilesParam, object, object>,
+  req: Request,
   res: Response,
   next: NextFunction,
 ) => {
@@ -142,6 +154,34 @@ export const getFilesByType = async (
 
     logger.info(
       `Recuperación de archivos por tipo (${req.params.type}) realizada por el usuario: ${user?.username || 'Unknown'}`,
+    );
+
+    res.status(200).json({ error: null, data: files });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getFilesByFolder = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const user = await prisma.user.findFirst({
+      where: {
+        id: req.userId,
+      },
+    });
+
+    const files = await prisma.file.findMany({
+      where: {
+        folderId: Number(req.params.folderId),
+      },
+    });
+
+    logger.info(
+      `Recuperación de archivos por folder (${req.params.folderId}) realizada por el usuario: ${user?.username || 'Unknown'}`,
     );
 
     res.status(200).json({ error: null, data: files });

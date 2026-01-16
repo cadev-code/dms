@@ -2,10 +2,15 @@ import { RequestHandler, Router } from 'express';
 import { authMiddleware } from '../middlewares/authMiddleware';
 import { uploadMiddleware } from '../middlewares/uploadMiddleware';
 import { validateInput } from '../middlewares/validateInput';
-import { filesParamSchema, uploadFileSchema } from '../schemas/files.schema';
+import {
+  filesByTypeParamSchema,
+  filesByFolderParamSchema,
+  uploadFileSchema,
+} from '../schemas/files.schema';
 import { validateParam } from '../middlewares/validateParam';
 import {
   getAllFiles,
+  getFilesByFolder,
   getFilesByType,
   uploadFile,
 } from '../controllers/files.controllers';
@@ -38,8 +43,15 @@ router.get('/files/all', authMiddleware, getAllFiles);
 router.get(
   '/files/:type',
   authMiddleware,
-  validateParam(filesParamSchema),
+  validateParam(filesByTypeParamSchema),
   getFilesByType,
+);
+
+router.get(
+  '/files/folder/:folderId',
+  authMiddleware,
+  validateParam(filesByFolderParamSchema),
+  getFilesByFolder,
 );
 
 export default router;
