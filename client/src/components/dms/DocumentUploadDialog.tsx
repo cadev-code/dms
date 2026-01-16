@@ -16,9 +16,14 @@ import { useDocumentUpload } from '@/hooks/useDocumentUpload';
 interface Props {
   isOpen: boolean;
   onClose: () => void;
+  activeFilter: string;
 }
 
-export const DocumentUploadDialog = ({ isOpen, onClose }: Props) => {
+export const DocumentUploadDialog = ({
+  isOpen,
+  onClose,
+  activeFilter,
+}: Props) => {
   const {
     ALLOWED_EXTENSIONS,
     dragActive,
@@ -32,7 +37,7 @@ export const DocumentUploadDialog = ({ isOpen, onClose }: Props) => {
     handleUploadFile,
     setName,
     setSelectedFile,
-  } = useDocumentUpload(onClose);
+  } = useDocumentUpload(onClose, activeFilter);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>

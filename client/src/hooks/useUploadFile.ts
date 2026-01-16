@@ -6,6 +6,7 @@ import { poster } from '@/api/queryHelpers';
 interface UploadPayload {
   documentName: string;
   file: File;
+  folderId: number;
 }
 
 interface UploadResponse {
@@ -27,6 +28,7 @@ export const useUploadFile = (onClose: () => void) => {
       const formData = new FormData();
       formData.append('documentName', data.documentName);
       formData.append('file', data.file);
+      formData.append('folderId', data.folderId.toString());
 
       return poster('/files', formData);
     },
@@ -36,6 +38,7 @@ export const useUploadFile = (onClose: () => void) => {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['all-files'] });
       queryClient.invalidateQueries({ queryKey: ['files-by-type'] });
+      queryClient.invalidateQueries({ queryKey: ['files-by-folder'] });
       showAlert(data.message, 'success');
       onClose();
     },

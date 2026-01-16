@@ -24,7 +24,10 @@ export const ALLOWED_EXTENSIONS = [
   '.gif',
 ];
 
-export const useDocumentUpload = (onClose: () => void) => {
+export const useDocumentUpload = (
+  onClose: () => void,
+  activeFilter: string,
+) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [dragActive, setDragActive] = useState<boolean>(false);
@@ -127,7 +130,15 @@ export const useDocumentUpload = (onClose: () => void) => {
     if (!selectedFile) return;
     if (name.trim() === '') return;
 
-    uploadFile.mutate({ file: selectedFile, documentName: name.trim() });
+    const folderId = +activeFilter.split(':')[1];
+
+    if (!folderId) return;
+
+    uploadFile.mutate({
+      file: selectedFile,
+      documentName: name.trim(),
+      folderId,
+    });
   };
 
   return {

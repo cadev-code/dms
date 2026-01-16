@@ -4,6 +4,7 @@ import { Sidebar } from '@/components/dms/Sidebar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useAllFiles } from '@/hooks/useAllFiles';
+import { useFilesByFolder } from '@/hooks/useFilesByFolder';
 import { useFilesByType } from '@/hooks/useFilesByType';
 import { Document, DocumentType } from '@/types/document.types';
 import { FileText, Plus, Shield } from 'lucide-react';
@@ -31,15 +32,28 @@ export const Dashboard = () => {
 
   const { data: allDocuments } = useAllFiles();
   const { data: documentsByType } = useFilesByType(
-    activeFilter as DocumentType & 'all',
+    activeFilter.startsWith('folder:')
+      ? ('all' as DocumentType & 'all')
+      : (activeFilter as DocumentType & 'all'),
+  );
+  const { data: documentsByFolder } = useFilesByFolder(
+    activeFilter.startsWith('folder:')
+      ? (parseInt(activeFilter.split(':')[1]) as DocumentType &
+          'all' &
+          `folder:${number}`)
+      : 0,
   );
 
   useEffect(() => {
     const documentsToShow =
-      activeFilter === 'all' ? allDocuments?.data : documentsByType?.data;
+      activeFilter === 'all'
+        ? allDocuments?.data
+        : activeFilter.startsWith('folder:')
+          ? documentsByFolder?.data
+          : documentsByType?.data;
 
     setDocuments(documentsToShow || []);
-  }, [activeFilter, allDocuments, documentsByType]);
+  }, [activeFilter, allDocuments, documentsByType, documentsByFolder]);
 
   const isAdmin = true;
 
@@ -110,7 +124,11 @@ export const Dashboard = () => {
         </div>
       </main>
 
-      <DocumentUploadDialog isOpen={isUploadOpen} onClose={handleCloseUpload} />
+      <DocumentUploadDialog
+        isOpen={isUploadOpen}
+        onClose={handleCloseUpload}
+        activeFilter={activeFilter}
+      />
     </div>
   );
 };
