@@ -70,7 +70,9 @@ export const getAllFolders = async (
       where: { id: req.userId },
     });
 
-    const folders = await prisma.folder.findMany();
+    const folders = await prisma.folder.findMany({
+      orderBy: { folderName: 'asc' },
+    });
 
     // Árbol de carpetas a partir de una lista plana
     type FolderNode = (typeof folders)[number] & { children: FolderNode[] };
