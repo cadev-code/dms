@@ -20,6 +20,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Input } from '../ui/input';
 import React, { useState } from 'react';
+import { useCreateFolder } from '@/hooks/useCreateFolder';
 
 interface Props {
   activeFilter: string;
@@ -74,15 +75,19 @@ export const Sidebar = ({
 
   const logout = useLogout();
   const { data: folders } = useAllFolders();
+  const createFolder = useCreateFolder();
 
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      if (newFolderName.trim() !== '') {
-        // Aquí iría la lógica para crear la carpeta
-        console.log('Crear carpeta:', newFolderName);
-        setIsAddingRoot(false);
-        setNewFolderName('');
-      }
+      if (newFolderName.trim() === '') return;
+
+      createFolder.mutate({
+        folderName: newFolderName.trim(),
+        parentId: null,
+      });
+
+      setIsAddingRoot(false);
+      setNewFolderName('');
     }
   };
 
