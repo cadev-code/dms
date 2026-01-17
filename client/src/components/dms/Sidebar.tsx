@@ -12,15 +12,10 @@ import {
   User,
   Presentation,
   Image,
-  Plus,
-  Folder,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Input } from '../ui/input';
-import React, { useState } from 'react';
-import { useCreateFolder } from '@/hooks/useCreateFolder';
 
 interface Props {
   activeFilter: string;
@@ -36,9 +31,6 @@ export const Sidebar = ({
   onFilterChange,
   documentCounts,
 }: Props) => {
-  const [newFolderName, setNewFolderName] = useState<string>('');
-  const [isAddingRoot, setIsAddingRoot] = useState<boolean>(false);
-
   const filters = [
     {
       id: 'all',
@@ -75,22 +67,6 @@ export const Sidebar = ({
 
   const logout = useLogout();
   const { data: folders } = useAllFolders();
-  const createFolder = useCreateFolder();
-
-  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      if (newFolderName.trim() === '') return;
-
-      createFolder.mutate({
-        folderName: newFolderName.trim(),
-        parentId: null,
-      });
-
-      setIsAddingRoot(false);
-      setNewFolderName('');
-    }
-  };
-
   return (
     <aside className="w-64 bg-sidebar text-sidebar-foreground flex flex-col h-screen sticky top-0">
       {/* Logo */}
@@ -167,47 +143,12 @@ export const Sidebar = ({
 
         <Separator className="my-4 bg-sidebar-border" />
 
-        <div className="flex justify-between items-center mb-2">
-          <p className="text-xs font-semibold text-sidebar-foreground/50 uppercase tracking-wider">
-            Repositorio
-          </p>
-          {isAdmin && !isAddingRoot && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-6 w-6 text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-green-500"
-              onClick={() => setIsAddingRoot(true)}
-            >
-              <Plus className="h-4 w-4" />
-            </Button>
-          )}
-        </div>
-
-        {isAddingRoot && (
-          <div className="flex items-center gap-2 py-1.5 px-2">
-            <Folder className="h-4 w-4 text-muted-foreground shrink-0" />
-            <Input
-              value={newFolderName}
-              onChange={(e) => setNewFolderName(e.target.value)}
-              placeholder="Nueva carpeta..."
-              className="h-7 text-sm flex-1 bg-sidebar-accent border-sidebar-border"
-              autoFocus
-              onBlur={() => {
-                setIsAddingRoot(false);
-                setNewFolderName('');
-              }}
-              onKeyDown={handleInputKeyDown}
-            />
-          </div>
-        )}
-
-        {folders?.data && (
-          <FolderTree
-            folders={folders.data}
-            activeFilter={activeFilter}
-            onFilterChange={onFilterChange}
-          />
-        )}
+        <FolderTree
+          activeFilter={activeFilter}
+          folders={folders?.data || []}
+          isAdmin={isAdmin}
+          onFilterChange={onFilterChange}
+        />
       </nav>
 
       <Separator className="bg-sidebar-border" />
