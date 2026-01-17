@@ -24,7 +24,7 @@ export const useUploadFile = (onClose: () => void) => {
     AxiosError<{ message: string; error: string }>,
     UploadPayload
   >({
-    mutationFn: async (data) => {
+    mutationFn: (data) => {
       const formData = new FormData();
       formData.append('documentName', data.documentName);
       formData.append('file', data.file);
