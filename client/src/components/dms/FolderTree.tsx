@@ -31,6 +31,10 @@ export const FolderTree = ({
 
   const createFolder = useCreateFolder();
 
+  const isExpanded = (folderId: number) => {
+    return expandedFolders.has(folderId);
+  };
+
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       if (newFolderName.trim() === '') return;
@@ -45,9 +49,7 @@ export const FolderTree = ({
     }
   };
 
-  const handleFolderClick = (folder: FolderType) => {
-    onFilterChange(`folder:${folder.id}`);
-
+  const handleExpandedFolder = (folder: FolderType) => {
     setExpandedFolders((prev) => {
       const next = new Set(prev);
       if (next.has(folder.id)) {
@@ -57,25 +59,6 @@ export const FolderTree = ({
       }
       return next;
     });
-  };
-
-  const renderFolders = (nodes: FolderType[], depth = 0) => {
-    return nodes.map((folder) => (
-      <div key={folder.id} className="w-full">
-        <FolderTreeItem
-          activeFilter={activeFilter}
-          depth={depth}
-          isExpanded={expandedFolders.has(folder.id)}
-          folder={folder}
-          onFolderClick={() => handleFolderClick(folder)}
-        />
-
-        {folder.children &&
-          folder.children.length > 0 &&
-          expandedFolders.has(folder.id) &&
-          renderFolders(folder.children, depth + 1)}
-      </div>
-    ));
   };
 
   useEffect(() => {
@@ -121,7 +104,19 @@ export const FolderTree = ({
         </div>
       )}
 
-      {renderFolders(folders)}
+      <div className="space-y-0.5">
+        {folders.map((folder) => (
+          <FolderTreeItem
+            activeFilter={activeFilter}
+            folder={folder}
+            isExpanded={isExpanded}
+            key={folder.id}
+            level={0}
+            onFolderClick={onFilterChange}
+            onFolderExpanded={handleExpandedFolder}
+          />
+        ))}
+      </div>
     </>
   );
 };
