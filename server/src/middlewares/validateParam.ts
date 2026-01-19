@@ -18,5 +18,7 @@ export const validateParam =
       );
     }
 
+    req.params = result.data;
+
     next();
   };
