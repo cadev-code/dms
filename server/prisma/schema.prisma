@@ -21,14 +21,14 @@ model File {
   type String
   size Int
   folderId Int?
-  folder Folder? @relation(fields: [folderId], references: [id])
+  folder Folder? @relation(fields: [folderId], references: [id], onDelete: Cascade)
 }
 
 model Folder {
   id Int @id @default(autoincrement())
   folderName String @unique
   parentId Int?
-  parent Folder? @relation("FolderToFolder", fields: [parentId], references: [id])
+  parent Folder? @relation("FolderToFolder", fields: [parentId], references: [id], onDelete: Cascade)
   children Folder[] @relation("FolderToFolder") 
   files File[]
 }
