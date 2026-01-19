@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { CreateFolderBody } from '../schemas/folders.schema';
+import { CreateFolderBody, RenameFolderBody } from '../schemas/folders.schema';
 import prisma from '../prisma_client';
 import { AppError } from '../utils/AppError';
 import { logger } from '../helpers/logger';
@@ -106,6 +106,62 @@ export const getAllFolders = async (
     );
 
     res.status(200).json({ error: null, data: rootFolders });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const renameFolder = async (
+  req: Request<object, object, RenameFolderBody>,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.userId },
+    });
+
+    const { folderId } = req.params as { folderId: number };
+    const { folderName } = req.body;
+
+    const existingFolder = await prisma.folder.findUnique({
+      where: { id: folderId },
+    });
+
+    if (!existingFolder) {
+      throw new AppError(
+        `La carpeta no existe.`,
+        400,
+        'FOLDER_NOT_FOUND',
+        `Intento de renombrar carpeta fallido - Carpeta no encontrada - folderId: ${folderId} (Intentado por: ${user?.username || 'Unknown'})`,
+      );
+    }
+
+    const existingFolderWithName = await prisma.folder.findUnique({
+      where: { folderName, parentId: existingFolder.parentId },
+    });
+
+    if (existingFolderWithName) {
+      throw new AppError(
+        `Ya existe una carpeta con el nombre "${folderName}" en esta ubicación.`,
+        400,
+        'FOLDER_ALREADY_EXISTS',
+        `Intento de renombrar carpeta fallido - Nombre de carpeta duplicado (Intentado por: ${user?.username || 'Unknown'})`,
+      );
+    }
+
+    await prisma.folder.update({
+      where: { id: folderId },
+      data: { folderName },
+    });
+
+    logger.info(
+      `Carpeta renombrada exitosamente - ID: ${folderId}, Nuevo nombre: ${folderName} (Renombrado por: ${user?.username || 'Unknown'})`,
+    );
+
+    res
+      .status(200)
+      .json({ error: null, message: 'Carpeta renombrada exitosamente' });
   } catch (error) {
     next(error);
   }
