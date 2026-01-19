@@ -106,6 +106,7 @@ export const uploadFile = async (
       .status(201)
       .json({ error: null, message: 'Archivo cargado exitosamente' });
   } catch (error) {
+    removeUploadedFile(req.file?.path || '');
     next(error);
   }
 };

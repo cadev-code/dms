@@ -29,6 +29,7 @@ import {
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
 import { useRenameFolder } from '@/hooks/useRenameFolder';
+import { useCreateFolder } from '@/hooks/useCreateFolder';
 
 interface Props {
   activeFilter: string;
@@ -58,6 +59,7 @@ export const FolderTreeItem = ({
   const isActive = activeFilter === `folder:${folder.id}`;
   const hasChildren = folder.children && folder.children.length > 0;
 
+  const createFolder = useCreateFolder();
   const renameFolder = useRenameFolder();
 
   const handleToggle = (e: React.MouseEvent) => {
@@ -84,7 +86,10 @@ export const FolderTreeItem = ({
     if (e.key === 'Enter') {
       if (newFolderName === '') return;
 
-      console.log('Add new Subfolder');
+      createFolder.mutate({
+        folderName: newFolderName,
+        parentId: folder.id,
+      });
 
       setIsAddingSubfolder(false);
       setNewFolderName('');
@@ -166,7 +171,12 @@ export const FolderTreeItem = ({
                 align="end"
                 className="w-48 bg-popover border-border z-50"
               >
-                <DropdownMenuItem onClick={() => setIsAddingSubfolder(true)}>
+                <DropdownMenuItem
+                  onClick={() => {
+                    setIsAddingSubfolder(true);
+                    onFolderExpanded(folder);
+                  }}
+                >
                   <Plus className="h-4 w-4 mr-2" />
                   Nueva Subcarpeta
                 </DropdownMenuItem>
