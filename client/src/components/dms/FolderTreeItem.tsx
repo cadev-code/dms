@@ -30,6 +30,7 @@ import {
 } from '../ui/dropdown-menu';
 import { useRenameFolder } from '@/hooks/useRenameFolder';
 import { useCreateFolder } from '@/hooks/useCreateFolder';
+import { FolderDeleteDialog } from './FolderDeleteDialog';
 
 interface Props {
   activeFilter: string;
@@ -55,6 +56,8 @@ export const FolderTreeItem = ({
 
   const [isAddingSubfolder, setIsAddingSubfolder] = useState(false);
   const [newFolderName, setNewFolderName] = useState('');
+
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const isActive = activeFilter === `folder:${folder.id}`;
   const hasChildren = folder.children && folder.children.length > 0;
@@ -95,6 +98,8 @@ export const FolderTreeItem = ({
       setNewFolderName('');
     }
   };
+
+  const handleConfirmDelete = () => {};
 
   return (
     <div className="select-none">
@@ -172,7 +177,8 @@ export const FolderTreeItem = ({
                 className="w-48 bg-popover border-border z-50"
               >
                 <DropdownMenuItem
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
                     setIsAddingSubfolder(true);
                     onFolderExpanded(folder);
                   }}
@@ -181,7 +187,8 @@ export const FolderTreeItem = ({
                   Nueva Subcarpeta
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
                     setEditName(folder.folderName);
                     setIsEditing(true);
                   }}
@@ -191,7 +198,10 @@ export const FolderTreeItem = ({
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
-                  onClick={() => console.log('eliminar')}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsDeleteDialogOpen(true);
+                  }}
                   className="text-destructive focus:text-destructive"
                 >
                   <Trash2 className="h-4 w-4 mr-2" />
@@ -239,6 +249,13 @@ export const FolderTreeItem = ({
           ))}
         </CollapsibleContent>
       </Collapsible>
+
+      <FolderDeleteDialog
+        folderName={folder.folderName}
+        isOpen={isDeleteDialogOpen}
+        onClose={() => setIsDeleteDialogOpen(false)}
+        onConfirm={handleConfirmDelete}
+      />
     </div>
   );
 };
