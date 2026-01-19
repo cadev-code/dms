@@ -28,6 +28,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
+import { useRenameFolder } from '@/hooks/useRenameFolder';
 
 interface Props {
   activeFilter: string;
@@ -57,6 +58,8 @@ export const FolderTreeItem = ({
   const isActive = activeFilter === `folder:${folder.id}`;
   const hasChildren = folder.children && folder.children.length > 0;
 
+  const renameFolder = useRenameFolder();
+
   const handleToggle = (e: React.MouseEvent) => {
     e.stopPropagation();
     onFolderExpanded(folder);
@@ -65,8 +68,12 @@ export const FolderTreeItem = ({
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       if (editName === '') return;
+      if (folder.folderName === editName) return;
 
-      console.log('Edit Folder');
+      renameFolder.mutate({
+        folderName: editName,
+        id: folder.id,
+      });
 
       setIsEditing(false);
       setEditName('');
@@ -163,7 +170,12 @@ export const FolderTreeItem = ({
                   <Plus className="h-4 w-4 mr-2" />
                   Nueva Subcarpeta
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setIsEditing(true)}>
+                <DropdownMenuItem
+                  onClick={() => {
+                    setEditName(folder.folderName);
+                    setIsEditing(true);
+                  }}
+                >
                   <Pencil className="h-4 w-4 mr-2" />
                   Renombrar
                 </DropdownMenuItem>
