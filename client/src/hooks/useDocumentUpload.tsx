@@ -141,6 +141,12 @@ export const useDocumentUpload = (
     });
   };
 
+  const handleCancel = () => {
+    onClose();
+    setName('');
+    setSelectedFile(null);
+  };
+
   return {
     ALLOWED_EXTENSIONS,
     dragActive,
@@ -148,6 +154,7 @@ export const useDocumentUpload = (
     name,
     selectedFile,
     getFileIcon,
+    handleCancel,
     handleDrag,
     handleDrop,
     handleFileSelect,

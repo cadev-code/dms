@@ -31,6 +31,7 @@ export const DocumentUploadDialog = ({
     name,
     selectedFile,
     getFileIcon,
+    handleCancel,
     handleDrag,
     handleDrop,
     handleFileSelect,
@@ -40,7 +41,7 @@ export const DocumentUploadDialog = ({
   } = useDocumentUpload(onClose, activeFilter);
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleCancel}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Subir Nuevo Documento</DialogTitle>
@@ -112,7 +113,7 @@ export const DocumentUploadDialog = ({
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={onClose}>
+          <Button variant="outline" onClick={handleCancel}>
             Cancelar
           </Button>
           <Button
