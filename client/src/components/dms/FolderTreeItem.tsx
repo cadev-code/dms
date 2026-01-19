@@ -31,6 +31,7 @@ import {
 import { useRenameFolder } from '@/hooks/useRenameFolder';
 import { useCreateFolder } from '@/hooks/useCreateFolder';
 import { FolderDeleteDialog } from './FolderDeleteDialog';
+import { useDeleteFolder } from '@/hooks/useDeleteFolder';
 
 interface Props {
   activeFilter: string;
@@ -64,6 +65,7 @@ export const FolderTreeItem = ({
 
   const createFolder = useCreateFolder();
   const renameFolder = useRenameFolder();
+  const deleteFolder = useDeleteFolder();
 
   const handleToggle = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -99,7 +101,10 @@ export const FolderTreeItem = ({
     }
   };
 
-  const handleConfirmDelete = () => {};
+  const handleConfirmDelete = () => {
+    deleteFolder.mutate({ id: folder.id });
+    onFolderClick('all');
+  };
 
   return (
     <div className="select-none">
