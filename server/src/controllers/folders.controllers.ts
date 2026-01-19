@@ -1,5 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
-import { CreateFolderBody, RenameFolderBody } from '../schemas/folders.schema';
+import {
+  CreateFolderBody,
+  mutateFolderParamsSchema,
+  renameFolderSchema,
+} from '../schemas/folders.schema';
 import prisma from '../prisma_client';
 import { AppError } from '../utils/AppError';
 import { logger } from '../helpers/logger';
@@ -112,7 +116,7 @@ export const getAllFolders = async (
 };
 
 export const renameFolder = async (
-  req: Request<object, object, RenameFolderBody>,
+  req: Request,
   res: Response,
   next: NextFunction,
 ) => {
@@ -121,8 +125,8 @@ export const renameFolder = async (
       where: { id: req.userId },
     });
 
-    const { folderId } = req.params as { folderId: number };
-    const { folderName } = req.body;
+    const { folderId } = mutateFolderParamsSchema.parse(req.params);
+    const { folderName } = renameFolderSchema.parse(req.body);
 
     const existingFolder = await prisma.folder.findUnique({
       where: { id: folderId },
@@ -162,6 +166,47 @@ export const renameFolder = async (
     res
       .status(200)
       .json({ error: null, message: 'Carpeta renombrada exitosamente' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteFolder = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.userId },
+    });
+
+    const { folderId } = mutateFolderParamsSchema.parse(req.params);
+
+    const existingFolder = await prisma.folder.findUnique({
+      where: { id: folderId },
+    });
+
+    if (!existingFolder) {
+      throw new AppError(
+        `La carpeta no existe.`,
+        400,
+        'FOLDER_NOT_FOUND',
+        `Intento de eliminar carpeta fallido - Carpeta no encontrada - folderId: ${folderId} (Intentado por: ${user?.username || 'Unknown'})`,
+      );
+    }
+
+    await prisma.folder.delete({
+      where: { id: folderId },
+    });
+
+    logger.info(
+      `Carpeta eliminada exitosamente - ID: ${folderId} FolderName: ${existingFolder.folderName} (Eliminado por: ${user?.username || 'Unknown'})`,
+    );
+
+    res
+      .status(200)
+      .json({ error: null, message: 'Carpeta eliminada exitosamente' });
   } catch (error) {
     next(error);
   }

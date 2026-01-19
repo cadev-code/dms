@@ -3,11 +3,12 @@ import { authMiddleware } from '../middlewares/authMiddleware';
 import { validateInput } from '../middlewares/validateInput';
 import {
   createFolderSchema,
-  renameFolderParamsSchema,
+  mutateFolderParamsSchema,
   renameFolderSchema,
 } from '../schemas/folders.schema';
 import {
   createFolder,
+  deleteFolder,
   getAllFolders,
   renameFolder,
 } from '../controllers/folders.controllers';
@@ -27,9 +28,16 @@ router.get('/folders/all', authMiddleware, getAllFolders);
 router.put(
   '/folders/:folderId',
   authMiddleware,
-  validateParam(renameFolderParamsSchema),
+  validateParam(mutateFolderParamsSchema),
   validateInput(renameFolderSchema),
   renameFolder,
+);
+
+router.delete(
+  '/folders/:folderId',
+  authMiddleware,
+  validateParam(mutateFolderParamsSchema),
+  deleteFolder,
 );
 
 export default router;
