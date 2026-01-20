@@ -9,6 +9,8 @@ import {
   RenameFileBody,
   UploadFileBody,
 } from '../schemas/files.schema';
+import path from 'path';
+import { convertToPdf } from '../helpers/convertToPdf';
 
 const getType = (mimetype: string) => {
   if (mimetype.startsWith('image/')) return 'image';
@@ -72,7 +74,8 @@ export const uploadFile = async (
       );
     }
 
-    const { filename, mimetype, size, path } = file;
+    const { filename, mimetype, size, path: filePath } = file;
+    const type = getType(mimetype);
 
     const existingFile = await prisma.file.findFirst({
       where: {
@@ -82,7 +85,7 @@ export const uploadFile = async (
     });
 
     if (existingFile) {
-      removeUploadedFile(path);
+      removeUploadedFile(filePath);
 
       throw new AppError(
         `El archivo ya existe`,
@@ -92,11 +95,27 @@ export const uploadFile = async (
       );
     }
 
+    const uploadsDir = path.join(__dirname, '../../uploads');
+
+    let previewFileName: string | null = null;
+
+    if (type === 'word' || type === 'excel' || type === 'powerpoint') {
+      try {
+        const pdfFileName = await convertToPdf(filePath, uploadsDir);
+        previewFileName = pdfFileName;
+      } catch (error) {
+        logger.error(
+          `Error al convertir el archivo a PDF para vista previa - ${filename} (Intentado por: ${user?.username || 'Unknown'}) - ${error}`,
+        );
+      }
+    }
+
     await prisma.file.create({
       data: {
         documentName,
         fileName: filename,
-        type: getType(mimetype),
+        previewFileName,
+        type,
         size,
         folderId,
       },
