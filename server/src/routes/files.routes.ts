@@ -12,6 +12,7 @@ import {
 import { validateParam } from '../middlewares/validateParam';
 import {
   deleteFile,
+  downloadFile,
   getAllFiles,
   getFilesByFolder,
   getFilesByType,
@@ -71,6 +72,13 @@ router.delete(
   authMiddleware,
   validateParam(mutateFileParamsSchema),
   deleteFile,
+);
+
+router.get(
+  '/files/:documentId/download',
+  authMiddleware,
+  validateParam(mutateFileParamsSchema),
+  downloadFile,
 );
 
 export default router;

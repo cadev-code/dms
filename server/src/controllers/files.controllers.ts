@@ -1,3 +1,5 @@
+import path from 'path';
+import fs from 'fs';
 import { NextFunction, Request, Response } from 'express';
 import prisma from '../prisma_client';
 import { AppError } from '../utils/AppError';
@@ -9,7 +11,6 @@ import {
   RenameFileBody,
   UploadFileBody,
 } from '../schemas/files.schema';
-import path from 'path';
 import { convertToPdf } from '../helpers/convertToPdf';
 
 const getType = (mimetype: string) => {
@@ -306,6 +307,57 @@ export const deleteFile = async (
     res
       .status(200)
       .json({ error: null, message: 'Archivo eliminado exitosamente' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const downloadFile = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.userId },
+    });
+
+    const { documentId } = mutateFileParamsSchema.parse(req.params);
+
+    const existingFile = await prisma.file.findUnique({
+      where: { id: documentId },
+    });
+
+    if (!existingFile) {
+      throw new AppError(
+        `El archivo no existe.`,
+        400,
+        'FILE_NOT_FOUND',
+        `Intento de descarga de archivo fallido - Archivo no encontrado - documentId: ${documentId} (Intentado por: ${user?.username || 'Unknown'})`,
+      );
+    }
+
+    const uploadsDir = path.join(__dirname, '../../uploads');
+    const filePath = path.join(uploadsDir, existingFile.fileName);
+
+    if (!fs.existsSync(filePath)) {
+      throw new AppError(
+        `El archivo no se encuentra en el servidor.`,
+        400,
+        'FILE_MISSING_ON_SERVER',
+        `Intento de descarga de archivo fallido - Archivo faltante en el servidor - documentId: ${documentId} (Intentado por: ${user?.username || 'Unknown'})`,
+      );
+    }
+
+    res.download(
+      filePath,
+      `${existingFile.documentName}.${existingFile.fileName.split('.').pop()}`,
+      (err) => {
+        if (err) {
+          return next(err);
+        }
+      },
+    );
   } catch (error) {
     next(error);
   }
