@@ -37,10 +37,10 @@ import {
 interface DocumentListProps {
   documents: Document[];
   isAdmin?: boolean;
-  onDelete?: (doc: Document) => void;
-  onDownload?: (doc: Document) => void;
-  onEdit?: (doc: Document) => void;
-  onView: (doc: Document) => void;
+  onDelete?: (document: Document) => void;
+  onDownload?: (document: Document) => void;
+  onEdit?: (document: Document) => void;
+  onView: (document: Document) => void;
 }
 
 export function DocumentList({

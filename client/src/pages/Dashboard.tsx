@@ -1,5 +1,6 @@
 import { DocumentList } from '@/components/dms/DocumentList';
 import { DocumentUploadDialog } from '@/components/dms/DocumentUploadDialog';
+import { DeleteConfirmDialog } from '@/components/dms/FileDeleteDialog';
 import { Sidebar } from '@/components/dms/Sidebar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -17,6 +18,10 @@ export const Dashboard = () => {
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [documents, setDocuments] = useState<Document[]>([]);
   const [editDocument, setEditDocument] = useState<Document | null>(null);
+  const [documentToDelete, setDocumentToDelete] = useState<Document | null>(
+    null,
+  );
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
   useEffect(() => {
     localStorage.setItem('dms-active-filter', activeFilter);
@@ -29,6 +34,20 @@ export const Dashboard = () => {
   const handleEdit = (document: Document) => {
     setEditDocument(document);
     setIsUploadOpen(true);
+  };
+
+  const handleDelete = (document: Document) => {
+    setDocumentToDelete(document);
+    setIsDeleteOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (documentToDelete) {
+      // deleteDocument(documentToDelete.id);
+      // toast.success('Documento eliminado correctamente');
+      setIsDeleteOpen(false);
+      setDocumentToDelete(null);
+    }
   };
 
   const handleCloseUpload = () => {
@@ -126,7 +145,7 @@ export const Dashboard = () => {
             isAdmin={true}
             onView={() => {}}
             onEdit={handleEdit}
-            onDelete={() => {}}
+            onDelete={handleDelete}
             onDownload={() => {}}
           />
         </div>
@@ -137,6 +156,13 @@ export const Dashboard = () => {
         onClose={handleCloseUpload}
         activeFilter={activeFilter}
         editDocument={editDocument}
+      />
+
+      <DeleteConfirmDialog
+        document={documentToDelete}
+        isOpen={isDeleteOpen}
+        onClose={() => setIsDeleteOpen(false)}
+        onConfirm={handleConfirmDelete}
       />
     </div>
   );
