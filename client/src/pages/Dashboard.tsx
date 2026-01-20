@@ -60,8 +60,10 @@ export const Dashboard = () => {
     setEditDocument(null);
   };
 
-  const handlePdfView = (document: Document) => {
-    setPdfToShow(document.fileName);
+  const handleView = (document: Document) => {
+    setPdfToShow(
+      document.type === 'pdf' ? document.fileName : document.previewFileName,
+    );
     setIsPdfViewerOpen(true);
   };
 
@@ -153,7 +155,7 @@ export const Dashboard = () => {
           <DocumentList
             documents={documents || []}
             isAdmin={true}
-            onPdfView={handlePdfView}
+            onView={handleView}
             onEdit={handleEdit}
             onDelete={handleDelete}
             onDownload={() => {}}

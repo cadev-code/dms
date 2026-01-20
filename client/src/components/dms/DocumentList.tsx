@@ -40,7 +40,7 @@ interface DocumentListProps {
   onDelete?: (document: Document) => void;
   onDownload?: (document: Document) => void;
   onEdit?: (document: Document) => void;
-  onPdfView: (document: Document) => void;
+  onView: (document: Document) => void;
 }
 
 export function DocumentList({
@@ -49,7 +49,7 @@ export function DocumentList({
   onDelete,
   onDownload,
   onEdit,
-  onPdfView,
+  onView,
 }: DocumentListProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
 
@@ -162,8 +162,12 @@ export function DocumentList({
             variant="ghost"
             size="icon"
             onClick={() => {
-              if (row.original.type === 'pdf') {
-                onPdfView(row.original);
+              if (
+                ['pdf', 'word', 'excel', 'powerpoint'].includes(
+                  row.original.type,
+                )
+              ) {
+                onView(row.original);
               }
             }}
           >
