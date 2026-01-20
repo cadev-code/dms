@@ -102,7 +102,7 @@ export const FolderTreeItem = ({
   };
 
   const handleConfirmDelete = () => {
-    deleteFolder.mutate({ id: folder.id });
+    deleteFolder.mutate({ folderId: folder.id });
     onFolderClick('all');
   };
 

@@ -5,7 +5,7 @@ import { useMutation } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 
 interface DeleteFolderPayload {
-  id: number;
+  folderId: number;
 }
 
 interface DeleteFolderResponse {
@@ -22,7 +22,7 @@ export const useDeleteFolder = () => {
     DeleteFolderPayload
   >({
     mutationFn: (data) => {
-      return deleter(`/folders/${data.id}`);
+      return deleter(`/folders/${data.folderId}`);
     },
     onError: (error) => {
       showAlert(error.response?.data.message, 'error');
