@@ -160,7 +160,7 @@ export const renameFolder = async (
     });
 
     logger.info(
-      `Carpeta renombrada exitosamente - ID: ${folderId}, Nuevo nombre: ${folderName} (Renombrado por: ${user?.username || 'Unknown'})`,
+      `Carpeta renombrada exitosamente - ID: ${folderId}, Nombre Anterior: ${existingFolder.folderName}, Nuevo nombre: ${folderName} (Renombrado por: ${user?.username || 'Unknown'})`,
     );
 
     res
