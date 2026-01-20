@@ -51,11 +51,11 @@ export const DocumentUploadDialog = ({
           <DialogTitle>
             {editDocument ? 'Editar Documento' : 'Subir Nuevo Documento'}
           </DialogTitle>
-          {!editDocument && (
-            <DialogDescription>
-              Selecciona un archivo para subir o arrástralo a esta área.
-            </DialogDescription>
-          )}
+          <DialogDescription>
+            {!editDocument
+              ? 'Selecciona un archivo para subir o arrástralo a esta área.'
+              : 'Modifica el nombre del documento según sea necesario.'}
+          </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-4">
           {!editDocument && (
