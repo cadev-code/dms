@@ -23,7 +23,7 @@ export const filesByFolderParamSchema = z.object({
 });
 
 export const mutateFileParamsSchema = z.object({
-  fileId: z.coerce
+  documentId: z.coerce
     .number({ invalid_type_error: 'Id debe debe ser un número' })
     .int('Id debe ser un número entero'),
 });

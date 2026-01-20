@@ -205,11 +205,11 @@ export const renameFile = async (
       where: { id: req.userId },
     });
 
-    const { fileId } = mutateFileParamsSchema.parse(req.params);
+    const { documentId } = mutateFileParamsSchema.parse(req.params);
     const { documentName } = req.body;
 
     const existingFile = await prisma.file.findUnique({
-      where: { id: fileId },
+      where: { id: documentId },
     });
 
     if (!existingFile) {
@@ -217,7 +217,7 @@ export const renameFile = async (
         `El archivo no existe.`,
         400,
         'FILE_NOT_FOUND',
-        `Intento de renombrar archivo fallido - Archivo no encontrado - fileId: ${fileId} (Intentado por: ${user?.username || 'Unknown'})`,
+        `Intento de renombrar archivo fallido - Archivo no encontrado - documentId: ${documentId} (Intentado por: ${user?.username || 'Unknown'})`,
       );
     }
 
@@ -235,12 +235,12 @@ export const renameFile = async (
     }
 
     await prisma.file.update({
-      where: { id: fileId },
+      where: { id: documentId },
       data: { documentName },
     });
 
     logger.info(
-      `Archivo renombrado exitosamente - ID: ${fileId}, Nombre Anterior: ${existingFile.documentName}, Nuevo nombre: ${documentName} (Renombrado por: ${user?.username || 'Unknown'})`,
+      `Archivo renombrado exitosamente - ID: ${documentId}, Nombre Anterior: ${existingFile.documentName}, Nuevo nombre: ${documentName} (Renombrado por: ${user?.username || 'Unknown'})`,
     );
 
     res

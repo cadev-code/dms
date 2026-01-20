@@ -58,7 +58,7 @@ router.get(
 );
 
 router.put(
-  '/files/:fileId',
+  '/files/:documentId',
   authMiddleware,
   validateParam(mutateFileParamsSchema),
   validateInput(renameFileSchema),
