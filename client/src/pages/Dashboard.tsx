@@ -5,6 +5,7 @@ import { Sidebar } from '@/components/dms/Sidebar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useAllFiles } from '@/hooks/useAllFiles';
+import { useDeleteFile } from '@/hooks/useDeleteFile';
 import { useFilesByFolder } from '@/hooks/useFilesByFolder';
 import { useFilesByType } from '@/hooks/useFilesByType';
 import { Document, DocumentType } from '@/types/document.types';
@@ -27,6 +28,8 @@ export const Dashboard = () => {
     localStorage.setItem('dms-active-filter', activeFilter);
   }, [activeFilter]);
 
+  const deleteFile = useDeleteFile();
+
   const handleFilterChange = (filter: string) => {
     setActiveFilter(filter);
   };
@@ -43,8 +46,7 @@ export const Dashboard = () => {
 
   const handleConfirmDelete = () => {
     if (documentToDelete) {
-      // deleteDocument(documentToDelete.id);
-      // toast.success('Documento eliminado correctamente');
+      deleteFile.mutate({ documentId: documentToDelete.id });
       setIsDeleteOpen(false);
       setDocumentToDelete(null);
     }
