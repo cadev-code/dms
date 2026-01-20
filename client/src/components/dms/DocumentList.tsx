@@ -39,6 +39,7 @@ interface DocumentListProps {
   isAdmin?: boolean;
   onDelete?: (doc: Document) => void;
   onDownload?: (doc: Document) => void;
+  onEdit?: (doc: Document) => void;
   onView: (doc: Document) => void;
 }
 
@@ -47,6 +48,7 @@ export function DocumentList({
   isAdmin = false,
   onDelete,
   onDownload,
+  onEdit,
   onView,
 }: DocumentListProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -172,7 +174,11 @@ export function DocumentList({
               >
                 <Download className="h-4 w-4" />
               </Button>
-              <Button variant="ghost" size="icon" onClick={() => {}}>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => onEdit?.(row.original)}
+              >
                 <Pencil className="h-4 w-4" />
               </Button>
               <Button

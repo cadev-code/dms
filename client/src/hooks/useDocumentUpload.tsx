@@ -1,4 +1,4 @@
-import { DocumentType } from '@/types/document.types';
+import type { Document, DocumentType } from '@/types/document.types';
 import {
   File as FileIcon,
   FileSpreadsheet,
@@ -7,7 +7,7 @@ import {
   Presentation,
   Upload,
 } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useUploadFile } from './useUploadFile';
 
 export const ALLOWED_EXTENSIONS = [
@@ -25,13 +25,24 @@ export const ALLOWED_EXTENSIONS = [
 ];
 
 export const useDocumentUpload = (
-  onClose: () => void,
   activeFilter: string,
+  editDocument: Document | null,
+  isOpen: boolean,
+  onClose: () => void,
 ) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [dragActive, setDragActive] = useState<boolean>(false);
-  const [name, setName] = useState<string>('');
+  const [name, setName] = useState<string>(editDocument?.documentName || '');
+
+  useEffect(() => {
+    if (editDocument) {
+      setName(editDocument.documentName);
+    } else {
+      setName('');
+      setSelectedFile(null);
+    }
+  }, [editDocument, isOpen]);
 
   const uploadFile = useUploadFile(() => {
     setSelectedFile(null);
@@ -126,19 +137,30 @@ export const useDocumentUpload = (
     }
   };
 
-  const handleUploadFile = () => {
-    if (!selectedFile) return;
-    if (name.trim() === '') return;
-
+  const handleSubmit = () => {
     const folderId = +activeFilter.split(':')[1];
 
-    if (!folderId) return;
+    if (
+      name.trim() === '' ||
+      (editDocument?.documentName === name.trim() && !selectedFile) ||
+      !folderId
+    )
+      return;
 
-    uploadFile.mutate({
-      file: selectedFile,
-      documentName: name.trim(),
-      folderId,
-    });
+    if (editDocument) {
+      console.log('editing document');
+      return;
+    }
+
+    if (!editDocument && selectedFile) {
+      uploadFile.mutate({
+        file: selectedFile,
+        documentName: name.trim(),
+        folderId,
+      });
+
+      return;
+    }
   };
 
   const handleCancel = () => {
@@ -158,8 +180,8 @@ export const useDocumentUpload = (
     handleDrag,
     handleDrop,
     handleFileSelect,
-    handleUploadFile,
     setName,
     setSelectedFile,
+    handleSubmit,
   };
 };

@@ -16,6 +16,7 @@ export const Dashboard = () => {
   });
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [documents, setDocuments] = useState<Document[]>([]);
+  const [editDocument, setEditDocument] = useState<Document | null>(null);
 
   useEffect(() => {
     localStorage.setItem('dms-active-filter', activeFilter);
@@ -25,11 +26,18 @@ export const Dashboard = () => {
     setActiveFilter(filter);
   };
 
+  const handleEdit = (document: Document) => {
+    setEditDocument(document);
+    setIsUploadOpen(true);
+  };
+
   const handleCloseUpload = () => {
     setIsUploadOpen(false);
+    setEditDocument(null);
   };
 
   const { data: allDocuments } = useAllFiles();
+
   const { data: documentsByType } = useFilesByType(
     activeFilter.startsWith('folder:')
       ? ('all' as DocumentType & 'all')
@@ -117,6 +125,7 @@ export const Dashboard = () => {
             documents={documents || []}
             isAdmin={true}
             onView={() => {}}
+            onEdit={handleEdit}
             onDelete={() => {}}
             onDownload={() => {}}
           />
@@ -127,6 +136,7 @@ export const Dashboard = () => {
         isOpen={isUploadOpen}
         onClose={handleCloseUpload}
         activeFilter={activeFilter}
+        editDocument={editDocument}
       />
     </div>
   );
