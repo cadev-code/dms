@@ -11,6 +11,7 @@ import {
 } from '../schemas/files.schema';
 import { validateParam } from '../middlewares/validateParam';
 import {
+  deleteFile,
   getAllFiles,
   getFilesByFolder,
   getFilesByType,
@@ -63,6 +64,13 @@ router.put(
   validateParam(mutateFileParamsSchema),
   validateInput(renameFileSchema),
   renameFile,
+);
+
+router.delete(
+  '/files/:documentId',
+  authMiddleware,
+  validateParam(mutateFileParamsSchema),
+  deleteFile,
 );
 
 export default router;

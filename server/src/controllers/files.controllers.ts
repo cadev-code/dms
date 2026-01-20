@@ -250,3 +250,44 @@ export const renameFile = async (
     next(error);
   }
 };
+
+export const deleteFile = async (
+  req: Request<object, object, RenameFileBody>,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.userId },
+    });
+
+    const { documentId } = mutateFileParamsSchema.parse(req.params);
+
+    const existingFile = await prisma.file.findUnique({
+      where: { id: documentId },
+    });
+
+    if (!existingFile) {
+      throw new AppError(
+        `El archivo no existe.`,
+        400,
+        'FILE_NOT_FOUND',
+        `Intento de eliminar archivo fallido - Archivo no encontrado - documentId: ${documentId} (Intentado por: ${user?.username || 'Unknown'})`,
+      );
+    }
+
+    await prisma.file.delete({
+      where: { id: documentId },
+    });
+
+    logger.info(
+      `Archivo eliminado exitosamente - ID: ${documentId}, Nombre: ${existingFile.documentName} (Eliminado por: ${user?.username || 'Unknown'})`,
+    );
+
+    res
+      .status(200)
+      .json({ error: null, message: 'Archivo eliminado exitosamente' });
+  } catch (error) {
+    next(error);
+  }
+};
