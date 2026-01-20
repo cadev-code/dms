@@ -11,6 +11,7 @@ import filesRoutes from './routes/files.routes';
 import foldersRoutes from './routes/folders.routes';
 
 import { errorHandler } from './middlewares/errorHandler';
+import path from 'path';
 
 const app = express();
 const PORT = 8080;
@@ -27,5 +28,8 @@ app.use(filesRoutes);
 app.use(foldersRoutes);
 
 app.use(errorHandler);
+
+const uploadsPath = path.join(__dirname, '../uploads');
+app.use('/documents', express.static(uploadsPath));
 
 app.listen(PORT, () => {});
