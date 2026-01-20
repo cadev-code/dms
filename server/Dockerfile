@@ -1,6 +1,11 @@
-FROM node:20.12.1-alpine3.18
+FROM node:20.12.1
 
 WORKDIR /app
+
+# Instalar LibreOffice
+RUN apt-get update \
+  && apt-get install -y libreoffice \
+  && rm -rf /var/lib/apt/lists/*
 
 # Instalar dependencias (node_modules)
 COPY package*.json .
