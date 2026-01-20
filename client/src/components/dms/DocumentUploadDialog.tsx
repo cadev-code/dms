@@ -32,6 +32,7 @@ export const DocumentUploadDialog = ({
     ALLOWED_EXTENSIONS,
     dragActive,
     fileInputRef,
+    isLoading,
     name,
     selectedFile,
     getFileIcon,
@@ -129,7 +130,9 @@ export const DocumentUploadDialog = ({
           <Button
             onClick={handleSubmit}
             disabled={
-              name.trim().length < 3 || (!editDocument && !selectedFile)
+              name.trim().length < 3 ||
+              (!editDocument && !selectedFile) ||
+              isLoading
             }
           >
             Subir Documento

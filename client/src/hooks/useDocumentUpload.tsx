@@ -176,6 +176,7 @@ export const useDocumentUpload = (
     ALLOWED_EXTENSIONS,
     dragActive,
     fileInputRef,
+    isLoading: uploadFile.isPending,
     name,
     selectedFile,
     getFileIcon,
