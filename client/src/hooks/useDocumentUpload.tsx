@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useUploadFile } from './useUploadFile';
+import { useRenameFile } from './useRenameFile';
 
 export const ALLOWED_EXTENSIONS = [
   '.pdf',
@@ -45,8 +46,10 @@ export const useDocumentUpload = (
   }, [editDocument, isOpen]);
 
   const uploadFile = useUploadFile(() => {
-    setSelectedFile(null);
-    setName('');
+    onClose();
+  });
+
+  const renameFile = useRenameFile(() => {
     onClose();
   });
 
@@ -138,21 +141,21 @@ export const useDocumentUpload = (
   };
 
   const handleSubmit = () => {
-    const folderId = +activeFilter.split(':')[1];
-
-    if (
-      name.trim() === '' ||
-      (editDocument?.documentName === name.trim() && !selectedFile) ||
-      !folderId
-    )
-      return;
+    if (name.trim() === '') return;
+    if (!editDocument && !selectedFile) return;
 
     if (editDocument) {
-      console.log('editing document');
+      renameFile.mutate({
+        documentId: editDocument.id,
+        documentName: name.trim(),
+      });
       return;
     }
 
     if (!editDocument && selectedFile) {
+      const folderId = +activeFilter.split(':')[1];
+      if (!folderId) return;
+
       uploadFile.mutate({
         file: selectedFile,
         documentName: name.trim(),
