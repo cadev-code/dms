@@ -20,6 +20,7 @@ import {
   ArrowUp,
   ArrowDownUp,
   Presentation,
+  Pencil,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -170,6 +171,9 @@ export function DocumentList({
                 onClick={() => onDownload?.(row.original)}
               >
                 <Download className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="icon" onClick={() => {}}>
+                <Pencil className="h-4 w-4" />
               </Button>
               <Button
                 variant="ghost"
