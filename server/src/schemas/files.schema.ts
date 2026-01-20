@@ -21,3 +21,15 @@ export const filesByFolderParamSchema = z.object({
     .number({ invalid_type_error: 'folderId debe ser un número' })
     .int('folderId debe ser un número entero'),
 });
+
+export const mutateFileParamsSchema = z.object({
+  fileId: z.coerce
+    .number({ invalid_type_error: 'Id debe debe ser un número' })
+    .int('Id debe ser un número entero'),
+});
+
+export const renameFileSchema = z.object({
+  documentName: z.string().min(1, 'Nombre de carpeta es obligatorio'),
+});
+
+export type RenameFileBody = z.infer<typeof renameFileSchema>;

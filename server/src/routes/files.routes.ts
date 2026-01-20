@@ -6,12 +6,15 @@ import {
   filesByTypeParamSchema,
   filesByFolderParamSchema,
   uploadFileSchema,
+  mutateFileParamsSchema,
+  renameFileSchema,
 } from '../schemas/files.schema';
 import { validateParam } from '../middlewares/validateParam';
 import {
   getAllFiles,
   getFilesByFolder,
   getFilesByType,
+  renameFile,
   uploadFile,
 } from '../controllers/files.controllers';
 
@@ -52,6 +55,14 @@ router.get(
   authMiddleware,
   validateParam(filesByFolderParamSchema),
   getFilesByFolder,
+);
+
+router.put(
+  '/files/:fileId',
+  authMiddleware,
+  validateParam(mutateFileParamsSchema),
+  validateInput(renameFileSchema),
+  renameFile,
 );
 
 export default router;

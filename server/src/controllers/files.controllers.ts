@@ -4,7 +4,11 @@ import { AppError } from '../utils/AppError';
 import { removeUploadedFile } from '../helpers/removeUploadedFile';
 import { logger } from '../helpers/logger';
 
-import { UploadFileBody } from '../schemas/files.schema';
+import {
+  mutateFileParamsSchema,
+  RenameFileBody,
+  UploadFileBody,
+} from '../schemas/files.schema';
 
 const getType = (mimetype: string) => {
   if (mimetype.startsWith('image/')) return 'image';
@@ -186,6 +190,62 @@ export const getFilesByFolder = async (
     );
 
     res.status(200).json({ error: null, data: files });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const renameFile = async (
+  req: Request<object, object, RenameFileBody>,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.userId },
+    });
+
+    const { fileId } = mutateFileParamsSchema.parse(req.params);
+    const { documentName } = req.body;
+
+    const existingFile = await prisma.file.findUnique({
+      where: { id: fileId },
+    });
+
+    if (!existingFile) {
+      throw new AppError(
+        `El archivo no existe.`,
+        400,
+        'FILE_NOT_FOUND',
+        `Intento de renombrar archivo fallido - Archivo no encontrado - fileId: ${fileId} (Intentado por: ${user?.username || 'Unknown'})`,
+      );
+    }
+
+    const existingFileWithName = await prisma.file.findFirst({
+      where: { documentName, folderId: existingFile.folderId },
+    });
+
+    if (existingFileWithName) {
+      throw new AppError(
+        `Ya existe un archivo con el nombre "${documentName}" en esta ubicación.`,
+        400,
+        'FILE_ALREADY_EXISTS',
+        `Intento de renombrar archivo fallido - Nombre de archivo duplicado (Intentado por: ${user?.username || 'Unknown'})`,
+      );
+    }
+
+    await prisma.file.update({
+      where: { id: fileId },
+      data: { documentName },
+    });
+
+    logger.info(
+      `Archivo renombrado exitosamente - ID: ${fileId}, Nombre Anterior: ${existingFile.documentName}, Nuevo nombre: ${documentName} (Renombrado por: ${user?.username || 'Unknown'})`,
+    );
+
+    res
+      .status(200)
+      .json({ error: null, message: 'Archivo renombrado exitosamente' });
   } catch (error) {
     next(error);
   }
