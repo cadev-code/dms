@@ -18,6 +18,7 @@ model File {
   id Int @id @default(autoincrement())
   documentName String @unique
   fileName String 
+  previewFileName String?
   type String
   size Int
   folderId Int?
