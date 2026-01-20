@@ -118,3 +118,8 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Desactiva selección de texto en PDFs */
+.rpv-core__text-layer {
+  user-select: none;
+}

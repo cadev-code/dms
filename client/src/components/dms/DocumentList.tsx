@@ -40,7 +40,7 @@ interface DocumentListProps {
   onDelete?: (document: Document) => void;
   onDownload?: (document: Document) => void;
   onEdit?: (document: Document) => void;
-  onView: (document: Document) => void;
+  onPdfView: (document: Document) => void;
 }
 
 export function DocumentList({
@@ -49,7 +49,7 @@ export function DocumentList({
   onDelete,
   onDownload,
   onEdit,
-  onView,
+  onPdfView,
 }: DocumentListProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
 
@@ -161,7 +161,11 @@ export function DocumentList({
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => onView(row.original)}
+            onClick={() => {
+              if (row.original.type === 'pdf') {
+                onPdfView(row.original);
+              }
+            }}
           >
             <Eye className="h-4 w-4" />
           </Button>

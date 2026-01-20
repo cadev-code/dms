@@ -1,6 +1,7 @@
 import { DocumentList } from '@/components/dms/DocumentList';
 import { DocumentUploadDialog } from '@/components/dms/DocumentUploadDialog';
 import { DeleteConfirmDialog } from '@/components/dms/FileDeleteDialog';
+import { PdfViewer } from '@/components/dms/PdfViewer';
 import { Sidebar } from '@/components/dms/Sidebar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -23,6 +24,8 @@ export const Dashboard = () => {
     null,
   );
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [isPdfViewerOpen, setIsPdfViewerOpen] = useState(false);
+  const [pdfToShow, setPdfToShow] = useState<Document['fileName'] | null>(null);
 
   useEffect(() => {
     localStorage.setItem('dms-active-filter', activeFilter);
@@ -55,6 +58,11 @@ export const Dashboard = () => {
   const handleCloseUpload = () => {
     setIsUploadOpen(false);
     setEditDocument(null);
+  };
+
+  const handlePdfView = (document: Document) => {
+    setPdfToShow(document.fileName);
+    setIsPdfViewerOpen(true);
   };
 
   const { data: allDocuments } = useAllFiles();
@@ -145,7 +153,7 @@ export const Dashboard = () => {
           <DocumentList
             documents={documents || []}
             isAdmin={true}
-            onView={() => {}}
+            onPdfView={handlePdfView}
             onEdit={handleEdit}
             onDelete={handleDelete}
             onDownload={() => {}}
@@ -165,6 +173,15 @@ export const Dashboard = () => {
         isOpen={isDeleteOpen}
         onClose={() => setIsDeleteOpen(false)}
         onConfirm={handleConfirmDelete}
+      />
+
+      <PdfViewer
+        isOpen={isPdfViewerOpen}
+        fileName={pdfToShow}
+        onClose={() => {
+          setPdfToShow(null);
+          setIsPdfViewerOpen(false);
+        }}
       />
     </div>
   );
