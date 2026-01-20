@@ -10,6 +10,7 @@ export interface Document {
   id: number;
   documentName: string;
   fileName: string;
+  previewFileName: string | null;
   type: DocumentType;
   size: number;
 }
