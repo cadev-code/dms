@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { AlertTriangle, Folder } from 'lucide-react';
 
-interface FolderDeleteDialogProps {
+interface Props {
   folderName: string;
   isOpen: boolean;
   onClose: () => void;
@@ -22,7 +22,7 @@ export function FolderDeleteDialog({
   isOpen,
   onClose,
   onConfirm,
-}: FolderDeleteDialogProps) {
+}: Props) {
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
       <AlertDialogContent>
