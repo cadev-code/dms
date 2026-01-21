@@ -3,9 +3,12 @@ import { useEffect, useState } from 'react';
 import type { Document, DocumentType } from '@/types/document.types';
 
 import { useAllFiles } from '@/hooks/useAllFiles';
-import { useFilesActions } from '@/hooks/useFilesActions';
+import { useDownloadFile } from '@/hooks/useDownloadFile';
+import { useFileDeletion } from '@/hooks/useFileDeletion';
+import { useFileEditor } from '@/hooks/useFileEditor';
 import { useFilesByFolder } from '@/hooks/useFilesByFolder';
 import { useFilesByType } from '@/hooks/useFilesByType';
+import { useFileViewer } from '@/hooks/useFileViewer';
 
 import { FileText, Plus, Shield } from 'lucide-react';
 
@@ -16,8 +19,6 @@ import { DocumentList } from '@/components/dms/DocumentList';
 import { DocumentUploadDialog } from '@/components/dms/DocumentUploadDialog';
 import { PdfViewer } from '@/components/dms/PdfViewer';
 import { Sidebar } from '@/components/dms/Sidebar';
-import { useFileEditor } from '@/hooks/useFileEditor';
-import { useFileDeletion } from '@/hooks/useFileDeletion';
 
 const isAdmin = true;
 
@@ -81,11 +82,16 @@ export const Dashboard = () => {
   const {
     isPdfViewerOpen,
     pdfToShow,
-    handleDownload,
     handleView,
     setIsPdfViewerOpen,
     setPdfToShow,
-  } = useFilesActions();
+  } = useFileViewer();
+
+  const downloadFile = useDownloadFile();
+
+  const handleDownload = (document: Document) => {
+    downloadFile.mutate(document);
+  };
 
   return (
     <div className="flex min-h-screen bg-background">
