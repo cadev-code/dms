@@ -1,13 +1,8 @@
-import { useEffect, useState } from 'react';
+import type { Document } from '@/types/document.types';
 
-import type { Document, DocumentType } from '@/types/document.types';
-
-import { useAllFiles } from '@/hooks/useAllFiles';
 import { useDownloadFile } from '@/hooks/useDownloadFile';
 import { useFileDeletion } from '@/hooks/useFileDeletion';
 import { useFileEditor } from '@/hooks/useFileEditor';
-import { useFilesByFolder } from '@/hooks/useFilesByFolder';
-import { useFilesByType } from '@/hooks/useFilesByType';
 import { useFileViewer } from '@/hooks/useFileViewer';
 
 import { FileText, Plus, Shield } from 'lucide-react';
@@ -19,49 +14,17 @@ import { DocumentList } from '@/components/dms/DocumentList';
 import { DocumentUploadDialog } from '@/components/dms/DocumentUploadDialog';
 import { PdfViewer } from '@/components/dms/PdfViewer';
 import { Sidebar } from '@/components/dms/Sidebar';
+import { useDocumentsDashboard } from '@/hooks/useDocumentsDashboard';
 
 const isAdmin = true;
 
 export const Dashboard = () => {
-  const [documents, setDocuments] = useState<Document[]>([]);
-  const [activeFilter, setActiveFilter] = useState(() => {
-    return localStorage.getItem('dms-active-filter') || 'all';
-  });
-
-  useEffect(() => {
-    localStorage.setItem('dms-active-filter', activeFilter);
-  }, [activeFilter]);
-
-  const { data: allDocuments } = useAllFiles();
-
-  const { data: documentsByType } = useFilesByType(
-    activeFilter.startsWith('folder:')
-      ? ('all' as DocumentType & 'all')
-      : (activeFilter as DocumentType & 'all'),
-  );
-
-  const { data: documentsByFolder } = useFilesByFolder(
-    activeFilter.startsWith('folder:')
-      ? (parseInt(activeFilter.split(':')[1]) as DocumentType &
-          'all' &
-          `folder:${number}`)
-      : 0,
-  );
+  const { activeFilter, allDocuments, documents, setActiveFilter } =
+    useDocumentsDashboard();
 
   const handleFilterChange = (filter: string) => {
     setActiveFilter(filter);
   };
-
-  useEffect(() => {
-    const documentsToShow =
-      activeFilter === 'all'
-        ? allDocuments?.data
-        : activeFilter.startsWith('folder:')
-          ? documentsByFolder?.data
-          : documentsByType?.data;
-
-    setDocuments(documentsToShow || []);
-  }, [activeFilter, allDocuments, documentsByType, documentsByFolder]);
 
   const {
     editDocument,
@@ -99,20 +62,13 @@ export const Dashboard = () => {
         activeFilter={activeFilter}
         onFilterChange={handleFilterChange}
         documentCounts={{
-          all: allDocuments?.data.length || 0,
-          excel:
-            allDocuments?.data.filter((doc) => doc.type === 'excel').length ||
-            0,
-          word:
-            allDocuments?.data.filter((doc) => doc.type === 'word').length || 0,
-          pdf:
-            allDocuments?.data.filter((doc) => doc.type === 'pdf').length || 0,
+          all: allDocuments.length || 0,
+          excel: allDocuments.filter((doc) => doc.type === 'excel').length || 0,
+          word: allDocuments.filter((doc) => doc.type === 'word').length || 0,
+          pdf: allDocuments.filter((doc) => doc.type === 'pdf').length || 0,
           powerpoint:
-            allDocuments?.data.filter((doc) => doc.type === 'powerpoint')
-              .length || 0,
-          image:
-            allDocuments?.data.filter((doc) => doc.type === 'image').length ||
-            0,
+            allDocuments.filter((doc) => doc.type === 'powerpoint').length || 0,
+          image: allDocuments.filter((doc) => doc.type === 'image').length || 0,
           other: 15,
         }}
       />
