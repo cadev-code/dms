@@ -1,32 +1,29 @@
-import { DocumentList } from '@/components/dms/DocumentList';
-import { DocumentUploadDialog } from '@/components/dms/DocumentUploadDialog';
-import { DeleteConfirmDialog } from '@/components/dms/FileDeleteDialog';
-import { PdfViewer } from '@/components/dms/PdfViewer';
-import { Sidebar } from '@/components/dms/Sidebar';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { useAllFiles } from '@/hooks/useAllFiles';
-import { useDeleteFile } from '@/hooks/useDeleteFile';
-import { useDownloadFile } from '@/hooks/useDownloadFile';
-import { useFilesByFolder } from '@/hooks/useFilesByFolder';
-import { useFilesByType } from '@/hooks/useFilesByType';
-import { Document, DocumentType } from '@/types/document.types';
-import { FileText, Plus, Shield } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
+import type { Document, DocumentType } from '@/types/document.types';
+
+import { useAllFiles } from '@/hooks/useAllFiles';
+import { useFilesActions } from '@/hooks/useFilesActions';
+import { useFilesByFolder } from '@/hooks/useFilesByFolder';
+import { useFilesByType } from '@/hooks/useFilesByType';
+
+import { FileText, Plus, Shield } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { DeleteConfirmDialog } from '@/components/dms/FileDeleteDialog';
+import { DocumentList } from '@/components/dms/DocumentList';
+import { DocumentUploadDialog } from '@/components/dms/DocumentUploadDialog';
+import { PdfViewer } from '@/components/dms/PdfViewer';
+import { Sidebar } from '@/components/dms/Sidebar';
+
+const isAdmin = true;
+
 export const Dashboard = () => {
+  const [documents, setDocuments] = useState<Document[]>([]);
   const [activeFilter, setActiveFilter] = useState(() => {
     return localStorage.getItem('dms-active-filter') || 'all';
   });
-  const [isUploadOpen, setIsUploadOpen] = useState(false);
-  const [documents, setDocuments] = useState<Document[]>([]);
-  const [editDocument, setEditDocument] = useState<Document | null>(null);
-  const [documentToDelete, setDocumentToDelete] = useState<Document | null>(
-    null,
-  );
-  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const [isPdfViewerOpen, setIsPdfViewerOpen] = useState(false);
-  const [pdfToShow, setPdfToShow] = useState<Document['fileName'] | null>(null);
 
   useEffect(() => {
     localStorage.setItem('dms-active-filter', activeFilter);
@@ -39,6 +36,7 @@ export const Dashboard = () => {
       ? ('all' as DocumentType & 'all')
       : (activeFilter as DocumentType & 'all'),
   );
+
   const { data: documentsByFolder } = useFilesByFolder(
     activeFilter.startsWith('folder:')
       ? (parseInt(activeFilter.split(':')[1]) as DocumentType &
@@ -47,46 +45,8 @@ export const Dashboard = () => {
       : 0,
   );
 
-  const deleteFile = useDeleteFile();
-
-  const downloadFile = useDownloadFile();
-
   const handleFilterChange = (filter: string) => {
     setActiveFilter(filter);
-  };
-
-  const handleEdit = (document: Document) => {
-    setEditDocument(document);
-    setIsUploadOpen(true);
-  };
-
-  const handleDelete = (document: Document) => {
-    setDocumentToDelete(document);
-    setIsDeleteOpen(true);
-  };
-
-  const handleConfirmDelete = () => {
-    if (documentToDelete) {
-      deleteFile.mutate({ documentId: documentToDelete.id });
-      setIsDeleteOpen(false);
-      setDocumentToDelete(null);
-    }
-  };
-
-  const handleCloseUpload = () => {
-    setIsUploadOpen(false);
-    setEditDocument(null);
-  };
-
-  const handleView = (document: Document) => {
-    setPdfToShow(
-      document.type === 'pdf' ? document.fileName : document.previewFileName,
-    );
-    setIsPdfViewerOpen(true);
-  };
-
-  const handleDownloadFile = (document: Document) => {
-    downloadFile.mutate(document);
   };
 
   useEffect(() => {
@@ -100,7 +60,25 @@ export const Dashboard = () => {
     setDocuments(documentsToShow || []);
   }, [activeFilter, allDocuments, documentsByType, documentsByFolder]);
 
-  const isAdmin = true;
+  const {
+    documentToDelete,
+    editDocument,
+    isDeleteOpen,
+    isPdfViewerOpen,
+    isUploadOpen,
+    pdfToShow,
+
+    handleCloseUpload,
+    handleConfirmDelete,
+    handleDelete,
+    handleDownload,
+    handleEdit,
+    handleView,
+    setIsDeleteOpen,
+    setIsPdfViewerOpen,
+    setIsUploadOpen,
+    setPdfToShow,
+  } = useFilesActions();
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -165,7 +143,7 @@ export const Dashboard = () => {
             onView={handleView}
             onEdit={handleEdit}
             onDelete={handleDelete}
-            onDownload={handleDownloadFile}
+            onDownload={handleDownload}
           />
         </div>
       </main>
