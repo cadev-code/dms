@@ -7,11 +7,38 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserRole {
+  SUPER_ADMIN
+  CONTENT_ADMIN
+  USER
+}
+
 model User {
   id             Int               @id @default(autoincrement())
   fullname       String
   username       String            @unique
   passwordHash   String
+  role UserRole @default(USER)
+  groups UserGroup[]
+}
+
+model Group {
+  id Int @id @default(autoincrement())
+  name String @unique
+
+  users UserGroup[]
+  folderPerms FolderGroupPermission[]
+  filePerms   FileGroupPermission[]
+}
+
+model UserGroup {
+  userId Int
+  groupId Int
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, groupId])
 }
 
 model File {
@@ -23,6 +50,8 @@ model File {
   size Int
   folderId Int?
   folder Folder? @relation(fields: [folderId], references: [id], onDelete: Cascade)
+
+  groupPerms FileGroupPermission[]
 }
 
 model Folder {
@@ -32,4 +61,26 @@ model Folder {
   parent Folder? @relation("FolderToFolder", fields: [parentId], references: [id], onDelete: Cascade)
   children Folder[] @relation("FolderToFolder") 
   files File[]
+
+  groupPerms FolderGroupPermission[]
+}
+
+model FolderGroupPermission {
+  folderId   Int
+  groupId    Int
+
+  folder Folder @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  group  Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@id([folderId, groupId])
+}
+
+model FileGroupPermission {
+  fileId     Int
+  groupId    Int
+
+  file  File  @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@id([fileId, groupId])
 }
