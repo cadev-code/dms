@@ -16,6 +16,7 @@ import { DocumentList } from '@/components/dms/DocumentList';
 import { DocumentUploadDialog } from '@/components/dms/DocumentUploadDialog';
 import { PdfViewer } from '@/components/dms/PdfViewer';
 import { Sidebar } from '@/components/dms/Sidebar';
+import { useFileEditor } from '@/hooks/useFileEditor';
 
 const isAdmin = true;
 
@@ -61,22 +62,25 @@ export const Dashboard = () => {
   }, [activeFilter, allDocuments, documentsByType, documentsByFolder]);
 
   const {
-    documentToDelete,
     editDocument,
+    isUploadOpen,
+    handleCloseUpload,
+    handleEdit,
+    setIsUploadOpen,
+  } = useFileEditor();
+
+  const {
+    documentToDelete,
     isDeleteOpen,
     isPdfViewerOpen,
-    isUploadOpen,
     pdfToShow,
 
-    handleCloseUpload,
     handleConfirmDelete,
     handleDelete,
     handleDownload,
-    handleEdit,
     handleView,
     setIsDeleteOpen,
     setIsPdfViewerOpen,
-    setIsUploadOpen,
     setPdfToShow,
   } = useFilesActions();
 

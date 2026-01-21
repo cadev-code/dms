@@ -4,10 +4,6 @@ import { useDownloadFile } from './useDownloadFile';
 import { Document } from '@/types/document.types';
 
 export const useFilesActions = () => {
-  // Upload / Edit File State
-  const [isUploadOpen, setIsUploadOpen] = useState(false);
-  const [editDocument, setEditDocument] = useState<Document | null>(null);
-
   // Delete File State
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [documentToDelete, setDocumentToDelete] = useState<Document | null>(
@@ -21,16 +17,6 @@ export const useFilesActions = () => {
   // Mutations
   const deleteFile = useDeleteFile();
   const downloadFile = useDownloadFile();
-
-  const handleEdit = (document: Document) => {
-    setEditDocument(document);
-    setIsUploadOpen(true);
-  };
-
-  const handleCloseUpload = () => {
-    setIsUploadOpen(false);
-    setEditDocument(null);
-  };
 
   const handleDelete = (document: Document) => {
     setDocumentToDelete(document);
@@ -58,21 +44,16 @@ export const useFilesActions = () => {
 
   return {
     documentToDelete,
-    editDocument,
     isDeleteOpen,
     isPdfViewerOpen,
-    isUploadOpen,
     pdfToShow,
 
-    handleCloseUpload,
     handleConfirmDelete,
     handleDelete,
     handleDownload,
-    handleEdit,
     handleView,
     setIsDeleteOpen,
     setIsPdfViewerOpen,
-    setIsUploadOpen,
     setPdfToShow,
   };
 };
