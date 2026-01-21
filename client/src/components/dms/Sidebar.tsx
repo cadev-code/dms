@@ -16,6 +16,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { useNavigate } from 'react-router';
 
 interface Props {
   activeFilter: string;
@@ -67,6 +68,9 @@ export const Sidebar = ({
 
   const logout = useLogout();
   const { data: folders } = useAllFolders();
+
+  const navigate = useNavigate();
+
   return (
     <aside className="w-64 bg-sidebar text-sidebar-foreground flex flex-col h-screen sticky top-0">
       {/* Logo */}
@@ -159,6 +163,7 @@ export const Sidebar = ({
           <Button
             variant="ghost"
             className="w-full justify-start gap-3 text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50"
+            onClick={() => navigate('/settings')}
           >
             <Settings className="h-4 w-4" />
             Configuración
