@@ -3,6 +3,7 @@ import { Navigate, useNavigate } from 'react-router';
 import { ArrowLeft, SettingsIcon, Users, UsersRound } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
+import { GroupManagement } from '@/components/admin/GroupManagement';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function Settings() {
@@ -61,7 +62,7 @@ export default function Settings() {
           </TabsContent>
 
           <TabsContent value="groups" className="space-y-4">
-            {/* <GroupManagement /> */}
+            <GroupManagement />
           </TabsContent>
         </Tabs>
       </div>
