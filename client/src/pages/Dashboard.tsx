@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useAllFiles } from '@/hooks/useAllFiles';
 import { useDeleteFile } from '@/hooks/useDeleteFile';
+import { useDownloadFile } from '@/hooks/useDownloadFile';
 import { useFilesByFolder } from '@/hooks/useFilesByFolder';
 import { useFilesByType } from '@/hooks/useFilesByType';
 import { Document, DocumentType } from '@/types/document.types';
@@ -31,7 +32,24 @@ export const Dashboard = () => {
     localStorage.setItem('dms-active-filter', activeFilter);
   }, [activeFilter]);
 
+  const { data: allDocuments } = useAllFiles();
+
+  const { data: documentsByType } = useFilesByType(
+    activeFilter.startsWith('folder:')
+      ? ('all' as DocumentType & 'all')
+      : (activeFilter as DocumentType & 'all'),
+  );
+  const { data: documentsByFolder } = useFilesByFolder(
+    activeFilter.startsWith('folder:')
+      ? (parseInt(activeFilter.split(':')[1]) as DocumentType &
+          'all' &
+          `folder:${number}`)
+      : 0,
+  );
+
   const deleteFile = useDeleteFile();
+
+  const downloadFile = useDownloadFile();
 
   const handleFilterChange = (filter: string) => {
     setActiveFilter(filter);
@@ -67,20 +85,9 @@ export const Dashboard = () => {
     setIsPdfViewerOpen(true);
   };
 
-  const { data: allDocuments } = useAllFiles();
-
-  const { data: documentsByType } = useFilesByType(
-    activeFilter.startsWith('folder:')
-      ? ('all' as DocumentType & 'all')
-      : (activeFilter as DocumentType & 'all'),
-  );
-  const { data: documentsByFolder } = useFilesByFolder(
-    activeFilter.startsWith('folder:')
-      ? (parseInt(activeFilter.split(':')[1]) as DocumentType &
-          'all' &
-          `folder:${number}`)
-      : 0,
-  );
+  const handleDownloadFile = (document: Document) => {
+    downloadFile.mutate(document);
+  };
 
   useEffect(() => {
     const documentsToShow =
@@ -158,7 +165,7 @@ export const Dashboard = () => {
             onView={handleView}
             onEdit={handleEdit}
             onDelete={handleDelete}
-            onDownload={() => {}}
+            onDownload={handleDownloadFile}
           />
         </div>
       </main>
