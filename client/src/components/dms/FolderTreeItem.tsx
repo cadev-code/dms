@@ -32,6 +32,7 @@ import { useRenameFolder } from '@/hooks/useRenameFolder';
 import { useCreateFolder } from '@/hooks/useCreateFolder';
 import { FolderDeleteDialog } from './FolderDeleteDialog';
 import { useDeleteFolder } from '@/hooks/useDeleteFolder';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
 
 interface Props {
   activeFilter: string;
@@ -42,8 +43,6 @@ interface Props {
   onFolderExpanded: (folder: FolderType) => void;
 }
 
-const isAdmin = true;
-
 export const FolderTreeItem = ({
   activeFilter,
   folder,
@@ -52,6 +51,8 @@ export const FolderTreeItem = ({
   onFolderClick,
   onFolderExpanded,
 }: Props) => {
+  const { data: currentUser } = useCurrentUser();
+
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [editName, setEditName] = useState(folder.folderName);
 
@@ -126,7 +127,7 @@ export const FolderTreeItem = ({
               size="icon"
               className={cn(
                 'h-5 w-5 p-0 hover:bg-transparent hover:text-green-500',
-                !hasChildren && !isAdmin && 'invisible',
+                !hasChildren && currentUser?.role === 'USER' && 'invisible',
               )}
             >
               {isExpanded(folder.id) ? (
@@ -165,7 +166,7 @@ export const FolderTreeItem = ({
           )}
 
           {/* Actions menu (admin only) */}
-          {isAdmin && !isEditing && (
+          {currentUser?.role !== 'USER' && !isEditing && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button

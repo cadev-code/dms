@@ -15,10 +15,11 @@ import { DocumentUploadDialog } from '@/components/dms/DocumentUploadDialog';
 import { PdfViewer } from '@/components/dms/PdfViewer';
 import { Sidebar } from '@/components/dms/Sidebar';
 import { useDocumentsDashboard } from '@/hooks/useDocumentsDashboard';
-
-const isAdmin = true;
+import { useCurrentUser } from '@/hooks/useCurrentUser';
 
 export const Dashboard = () => {
+  const { data: currentUser } = useCurrentUser();
+
   const { activeFilter, allDocuments, documents, setActiveFilter } =
     useDocumentsDashboard();
 
@@ -81,7 +82,7 @@ export const Dashboard = () => {
               <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
                 <FileText className="h-6 w-6 text-primary" />
                 Documentos
-                {!isAdmin && (
+                {currentUser?.role === 'USER' && (
                   <Badge variant="secondary" className="ml-2">
                     <Shield className="h-3 w-3 mr-1" />
                     Solo lectura
@@ -89,26 +90,26 @@ export const Dashboard = () => {
                 )}
               </h1>
               <p className="text-muted-foreground mt-1">
-                {isAdmin
+                {currentUser?.role !== 'USER'
                   ? 'Gestiona todos los documentos del sistema'
                   : 'Visualiza los documentos disponibles'}
               </p>
             </div>
 
             <div className="flex items-center gap-3">
-              {isAdmin && activeFilter.startsWith('folder:') && (
-                <Button onClick={() => setIsUploadOpen(true)}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Subir Documento
-                </Button>
-              )}
+              {currentUser?.role !== 'USER' &&
+                activeFilter.startsWith('folder:') && (
+                  <Button onClick={() => setIsUploadOpen(true)}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Subir Documento
+                  </Button>
+                )}
             </div>
           </div>
         </header>
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
           <DocumentList
             documents={documents || []}
-            isAdmin={true}
             onView={handleView}
             onEdit={handleEdit}
             onDelete={handleDelete}

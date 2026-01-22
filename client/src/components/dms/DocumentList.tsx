@@ -33,10 +33,10 @@ import {
   TableHeader,
   TableRow,
 } from '../ui/table';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
 
 interface DocumentListProps {
   documents: Document[];
-  isAdmin?: boolean;
   onDelete?: (document: Document) => void;
   onDownload?: (document: Document) => void;
   onEdit?: (document: Document) => void;
@@ -45,12 +45,13 @@ interface DocumentListProps {
 
 export function DocumentList({
   documents,
-  isAdmin = false,
   onDelete,
   onDownload,
   onEdit,
   onView,
 }: DocumentListProps) {
+  const { data: currentUser } = useCurrentUser();
+
   const [sorting, setSorting] = useState<SortingState>([]);
 
   const getDocumentIcon = (type: Document['type']) => {
@@ -173,7 +174,7 @@ export function DocumentList({
           >
             <Eye className="h-4 w-4" />
           </Button>
-          {isAdmin && (
+          {currentUser?.role !== 'USER' && (
             <>
               <Button
                 variant="ghost"

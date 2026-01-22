@@ -8,6 +8,6 @@ export const useCurrentUser = () => {
     queryKey: ['currentUser'],
     queryFn: () => fetcher<Auth>('/auth/me'),
     retry: false,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 30, // 5 minutes
   });
 };

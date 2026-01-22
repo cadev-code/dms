@@ -17,6 +17,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { useNavigate } from 'react-router';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
 
 interface Props {
   activeFilter: string;
@@ -24,14 +25,13 @@ interface Props {
   documentCounts: Record<string, number>;
 }
 
-const user = { name: 'Administrador' };
-const isAdmin = true;
-
 export const Sidebar = ({
   activeFilter,
   onFilterChange,
   documentCounts,
 }: Props) => {
+  const { data: currentUser } = useCurrentUser();
+
   const filters = [
     {
       id: 'all',
@@ -94,23 +94,29 @@ export const Sidebar = ({
       <div className="p-4">
         <div className="flex items-center gap-3 p-3 rounded-lg bg-sidebar-accent">
           <div className="p-2 rounded-full bg-sidebar-primary/20">
-            {isAdmin ? (
+            {currentUser?.role !== 'USER' ? (
               <Shield className="h-4 w-4 text-sidebar-primary" />
             ) : (
               <User className="h-4 w-4 text-sidebar-primary" />
             )}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate">{user?.name}</p>
+            <p className="text-sm font-medium truncate">
+              {currentUser?.fullname}
+            </p>
             <Badge
               variant="outline"
               className={`text-xs ${
-                isAdmin
+                currentUser?.role !== 'USER'
                   ? 'border-sidebar-primary text-sidebar-primary'
                   : 'border-sidebar-foreground/40 text-sidebar-foreground/60'
               }`}
             >
-              {isAdmin ? 'Administrador' : 'Usuario'}
+              {currentUser?.role === 'SUPER_ADMIN'
+                ? 'Administrador'
+                : currentUser?.role === 'CONTENT_ADMIN'
+                  ? 'Gestor de Contenido'
+                  : 'Usuario'}
             </Badge>
           </div>
         </div>
@@ -150,7 +156,6 @@ export const Sidebar = ({
         <FolderTree
           activeFilter={activeFilter}
           folders={folders?.data || []}
-          isAdmin={isAdmin}
           onFilterChange={onFilterChange}
         />
       </nav>
@@ -159,7 +164,7 @@ export const Sidebar = ({
 
       {/* Footer actions */}
       <div className="p-4 space-y-1">
-        {isAdmin && (
+        {currentUser?.role === 'SUPER_ADMIN' && (
           <Button
             variant="ghost"
             className="w-full justify-start gap-3 text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50"

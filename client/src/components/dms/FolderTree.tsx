@@ -7,20 +7,21 @@ import { useCreateFolder } from '@/hooks/useCreateFolder';
 import { Folder, Plus } from 'lucide-react';
 import { Input } from '../ui/input';
 import { FolderTreeItem } from './FolderTreeItem';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
 
 interface FolderTreeProps {
   activeFilter: string;
   folders: FolderType[];
-  isAdmin: boolean;
   onFilterChange: (filter: string) => void;
 }
 
 export const FolderTree = ({
   activeFilter,
   folders,
-  isAdmin,
   onFilterChange,
 }: FolderTreeProps) => {
+  const { data: currentUser } = useCurrentUser();
+
   const [newFolderName, setNewFolderName] = useState<string>('');
   const [isAddingRoot, setIsAddingRoot] = useState<boolean>(false);
 
@@ -74,7 +75,7 @@ export const FolderTree = ({
         <p className="text-xs font-semibold text-sidebar-foreground/50 uppercase tracking-wider">
           Repositorio
         </p>
-        {isAdmin && !isAddingRoot && (
+        {currentUser?.role !== 'USER' && !isAddingRoot && (
           <Button
             variant="ghost"
             size="icon"
