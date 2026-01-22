@@ -13,6 +13,7 @@ import { Group } from '@/types/group.types';
 import { User } from '@/types/user.types';
 import { Badge } from '../ui/badge';
 import { Checkbox } from '../ui/checkbox';
+import { useGroupMembers } from '@/hooks/useGroupMembers';
 
 interface Props {
   isOpen: boolean;
@@ -21,6 +22,9 @@ interface Props {
 }
 
 export const GroupMembersDialog = ({ isOpen, group, onClose }: Props) => {
+  const { data: membersData } = useGroupMembers(group?.id || null);
+  const membersGroup = membersData?.data || [];
+
   const { data: usersData } = useUsers();
   const users = usersData?.data || [];
 
@@ -42,11 +46,9 @@ export const GroupMembersDialog = ({ isOpen, group, onClose }: Props) => {
         <ScrollArea className="h-[300px] pr-4">
           <div className="space-y-2">
             {users.map((user) => {
-              // const isMember = membersGroup
-              //   ? getGroupMembers(membersGroup.id).some(
-              //       (m) => m.user_id === user.user_id,
-              //     )
-              //   : false;
+              const isMember = membersGroup.some(
+                (member) => member.userId === user.id,
+              );
 
               return (
                 <div
@@ -54,7 +56,7 @@ export const GroupMembersDialog = ({ isOpen, group, onClose }: Props) => {
                   className="flex items-center space-x-3 p-3 rounded-lg border hover:bg-accent/50 cursor-pointer"
                   onClick={() => handleToggleMember(user)}
                 >
-                  <Checkbox checked={false} />
+                  <Checkbox checked={isMember} />
                   <div className="flex-1">
                     <p className="font-medium text-sm">{user.fullname}</p>
                   </div>
