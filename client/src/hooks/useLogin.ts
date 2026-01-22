@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router';
 import { AxiosError } from 'axios';
-import type { LoginBody, User } from '@/types/auth.types';
+import type { LoginBody, Auth } from '@/types/auth.types';
 import { useMutation } from '@tanstack/react-query';
 import { poster } from '@/api/queryHelpers';
 import { useAlertStore } from '@/store/useAlertStore';
@@ -11,11 +11,11 @@ export const useLogin = () => {
   const navigate = useNavigate();
 
   return useMutation<
-    User,
+    Auth,
     AxiosError<{ message: string; error: string }>,
     LoginBody
   >({
-    mutationFn: (body: LoginBody) => poster<User>('/auth/login', body),
+    mutationFn: (body: LoginBody) => poster<Auth>('/auth/login', body),
     onError: (error) => {
       showAlert(error.response?.data.message, 'error');
     },

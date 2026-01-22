@@ -3,6 +3,6 @@ export interface LoginBody {
   password: string;
 }
 
-export interface User {
+export interface Auth {
   userId: number;
 }
