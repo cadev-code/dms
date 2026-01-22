@@ -14,6 +14,8 @@ import { User } from '@/types/user.types';
 import { Badge } from '../ui/badge';
 import { Checkbox } from '../ui/checkbox';
 import { useGroupMembers } from '@/hooks/useGroupMembers';
+import { useRemoveUserFromGroup } from '@/hooks/useRemoveUserFromGroup';
+import { useAddUserToGroup } from '@/hooks/useAddUserToGroup';
 
 interface Props {
   isOpen: boolean;
@@ -28,8 +30,24 @@ export const GroupMembersDialog = ({ isOpen, group, onClose }: Props) => {
   const { data: usersData } = useUsers();
   const users = usersData?.data || [];
 
+  const addUserToGroup = useAddUserToGroup();
+  const removeUserFromGroupMutation = useRemoveUserFromGroup();
+
   const handleToggleMember = (user: User) => {
-    console.log('Toggle member:', user);
+    if (!group) return;
+    const isMember = membersGroup.some((member) => member.userId === user.id);
+
+    if (isMember && group) {
+      removeUserFromGroupMutation.mutate({
+        groupId: group.id,
+        userId: user.id,
+      });
+    } else {
+      addUserToGroup.mutate({
+        groupId: group.id,
+        userId: user.id,
+      });
+    }
   };
 
   return (
