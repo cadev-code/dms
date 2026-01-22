@@ -59,12 +59,9 @@ import {
   AlertDialogTitle,
 } from '../ui/alert-dialog';
 import { useUsers } from '@/hooks/useUsers';
+import { useCreateUser } from '@/hooks/useCreateUser';
 
 export const UserManagement = () => {
-  const { data } = useUsers();
-
-  const users = data?.data || [];
-
   const [changePasswordUser, setChangePasswordUser] = useState<UserType | null>(
     null,
   );
@@ -79,6 +76,11 @@ export const UserManagement = () => {
   const [editPassword, setEditPassword] = useState('');
 
   const [disableUser, setDisableUser] = useState<UserType | null>(null);
+
+  const { data } = useUsers();
+  const createUser = useCreateUser();
+
+  const users = data?.data || [];
 
   const handleChangePassword = () => {
     console.log('Changing password for user:', {
@@ -112,17 +114,22 @@ export const UserManagement = () => {
   };
 
   const handleSave = async () => {
-    if (!editUser) return;
+    if (editUser === null) {
+      createUser.mutate({
+        fullname: editFullName,
+        username: editUserName,
+        role: editRole,
+        password: editPassword,
+      });
+    } else {
+      console.log('Updating user:', {
+        id: editUser.id,
+        fullname: editFullName,
+        role: editRole,
+      });
+    }
 
-    console.log('Saving user:', {
-      id: editUser.id,
-      fullname: editFullName,
-      role: editRole,
-    });
-
-    setEditUser(null);
-    setEditFullName('');
-    setEditRole('USER');
+    closeEditor();
   };
 
   const columns: ColumnDef<UserType>[] = [
