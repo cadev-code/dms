@@ -10,6 +10,7 @@ import authRoutes from './routes/auth.routes';
 import filesRoutes from './routes/files.routes';
 import foldersRoutes from './routes/folders.routes';
 import usersRoutes from './routes/users.routes';
+import groupsRoutes from './routes/groups.routes';
 
 import { errorHandler } from './middlewares/errorHandler';
 import path from 'path';
@@ -28,6 +29,7 @@ app.use(authRoutes);
 app.use(filesRoutes);
 app.use(foldersRoutes);
 app.use(usersRoutes);
+app.use(groupsRoutes);
 
 app.use(errorHandler);
 
