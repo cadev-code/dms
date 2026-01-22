@@ -5,6 +5,7 @@ import { ArrowLeft, SettingsIcon, Users, UsersRound } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { GroupManagement } from '@/components/admin/GroupManagement';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { UserManagement } from '@/components/admin/UserManagement';
 
 export default function Settings() {
   const { isAdmin } = { isAdmin: true };
@@ -58,7 +59,7 @@ export default function Settings() {
           </TabsList>
 
           <TabsContent value="users" className="space-y-4">
-            {/* <UserManagement /> */}
+            <UserManagement />
           </TabsContent>
 
           <TabsContent value="groups" className="space-y-4">
