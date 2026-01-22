@@ -1,8 +1,44 @@
 import { NextFunction, Request, Response } from 'express';
-import { AddUserToGroupBody } from '../schemas/userGroups.schema';
+import {
+  AddUserToGroupBody,
+  getGroupMembersSchema,
+} from '../schemas/userGroups.schema';
 import prisma from '../prisma_client';
 import { AppError } from '../utils/AppError';
 import { logger } from '../helpers/logger';
+
+export const getGroupMembers = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: req.userId,
+      },
+    });
+
+    const { groupId } = getGroupMembersSchema.parse(req.params);
+
+    const members = await prisma.userGroup.findMany({
+      where: {
+        groupId,
+      },
+    });
+
+    logger.info(
+      `Miembros del grupo ${groupId} obtenidos exitosamente (Solicitado por: ${user?.username || 'Unknown'})`,
+    );
+
+    res.status(200).json({
+      error: null,
+      data: members,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 export const addUserToGroup = async (
   req: Request<object, object, AddUserToGroupBody>,
