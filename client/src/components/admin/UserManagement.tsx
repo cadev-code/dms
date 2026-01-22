@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { User as UserType } from '@/types/auth.types';
+import type { User as UserType } from '@/types/user.types';
 
 import {
   ArrowDown,
