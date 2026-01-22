@@ -6,13 +6,14 @@ import { Button } from '@/components/ui/button';
 import { GroupManagement } from '@/components/admin/GroupManagement';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { UserManagement } from '@/components/admin/UserManagement';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
 
 export default function Settings() {
-  const { isAdmin } = { isAdmin: true };
+  const { data: currentUser } = useCurrentUser();
   const navigate = useNavigate();
 
   // Redirect non-admin users to home
-  if (!isAdmin) {
+  if (currentUser?.role !== 'SUPER_ADMIN') {
     return <Navigate to="/" replace />;
   }
 
