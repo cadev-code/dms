@@ -4,6 +4,33 @@ import { CreateGroupBody } from '../schemas/groups.schema';
 import { AppError } from '../utils/AppError';
 import { logger } from '../helpers/logger';
 
+export const getGroups = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.userId },
+    });
+
+    const groups = await prisma.group.findMany({
+      orderBy: { name: 'asc' },
+    });
+
+    logger.info(
+      `Grupos recuperados exitosamente (Solicitado por: ${user?.username || 'Unknown'})`,
+    );
+
+    res.status(200).json({
+      error: null,
+      data: groups,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const createGroup = async (
   req: Request<object, object, CreateGroupBody>,
   res: Response,
