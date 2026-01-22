@@ -40,7 +40,6 @@ import {
 import { Label } from '@/components/ui/label';
 import { useState } from 'react';
 import { Group } from '@/types/group.types';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   ColumnDef,
   flexRender,
@@ -51,6 +50,7 @@ import {
 } from '@tanstack/react-table';
 import { useGroups } from '@/hooks/useGroups';
 import { useCreateGroup } from '@/hooks/useCreateGroup';
+import { GroupMembersDialog } from './GroupMembersDialog';
 // import { Checkbox } from '@/components/ui/checkbox';
 
 export const GroupManagement = () => {
@@ -308,50 +308,11 @@ export const GroupManagement = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Members Dialog */}
-      <Dialog open={!!membersGroup} onOpenChange={() => setMembersGroup(null)}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Miembros de {membersGroup?.name}</DialogTitle>
-            <DialogDescription>
-              Selecciona los usuarios que pertenecen a este grupo
-            </DialogDescription>
-          </DialogHeader>
-          <ScrollArea className="h-[300px] pr-4">
-            {/* <div className="space-y-2">
-              {users.map((user) => {
-                const isMember = membersGroup
-                  ? getGroupMembers(membersGroup.id).some(
-                      (m) => m.user_id === user.user_id,
-                    )
-                  : false;
-
-                return (
-                  <div
-                    key={user.id}
-                    className="flex items-center space-x-3 p-3 rounded-lg border hover:bg-accent/50 cursor-pointer"
-                    onClick={() => handleToggleMember(user.user_id)}
-                  >
-                    <Checkbox checked={isMember} />
-                    <div className="flex-1">
-                      <p className="font-medium text-sm">{user.name}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {user.email}
-                      </p>
-                    </div>
-                    <Badge variant="secondary" className="text-xs">
-                      {user.role === 'admin' ? 'Admin' : 'Usuario'}
-                    </Badge>
-                  </div>
-                );
-              })}
-            </div> */}
-          </ScrollArea>
-          <DialogFooter>
-            <Button onClick={() => setMembersGroup(null)}>Cerrar</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <GroupMembersDialog
+        isOpen={!!membersGroup}
+        group={membersGroup}
+        onClose={() => setMembersGroup(null)}
+      />
 
       {/* Delete Confirmation */}
       <AlertDialog
