@@ -49,18 +49,19 @@ import {
   SortingState,
   useReactTable,
 } from '@tanstack/react-table';
+import { useGroups } from '@/hooks/useGroups';
 // import { Checkbox } from '@/components/ui/checkbox';
 
 export const GroupManagement = () => {
   const [membersGroup, setMembersGroup] = useState<Group | null>(null);
-  const [groups, setGroups] = useState<Group[]>([
-    { id: 1, name: 'Administradores' },
-  ]);
 
   const [formName, setFormName] = useState('');
   const [editGroup, setEditGroup] = useState<Group | null>(null);
 
   const [deleteGroupId, setDeleteGroupId] = useState<number | null>(null);
+
+  const { data } = useGroups();
+  const groups = data?.data || [];
 
   const handleEdit = (group: Group) => {
     setEditGroup(group);
@@ -75,9 +76,6 @@ export const GroupManagement = () => {
   };
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-
-  // // Form states
-  // const [saving, setSaving] = useState(false);
 
   const handleCreate = async () => {
     if (!formName.trim()) return;
