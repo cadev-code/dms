@@ -58,16 +58,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '../ui/alert-dialog';
+import { useUsers } from '@/hooks/useUsers';
 
 export const UserManagement = () => {
-  const [users, setUsers] = useState<UserType[]>([
-    {
-      id: 1,
-      fullname: 'Carlos Alberto Escobedo Moreno',
-      username: 'cescobedo',
-      role: 'SUPER_ADMIN',
-    },
-  ]);
+  const { data } = useUsers();
+
+  const users = data?.data || [];
 
   const [changePasswordUser, setChangePasswordUser] = useState<UserType | null>(
     null,
