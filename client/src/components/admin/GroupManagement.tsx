@@ -50,6 +50,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { useGroups } from '@/hooks/useGroups';
+import { useCreateGroup } from '@/hooks/useCreateGroup';
 // import { Checkbox } from '@/components/ui/checkbox';
 
 export const GroupManagement = () => {
@@ -60,6 +61,7 @@ export const GroupManagement = () => {
 
   const [deleteGroupId, setDeleteGroupId] = useState<number | null>(null);
 
+  const createGroup = useCreateGroup();
   const { data } = useGroups();
   const groups = data?.data || [];
 
@@ -80,7 +82,7 @@ export const GroupManagement = () => {
   const handleCreate = async () => {
     if (!formName.trim()) return;
 
-    console.log('Creating group:', formName);
+    await createGroup.mutate({ name: formName });
 
     setIsCreateOpen(false);
     setFormName('');
