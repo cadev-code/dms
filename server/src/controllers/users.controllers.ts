@@ -15,7 +15,7 @@ export const getUsers = async (
       where: { id: req.userId },
     });
 
-    const users = await prisma.user.findMany();
+    const users = await prisma.user.findMany({ orderBy: { fullname: 'asc' } });
 
     const formattedUsers = users.map((user) => ({
       id: user.id,
