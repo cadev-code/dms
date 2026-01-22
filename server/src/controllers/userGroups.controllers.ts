@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import {
   AddUserToGroupBody,
   getGroupMembersSchema,
+  removeUserFromGroupSchema,
 } from '../schemas/userGroups.schema';
 import prisma from '../prisma_client';
 import { AppError } from '../utils/AppError';
@@ -84,6 +85,56 @@ export const addUserToGroup = async (
     res.status(201).json({
       error: null,
       message: 'Usuario agregado al grupo exitosamente.',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const removeUserFromGroup = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: req.userId,
+      },
+    });
+
+    const { groupId, userId } = removeUserFromGroupSchema.parse(req.params);
+
+    const existingRelation = await prisma.userGroup.findFirst({
+      where: {
+        userId,
+        groupId,
+      },
+    });
+
+    if (!existingRelation) {
+      throw new AppError(
+        'El usuario no pertenece a este grupo.',
+        400,
+        'USER_NOT_IN_GROUP',
+        `Intento de remover usuario de grupo fallido - Usuario ${userId}, Grupo ID: ${groupId} (Intentado por: ${user?.username || 'Unknown'})`,
+      );
+    }
+
+    await prisma.userGroup.deleteMany({
+      where: {
+        userId,
+        groupId,
+      },
+    });
+
+    logger.info(
+      `Usuario ${userId} removido del grupo ${groupId} exitosamente (Solicitado por: ${user?.username || 'Unknown'})`,
+    );
+
+    res.status(200).json({
+      error: null,
+      message: 'Usuario removido del grupo exitosamente.',
     });
   } catch (error) {
     next(error);

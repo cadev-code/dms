@@ -4,10 +4,12 @@ import { validateInput } from '../middlewares/validateInput';
 import {
   addUserToGroupSchema,
   getGroupMembersSchema,
+  removeUserFromGroupSchema,
 } from '../schemas/userGroups.schema';
 import {
   addUserToGroup,
   getGroupMembers,
+  removeUserFromGroup,
 } from '../controllers/userGroups.controllers';
 import { validateParam } from '../middlewares/validateParam';
 
@@ -25,6 +27,13 @@ router.post(
   authMiddleware,
   validateInput(addUserToGroupSchema),
   addUserToGroup,
+);
+
+router.delete(
+  '/user-groups/:groupId/:userId',
+  authMiddleware,
+  validateParam(removeUserFromGroupSchema),
+  removeUserFromGroup,
 );
 
 export default router;
