@@ -30,6 +30,7 @@ async function main() {
       fullname: 'Administrador',
       username,
       passwordHash,
+      role: 'SUPER_ADMIN',
     },
   });
 
