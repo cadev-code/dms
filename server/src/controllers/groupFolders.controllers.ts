@@ -4,6 +4,31 @@ import prisma from '../prisma_client';
 import { AppError } from '../utils/AppError';
 import { logger } from '../helpers/logger';
 
+export const getFolderPermissions = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.userId },
+    });
+
+    const folderPermissions = await prisma.folderGroupPermission.findMany();
+
+    logger.info(
+      `Permisos de carpetas para grupos recuperados exitosamente (Solicitado por: ${user?.username || 'Unknown'})`,
+    );
+
+    res.json({
+      error: null,
+      data: folderPermissions,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const addGroupToFolder = async (
   req: Request<object, object, AddGroupToFolderBody>,
   res: Response,
