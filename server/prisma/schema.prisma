@@ -56,6 +56,7 @@ model File {
   type            String
   size            Int
   createdAt       DateTime @default(now())
+  ticketNumber    String?
 
   folderId Int?
   folder   Folder? @relation(fields: [folderId], references: [id], onDelete: Cascade)
