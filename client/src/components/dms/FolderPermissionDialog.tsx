@@ -13,6 +13,7 @@ import {
 import { ScrollArea } from '../ui/scroll-area';
 import { useGroups } from '@/hooks/useGroups';
 import { Checkbox } from '../ui/checkbox';
+import { useFolderPermissions } from '@/hooks/useFolderPermissions';
 
 interface Props {
   isOpen: boolean;
@@ -21,8 +22,8 @@ interface Props {
 }
 
 export const FolderPermissionDialog = ({ isOpen, folder, onClose }: Props) => {
-  // const { data: membersData } = useGroupMembers(group?.id || null);
-  // const membersGroup = membersData?.data || [];
+  const { data: permissionsData } = useFolderPermissions(folder?.id || null);
+  const folderPermissions = permissionsData?.data || [];
 
   const { data: groupsData } = useGroups();
   const groups = groupsData?.data || [];
@@ -64,9 +65,9 @@ export const FolderPermissionDialog = ({ isOpen, folder, onClose }: Props) => {
         <ScrollArea className="h-[300px] pr-4">
           <div className="space-y-2">
             {groups.map((group) => {
-              // const isMember = membersGroup.some(
-              //   (member) => member.userId === user.id,
-              // );
+              const isAllowed = folderPermissions.some(
+                (permission) => permission.groupId === group.id,
+              );
 
               return (
                 <div
@@ -74,7 +75,7 @@ export const FolderPermissionDialog = ({ isOpen, folder, onClose }: Props) => {
                   className="flex items-center space-x-3 p-3 rounded-lg border hover:bg-accent/50 cursor-pointer"
                   onClick={() => handleToggleAllow(group)}
                 >
-                  <Checkbox checked={false} />
+                  <Checkbox checked={isAllowed} />
                   <div className="flex-1">
                     <p className="font-medium text-sm">{group.name}</p>
                   </div>
