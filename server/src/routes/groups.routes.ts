@@ -11,7 +11,7 @@ router.get('/groups', authMiddleware, getGroups);
 router.post(
   '/groups',
   authMiddleware,
-  requireRole(['SUPER_ADMIN', 'CONTENT_ADMIN']),
+  requireRole(['SUPER_ADMIN']),
   validateInput(createGroupSchema),
   createGroup,
 );
