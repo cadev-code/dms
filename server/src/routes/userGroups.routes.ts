@@ -26,7 +26,7 @@ router.get(
 router.post(
   '/user-groups',
   authMiddleware,
-  requireRole(['SUPER_ADMIN', 'CONTENT_ADMIN']),
+  requireRole(['SUPER_ADMIN']),
   validateInput(addUserToGroupSchema),
   addUserToGroup,
 );
@@ -34,7 +34,7 @@ router.post(
 router.delete(
   '/user-groups/:groupId/:userId',
   authMiddleware,
-  requireRole(['SUPER_ADMIN', 'CONTENT_ADMIN']),
+  requireRole(['SUPER_ADMIN']),
   validateParam(removeUserFromGroupSchema),
   removeUserFromGroup,
 );
