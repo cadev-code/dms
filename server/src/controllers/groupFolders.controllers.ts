@@ -1,5 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
-import { AddGroupToFolderBody } from '../schemas/groupFolders.schema';
+import {
+  AddGroupToFolderBody,
+  removeGroupToFolderSchema,
+} from '../schemas/groupFolders.schema';
 import prisma from '../prisma_client';
 import { AppError } from '../utils/AppError';
 import { logger } from '../helpers/logger';
@@ -71,6 +74,54 @@ export const addGroupToFolder = async (
     res.status(201).json({
       error: null,
       message: 'Permisos del grupo para la carpeta agregados exitosamente',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const removeGroupToFolder = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.userId },
+    });
+
+    const { folderId, groupId } = removeGroupToFolderSchema.parse(req.params);
+
+    const existingRelation = await prisma.folderGroupPermission.findFirst({
+      where: {
+        groupId,
+        folderId,
+      },
+    });
+
+    if (!existingRelation) {
+      throw new AppError(
+        'El grupo no tiene permisos para esta carpeta',
+        404,
+        'GROUP_FOLDER_PERMISSION_NOT_FOUND',
+        `El grupo ${groupId} no tiene permisos para la carpeta ${folderId} (Solicitado por: ${user?.username || 'Unknown'})`,
+      );
+    }
+
+    await prisma.folderGroupPermission.deleteMany({
+      where: {
+        groupId,
+        folderId,
+      },
+    });
+
+    logger.info(
+      `Permisos del grupo ${groupId} para la carpeta ${folderId} eliminados exitosamente (Solicitado por: ${user?.username || 'Unknown'})`,
+    );
+
+    res.json({
+      error: null,
+      message: 'Permisos del grupo para la carpeta eliminados exitosamente',
     });
   } catch (error) {
     next(error);
