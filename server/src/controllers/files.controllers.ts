@@ -187,17 +187,37 @@ export const getFilesByType = async (
   next: NextFunction,
 ) => {
   try {
-    const user = await prisma.user.findFirst({
-      where: {
-        id: req.userId,
-      },
+    const user = await prisma.user.findUnique({
+      where: { id: req.userId },
+      include: { groups: true },
     });
 
-    const files = await prisma.file.findMany({
-      where: {
-        type: req.params.type,
-      },
-    });
+    let files = [];
+
+    if (user?.role !== 'USER') {
+      // si el usuario es admin
+      files = await prisma.file.findMany({
+        where: {
+          type: req.params.type,
+        },
+      });
+    } else {
+      // si el usuario es user
+      const groupsIds = user.groups.map(({ groupId }) => groupId);
+
+      const filePermissions = await prisma.fileGroupPermission.findMany({
+        where: { groupId: { in: groupsIds } },
+      });
+
+      const foldersIds = filePermissions.map(({ fileId }) => fileId);
+
+      files = await prisma.file.findMany({
+        where: {
+          AND: [{ type: req.params.type }, { id: { in: foldersIds } }],
+        },
+        orderBy: { fileName: 'asc' },
+      });
+    }
 
     logger.info(
       `Recuperación de archivos por tipo (${req.params.type}) realizada por el usuario: ${user?.username || 'Unknown'}`,
@@ -215,17 +235,40 @@ export const getFilesByFolder = async (
   next: NextFunction,
 ) => {
   try {
-    const user = await prisma.user.findFirst({
-      where: {
-        id: req.userId,
-      },
+    const user = await prisma.user.findUnique({
+      where: { id: req.userId },
+      include: { groups: true },
     });
 
-    const files = await prisma.file.findMany({
-      where: {
-        folderId: Number(req.params.folderId),
-      },
-    });
+    let files = [];
+
+    if (user?.role !== 'USER') {
+      // si el usuario es admin
+      files = await prisma.file.findMany({
+        where: {
+          folderId: Number(req.params.folderId),
+        },
+      });
+    } else {
+      // si el usuario es user
+      const groupsIds = user.groups.map(({ groupId }) => groupId);
+
+      const filePermissions = await prisma.fileGroupPermission.findMany({
+        where: { groupId: { in: groupsIds } },
+      });
+
+      const foldersIds = filePermissions.map(({ fileId }) => fileId);
+
+      files = await prisma.file.findMany({
+        where: {
+          AND: [
+            { folderId: Number(req.params.folderId) },
+            { id: { in: foldersIds } },
+          ],
+        },
+        orderBy: { fileName: 'asc' },
+      });
+    }
 
     logger.info(
       `Recuperación de archivos por folder (${req.params.folderId}) realizada por el usuario: ${user?.username || 'Unknown'}`,
