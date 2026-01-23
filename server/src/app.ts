@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
@@ -23,8 +23,27 @@ const PORT = 8080;
 
 dotenv.config(); // Load environment variables
 
-app.use(cors({ origin: 'http://localhost:5173', credentials: true })); // CORS configuration
+const allowedOrigin = process.env.CLIENT_URL || 'http://localhost:5173';
+
+app.use(
+  cors({
+    origin: allowedOrigin,
+    credentials: true,
+  }),
+); // CORS configuration
 app.use(cookieParser()); // Middleware for parsing cookies
+
+if (process.env.NODE_ENV === 'production') {
+  app.use((req: Request, res: Response, next: NextFunction): void => {
+    const origin = req.headers.origin;
+
+    if (origin !== allowedOrigin) {
+      res.status(403).json({ message: 'Origen no permitido' });
+      return;
+    }
+    next();
+  });
+}
 
 app.use(express.json()); // Middleware for parsing JSON request bodies
 

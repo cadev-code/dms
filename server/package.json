@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon",
-    "build": "tsc",
-    "start": "node dist/app.js",
+    "dev": "NODE_ENV=development nodemon",
+    "build": "NODE_ENV=production tsc",
+    "start": "NODE_ENV=production node dist/app.js",
     "lint": "eslint . --ext .ts",
     "format": "prettier --write .",
     "migrate": "prisma migrate dev",
