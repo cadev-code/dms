@@ -1,5 +1,11 @@
 import z from 'zod';
 
+export const getFolderPermissionsSchema = z.object({
+  folderId: z.coerce
+    .number({ invalid_type_error: 'folderId debe ser un número' })
+    .int('folderId debe ser un número entero'),
+});
+
 export const addGroupToFolderSchema = z.object({
   groupId: z.coerce
     .number({ invalid_type_error: 'groupId debe ser un número' })

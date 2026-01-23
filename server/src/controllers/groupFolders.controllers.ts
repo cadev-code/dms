@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import {
   AddGroupToFolderBody,
+  getFolderPermissionsSchema,
   removeGroupToFolderSchema,
 } from '../schemas/groupFolders.schema';
 import prisma from '../prisma_client';
@@ -17,7 +18,11 @@ export const getFolderPermissions = async (
       where: { id: req.userId },
     });
 
-    const folderPermissions = await prisma.folderGroupPermission.findMany();
+    const { folderId } = getFolderPermissionsSchema.parse(req.params);
+
+    const folderPermissions = await prisma.folderGroupPermission.findMany({
+      where: { folderId },
+    });
 
     logger.info(
       `Permisos de carpetas para grupos recuperados exitosamente (Solicitado por: ${user?.username || 'Unknown'})`,

@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import {
   addGroupToFolderSchema,
+  getFolderPermissionsSchema,
   removeGroupToFolderSchema,
 } from '../schemas/groupFolders.schema';
 import { authMiddleware } from '../middlewares/authMiddleware';
@@ -14,7 +15,12 @@ import {
 
 const router = Router();
 
-router.get('/folder-permissions', authMiddleware, getFolderPermissions);
+router.get(
+  '/folder-permissions/:folderId',
+  authMiddleware,
+  validateParam(getFolderPermissionsSchema),
+  getFolderPermissions,
+);
 
 router.post(
   '/group-folders',
