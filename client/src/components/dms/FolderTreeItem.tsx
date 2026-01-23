@@ -11,6 +11,7 @@ import {
   MoreHorizontal,
   Pencil,
   Plus,
+  Shield,
   Trash2,
 } from 'lucide-react';
 
@@ -33,6 +34,7 @@ import { useCreateFolder } from '@/hooks/useCreateFolder';
 import { FolderDeleteDialog } from './FolderDeleteDialog';
 import { useDeleteFolder } from '@/hooks/useDeleteFolder';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { FolderPermissionDialog } from './FolderPermissionDialog';
 
 interface Props {
   activeFilter: string;
@@ -60,6 +62,8 @@ export const FolderTreeItem = ({
   const [newFolderName, setNewFolderName] = useState('');
 
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
+  const [allowedUsers, setAllowedUsers] = useState<FolderType | null>(null);
 
   const isActive = activeFilter === `folder:${folder.id}`;
   const hasChildren = folder.children && folder.children.length > 0;
@@ -202,6 +206,10 @@ export const FolderTreeItem = ({
                   <Pencil className="h-4 w-4 mr-2" />
                   Renombrar
                 </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setAllowedUsers(folder)}>
+                  <Shield className="h-4 w-4 mr-2" />
+                  Permisos
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={(e) => {
@@ -255,6 +263,12 @@ export const FolderTreeItem = ({
           ))}
         </CollapsibleContent>
       </Collapsible>
+
+      <FolderPermissionDialog
+        folder={folder}
+        isOpen={allowedUsers !== null}
+        onClose={() => setAllowedUsers(null)}
+      />
 
       <FolderDeleteDialog
         folderName={folder.folderName}
