@@ -13,6 +13,7 @@ import usersRoutes from './routes/users.routes';
 import groupsRoutes from './routes/groups.routes';
 import userGroupsRoutes from './routes/userGroups.routes';
 import groupFoldersRoutes from './routes/groupFolders.routes';
+import groupFilesRoutes from './routes/groupFiles.routes';
 
 import { errorHandler } from './middlewares/errorHandler';
 import path from 'path';
@@ -34,6 +35,7 @@ app.use(usersRoutes);
 app.use(groupsRoutes);
 app.use(userGroupsRoutes);
 app.use(groupFoldersRoutes);
+app.use(groupFilesRoutes);
 
 app.use(errorHandler);
 
