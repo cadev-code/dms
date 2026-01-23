@@ -49,6 +49,32 @@ export const addGroupToFolder = async (
 
     const { groupId, folderId } = req.body;
 
+    const existingFolder = await prisma.folder.findUnique({
+      where: { id: folderId },
+    });
+
+    if (!existingFolder) {
+      throw new AppError(
+        'La carpeta no existe',
+        404,
+        'FOLDER_NOT_FOUND',
+        `La carpeta con ID ${folderId} no existe (Solicitado por: ${user?.username || 'Unknown'})`,
+      );
+    }
+
+    const existingGroup = await prisma.group.findUnique({
+      where: { id: groupId },
+    });
+
+    if (!existingGroup) {
+      throw new AppError(
+        'El grupo no existe',
+        404,
+        'GROUP_NOT_FOUND',
+        `El grupo con ID ${groupId} no existe (Solicitado por: ${user?.username || 'Unknown'})`,
+      );
+    }
+
     const existingRelation = await prisma.folderGroupPermission.findFirst({
       where: {
         groupId,
