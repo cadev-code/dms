@@ -15,6 +15,7 @@ import {
   getFilePermissions,
   removeGroupToFile,
 } from '../controllers/groupFiles.controllers';
+import { requireRole } from '../middlewares/requireRole';
 
 const router = Router();
 
@@ -28,6 +29,7 @@ router.get(
 router.post(
   '/group-files',
   authMiddleware,
+  requireRole(['SUPER_ADMIN', 'CONTENT_ADMIN']),
   validateInput(addGroupToFileSchema),
   addGroupToFile,
 );
@@ -35,6 +37,7 @@ router.post(
 router.delete(
   '/group-files/:groupId/:fileId',
   authMiddleware,
+  requireRole(['SUPER_ADMIN', 'CONTENT_ADMIN']),
   validateParam(removeGroupToFileSchema),
   removeGroupToFile,
 );
