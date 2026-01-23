@@ -7,6 +7,7 @@ import { AxiosError } from 'axios';
 interface RenameFilePayload {
   documentId: number;
   documentName: string;
+  ticketNumber: string;
 }
 
 interface RenameFileResponse {
@@ -14,7 +15,7 @@ interface RenameFileResponse {
   message: string;
 }
 
-export const useRenameFile = (onClose: () => void) => {
+export const useEditFile = (onClose: () => void) => {
   const { showAlert } = useAlertStore();
 
   return useMutation<
@@ -25,6 +26,7 @@ export const useRenameFile = (onClose: () => void) => {
     mutationFn: (data) => {
       return putter(`/files/${data.documentId}`, {
         documentName: data.documentName,
+        ticketNumber: data.ticketNumber,
       });
     },
     onError: (error) => {

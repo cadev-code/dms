@@ -35,6 +35,7 @@ export const DocumentUploadDialog = ({
     isLoading,
     name,
     selectedFile,
+    ticketNumber,
     getFileIcon,
     handleCancel,
     handleDrag,
@@ -43,6 +44,7 @@ export const DocumentUploadDialog = ({
     handleSubmit,
     setName,
     setSelectedFile,
+    setTicketNumber,
   } = useDocumentUpload(activeFilter, editDocument, isOpen, onClose);
 
   return (
@@ -119,6 +121,15 @@ export const DocumentUploadDialog = ({
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Nombre del documento"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="ticketNumber">Número de Solicitud</Label>
+            <Input
+              id="ticketNumber"
+              value={ticketNumber}
+              onChange={(e) => setTicketNumber(e.target.value)}
+              placeholder="Número de Solicitud"
             />
           </div>
         </div>

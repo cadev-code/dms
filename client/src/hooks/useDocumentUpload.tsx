@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useUploadFile } from './useUploadFile';
-import { useRenameFile } from './useRenameFile';
+import { useEditFile } from './useEditFile';
 
 export const ALLOWED_EXTENSIONS = [
   '.pdf',
@@ -35,12 +35,17 @@ export const useDocumentUpload = (
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [dragActive, setDragActive] = useState<boolean>(false);
   const [name, setName] = useState<string>(editDocument?.documentName || '');
+  const [ticketNumber, setTicketNumber] = useState<string>(
+    editDocument?.ticketNumber || '',
+  );
 
   useEffect(() => {
     if (editDocument) {
       setName(editDocument.documentName);
+      setTicketNumber(editDocument.ticketNumber);
     } else {
       setName('');
+      setTicketNumber('');
       setSelectedFile(null);
     }
   }, [editDocument, isOpen]);
@@ -49,7 +54,7 @@ export const useDocumentUpload = (
     onClose();
   });
 
-  const renameFile = useRenameFile(() => {
+  const editFile = useEditFile(() => {
     onClose();
   });
 
@@ -145,9 +150,10 @@ export const useDocumentUpload = (
     if (!editDocument && !selectedFile) return;
 
     if (editDocument) {
-      renameFile.mutate({
+      editFile.mutate({
         documentId: editDocument.id,
         documentName: name.trim(),
+        ticketNumber: ticketNumber.trim(),
       });
       return;
     }
@@ -159,6 +165,7 @@ export const useDocumentUpload = (
       uploadFile.mutate({
         file: selectedFile,
         documentName: name.trim(),
+        ticketNumber: ticketNumber.trim(),
         folderId,
       });
 
@@ -179,13 +186,15 @@ export const useDocumentUpload = (
     isLoading: uploadFile.isPending,
     name,
     selectedFile,
+    ticketNumber,
     getFileIcon,
     handleCancel,
     handleDrag,
     handleDrop,
     handleFileSelect,
+    handleSubmit,
     setName,
     setSelectedFile,
-    handleSubmit,
+    setTicketNumber,
   };
 };

@@ -159,6 +159,19 @@ export function DocumentList({
       cell: ({ row }) => <>{formatFileSize(row.original.size)}</>,
     },
     {
+      accessorKey: 'ticketNumber',
+      header: 'Número de Solicitud',
+      cell: ({ row }) => (
+        <a
+          className="text-primary underline"
+          href={`${import.meta.env.VITE_TICKETS_PLATFORM_URL}${row.original.ticketNumber}`}
+          target="__blank"
+        >
+          {row.original.ticketNumber}
+        </a>
+      ),
+    },
+    {
       id: 'actions',
       header: () => <div className="text-end pr-2">Acciones</div>,
       cell: ({ row }) => (

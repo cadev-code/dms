@@ -13,4 +13,5 @@ export interface Document {
   previewFileName: string | null;
   type: DocumentType;
   size: number;
+  ticketNumber: string;
 }
