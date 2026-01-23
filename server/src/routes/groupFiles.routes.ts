@@ -29,7 +29,7 @@ router.get(
 router.post(
   '/group-files',
   authMiddleware,
-  requireRole(['SUPER_ADMIN', 'CONTENT_ADMIN']),
+  requireRole(['SUPER_ADMIN']),
   validateInput(addGroupToFileSchema),
   addGroupToFile,
 );
@@ -37,7 +37,7 @@ router.post(
 router.delete(
   '/group-files/:groupId/:fileId',
   authMiddleware,
-  requireRole(['SUPER_ADMIN', 'CONTENT_ADMIN']),
+  requireRole(['SUPER_ADMIN']),
   validateParam(removeGroupToFileSchema),
   removeGroupToFile,
 );
