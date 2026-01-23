@@ -13,12 +13,14 @@ import {
   renameFolder,
 } from '../controllers/folders.controllers';
 import { validateParam } from '../middlewares/validateParam';
+import { requireRole } from '../middlewares/requireRole';
 
 const router = Router();
 
 router.post(
   '/folders',
   authMiddleware,
+  requireRole(['SUPER_ADMIN', 'CONTENT_ADMIN']),
   validateInput(createFolderSchema),
   createFolder,
 );
@@ -28,6 +30,7 @@ router.get('/folders/all', authMiddleware, getAllFolders);
 router.put(
   '/folders/:folderId',
   authMiddleware,
+  requireRole(['SUPER_ADMIN', 'CONTENT_ADMIN']),
   validateParam(mutateFolderParamsSchema),
   validateInput(renameFolderSchema),
   renameFolder,
@@ -36,6 +39,7 @@ router.put(
 router.delete(
   '/folders/:folderId',
   authMiddleware,
+  requireRole(['SUPER_ADMIN', 'CONTENT_ADMIN']),
   validateParam(mutateFolderParamsSchema),
   deleteFolder,
 );
