@@ -12,6 +12,7 @@ import {
   removeUserFromGroup,
 } from '../controllers/userGroups.controllers';
 import { validateParam } from '../middlewares/validateParam';
+import { requireRole } from '../middlewares/requireRole';
 
 const router = Router();
 
@@ -25,6 +26,7 @@ router.get(
 router.post(
   '/user-groups',
   authMiddleware,
+  requireRole(['SUPER_ADMIN', 'CONTENT_ADMIN']),
   validateInput(addUserToGroupSchema),
   addUserToGroup,
 );
@@ -32,6 +34,7 @@ router.post(
 router.delete(
   '/user-groups/:groupId/:userId',
   authMiddleware,
+  requireRole(['SUPER_ADMIN', 'CONTENT_ADMIN']),
   validateParam(removeUserFromGroupSchema),
   removeUserFromGroup,
 );
