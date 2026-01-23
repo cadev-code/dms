@@ -361,6 +361,16 @@ export const deleteFile = async (
       );
     }
 
+    removeUploadedFile(
+      path.join(__dirname, '../../uploads', existingFile.fileName),
+    );
+
+    if (existingFile.previewFileName) {
+      removeUploadedFile(
+        path.join(__dirname, '../../uploads', existingFile.previewFileName),
+      );
+    }
+
     await prisma.file.delete({
       where: { id: documentId },
     });
