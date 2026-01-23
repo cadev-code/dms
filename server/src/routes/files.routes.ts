@@ -19,12 +19,14 @@ import {
   renameFile,
   uploadFile,
 } from '../controllers/files.controllers';
+import { requireRole } from '../middlewares/requireRole';
 
 const router = Router();
 
 router.post(
   '/files',
   authMiddleware,
+  requireRole(['SUPER_ADMIN', 'CONTENT_ADMIN']),
   uploadMiddleware({
     fieldName: 'file',
     allowedMimeTypes: [
@@ -62,6 +64,7 @@ router.get(
 router.put(
   '/files/:documentId',
   authMiddleware,
+  requireRole(['SUPER_ADMIN', 'CONTENT_ADMIN']),
   validateParam(mutateFileParamsSchema),
   validateInput(renameFileSchema),
   renameFile,
@@ -70,6 +73,7 @@ router.put(
 router.delete(
   '/files/:documentId',
   authMiddleware,
+  requireRole(['SUPER_ADMIN', 'CONTENT_ADMIN']),
   validateParam(mutateFileParamsSchema),
   deleteFile,
 );
@@ -77,6 +81,7 @@ router.delete(
 router.get(
   '/files/:documentId/download',
   authMiddleware,
+  requireRole(['SUPER_ADMIN', 'CONTENT_ADMIN']),
   validateParam(mutateFileParamsSchema),
   downloadFile,
 );
