@@ -13,6 +13,9 @@ import {
 import { ScrollArea } from '../ui/scroll-area';
 import { Checkbox } from '../ui/checkbox';
 import { useGroups } from '@/hooks/useGroups';
+import { useFilePermissions } from '@/hooks/useFilePermissions';
+import { useAddGroupToFile } from '@/hooks/useAddGroupToFile';
+import { useRemoveGroupToFile } from '@/hooks/useRemoveGroupToFile';
 
 interface Props {
   isOpen: boolean;
@@ -25,33 +28,33 @@ export const DocumentPermissionDialog = ({
   document,
   onClose,
 }: Props) => {
-  // const { data: permissionsData } = useFolderPermissions(folder?.id || null);
-  // const folderPermissions = permissionsData?.data || [];
+  const { data: permissionsData } = useFilePermissions(document?.id || null);
+  const filePermissions = permissionsData?.data || [];
 
   const { data: groupsData } = useGroups();
   const groups = groupsData?.data || [];
 
-  // const addGroupToFolder = useAddGroupToFolder();
-  // const removeGroupToFolder = useRemoveGroupToFolder();
+  const addGroupToFile = useAddGroupToFile();
+  const removeGroupToFile = useRemoveGroupToFile();
 
   const handleToggleAllow = (group: Group) => {
     if (!document) return;
 
-    // const isAllowed = folderPermissions.some(
-    //   (permission) => permission.groupId === group.id,
-    // );
+    const isAllowed = filePermissions.some(
+      (permission) => permission.groupId === group.id,
+    );
 
-    // if (isAllowed && folder) {
-    //   removeGroupToFolder.mutate({
-    //     groupId: group.id,
-    //     folderId: folder.id,
-    //   });
-    // } else {
-    //   addGroupToFolder.mutate({
-    //     groupId: group.id,
-    //     folderId: folder.id,
-    //   });
-    // }
+    if (isAllowed && document) {
+      removeGroupToFile.mutate({
+        groupId: group.id,
+        fileId: document.id,
+      });
+    } else {
+      addGroupToFile.mutate({
+        groupId: group.id,
+        fileId: document.id,
+      });
+    }
   };
 
   return (
@@ -69,9 +72,9 @@ export const DocumentPermissionDialog = ({
         <ScrollArea className="h-[300px] pr-4">
           <div className="space-y-2">
             {groups.map((group) => {
-              // const isAllowed = folderPermissions.some(
-              //   (permission) => permission.groupId === group.id,
-              // );
+              const isAllowed = filePermissions.some(
+                (permission) => permission.groupId === group.id,
+              );
 
               return (
                 <div
@@ -79,7 +82,7 @@ export const DocumentPermissionDialog = ({
                   className="flex items-center space-x-3 p-3 rounded-lg border hover:bg-accent/50 cursor-pointer"
                   onClick={() => handleToggleAllow(group)}
                 >
-                  <Checkbox checked={false} />
+                  <Checkbox checked={isAllowed} />
                   <div className="flex-1">
                     <p className="font-medium text-sm">{group.name}</p>
                   </div>
