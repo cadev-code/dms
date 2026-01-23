@@ -26,7 +26,7 @@ router.get(
 router.post(
   '/group-folders',
   authMiddleware,
-  requireRole(['SUPER_ADMIN', 'CONTENT_ADMIN']),
+  requireRole(['SUPER_ADMIN']),
   validateInput(addGroupToFolderSchema),
   addGroupToFolder,
 );
@@ -34,7 +34,7 @@ router.post(
 router.delete(
   '/group-folders/:groupId/:folderId',
   authMiddleware,
-  requireRole(['SUPER_ADMIN', 'CONTENT_ADMIN']),
+  requireRole(['SUPER_ADMIN']),
   validateParam(removeGroupToFolderSchema),
   removeGroupToFolder,
 );
