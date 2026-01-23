@@ -141,13 +141,35 @@ export const getAllFiles = async (
   next: NextFunction,
 ) => {
   try {
-    const user = await prisma.user.findFirst({
-      where: {
-        id: req.userId,
-      },
+    const user = await prisma.user.findUnique({
+      where: { id: req.userId },
+      include: { groups: true },
     });
 
-    const files = await prisma.file.findMany();
+    let files = [];
+
+    if (user?.role !== 'USER') {
+      // si el usuario es admin
+      files = await prisma.file.findMany({
+        orderBy: { fileName: 'asc' },
+      });
+    } else {
+      // si el usuario es user
+      const groupsIds = user.groups.map(({ groupId }) => groupId);
+
+      const filePermissions = await prisma.fileGroupPermission.findMany({
+        where: { groupId: { in: groupsIds } },
+      });
+
+      const foldersIds = filePermissions.map(({ fileId }) => fileId);
+
+      files = await prisma.file.findMany({
+        where: {
+          id: { in: foldersIds },
+        },
+        orderBy: { fileName: 'asc' },
+      });
+    }
 
     logger.info(
       `Recuperación de todos los archivos realizada por el usuario: ${user?.username || 'Unknown'}`,
