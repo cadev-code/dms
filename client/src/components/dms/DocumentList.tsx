@@ -21,6 +21,7 @@ import {
   ArrowDownUp,
   Presentation,
   Pencil,
+  Shield,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -34,6 +35,7 @@ import {
   TableRow,
 } from '../ui/table';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { DocumentPermissionDialog } from './DocumentPermissionDialog';
 
 interface DocumentListProps {
   documents: Document[];
@@ -53,6 +55,8 @@ export function DocumentList({
   const { data: currentUser } = useCurrentUser();
 
   const [sorting, setSorting] = useState<SortingState>([]);
+
+  const [allowedUsers, setAllowedUsers] = useState<Document | null>(null);
 
   const getDocumentIcon = (type: Document['type']) => {
     switch (type) {
@@ -159,6 +163,15 @@ export function DocumentList({
       header: () => <div className="text-end pr-2">Acciones</div>,
       cell: ({ row }) => (
         <div className="flex items-center justify-end gap-1">
+          {currentUser?.role === 'SUPER_ADMIN' && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setAllowedUsers(row.original)}
+            >
+              <Shield className="h-4 w-4" />
+            </Button>
+          )}
           <Button
             variant="ghost"
             size="icon"
@@ -226,36 +239,43 @@ export function DocumentList({
   }
 
   return (
-    <div className="rounded-lg border bg-card overflow-hidden w-full">
-      <Table className="w-full">
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id} className="bg-muted/50">
-              {headerGroup.headers.map((header) => (
-                <TableHead key={header.id}>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext(),
-                      )}
-                </TableHead>
-              ))}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows.map((row) => (
-            <TableRow key={row.id} className="hover:bg-muted/30">
-              {row.getVisibleCells().map((cell) => (
-                <TableCell key={cell.id}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
+    <>
+      <div className="rounded-lg border bg-card overflow-hidden w-full">
+        <Table className="w-full">
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id} className="bg-muted/50">
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows.map((row) => (
+              <TableRow key={row.id} className="hover:bg-muted/30">
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+      <DocumentPermissionDialog
+        isOpen={allowedUsers !== null}
+        onClose={() => setAllowedUsers(null)}
+        document={allowedUsers}
+      />
+    </>
   );
 }
