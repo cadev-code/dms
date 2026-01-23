@@ -7,16 +7,16 @@ import {
   filesByFolderParamSchema,
   uploadFileSchema,
   mutateFileParamsSchema,
-  renameFileSchema,
+  editFileSchema,
 } from '../schemas/files.schema';
 import { validateParam } from '../middlewares/validateParam';
 import {
   deleteFile,
   downloadFile,
+  editFile,
   getAllFiles,
   getFilesByFolder,
   getFilesByType,
-  renameFile,
   uploadFile,
 } from '../controllers/files.controllers';
 import { requireRole } from '../middlewares/requireRole';
@@ -66,8 +66,8 @@ router.put(
   authMiddleware,
   requireRole(['SUPER_ADMIN', 'CONTENT_ADMIN']),
   validateParam(mutateFileParamsSchema),
-  validateInput(renameFileSchema),
-  renameFile,
+  validateInput(editFileSchema),
+  editFile,
 );
 
 router.delete(

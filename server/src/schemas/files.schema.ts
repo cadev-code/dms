@@ -6,6 +6,7 @@ export const uploadFileSchema = z.object({
     .number({ invalid_type_error: 'folderId debe ser un número' })
     .int('folderId debe ser un número entero')
     .positive('folderId debe ser un entero positivo'),
+  ticketNumber: z.string().min(1, 'Número de ticket es obligatorio'),
 });
 
 export type UploadFileBody = z.infer<typeof uploadFileSchema>;
@@ -28,8 +29,9 @@ export const mutateFileParamsSchema = z.object({
     .int('Id debe ser un número entero'),
 });
 
-export const renameFileSchema = z.object({
+export const editFileSchema = z.object({
   documentName: z.string().min(1, 'Nombre de carpeta es obligatorio'),
+  ticketNumber: z.string().min(1, 'Número de ticket es obligatorio'),
 });
 
-export type RenameFileBody = z.infer<typeof renameFileSchema>;
+export type EditFileBody = z.infer<typeof editFileSchema>;

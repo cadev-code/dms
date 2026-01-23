@@ -7,8 +7,8 @@ import { removeUploadedFile } from '../helpers/removeUploadedFile';
 import { logger } from '../helpers/logger';
 
 import {
+  EditFileBody,
   mutateFileParamsSchema,
-  RenameFileBody,
   UploadFileBody,
 } from '../schemas/files.schema';
 import { convertToPdf } from '../helpers/convertToPdf';
@@ -49,7 +49,7 @@ export const uploadFile = async (
       },
     });
 
-    const { documentName, folderId } = req.body;
+    const { documentName, folderId, ticketNumber } = req.body;
 
     const existingFolder = await prisma.folder.findUnique({
       where: { id: folderId },
@@ -119,6 +119,7 @@ export const uploadFile = async (
         type,
         size,
         folderId,
+        ticketNumber,
       },
     });
 
@@ -280,8 +281,8 @@ export const getFilesByFolder = async (
   }
 };
 
-export const renameFile = async (
-  req: Request<object, object, RenameFileBody>,
+export const editFile = async (
+  req: Request<object, object, EditFileBody>,
   res: Response,
   next: NextFunction,
 ) => {
@@ -291,7 +292,7 @@ export const renameFile = async (
     });
 
     const { documentId } = mutateFileParamsSchema.parse(req.params);
-    const { documentName } = req.body;
+    const { documentName, ticketNumber } = req.body;
 
     const existingFile = await prisma.file.findUnique({
       where: { id: documentId },
@@ -307,7 +308,11 @@ export const renameFile = async (
     }
 
     const existingFileWithName = await prisma.file.findFirst({
-      where: { documentName, folderId: existingFile.folderId },
+      where: {
+        documentName,
+        folderId: existingFile.folderId,
+        NOT: { id: documentId },
+      },
     });
 
     if (existingFileWithName) {
@@ -321,11 +326,11 @@ export const renameFile = async (
 
     await prisma.file.update({
       where: { id: documentId },
-      data: { documentName },
+      data: { documentName, ticketNumber },
     });
 
     logger.info(
-      `Archivo renombrado exitosamente - ID: ${documentId}, Nombre Anterior: ${existingFile.documentName}, Nuevo nombre: ${documentName} (Renombrado por: ${user?.username || 'Unknown'})`,
+      `Archivo renombrado exitosamente - ID: ${documentId}, Nuevo Nombre: ${documentName} (Renombrado por: ${user?.username || 'Unknown'})`,
     );
 
     res
@@ -337,7 +342,7 @@ export const renameFile = async (
 };
 
 export const deleteFile = async (
-  req: Request<object, object, RenameFileBody>,
+  req: Request,
   res: Response,
   next: NextFunction,
 ) => {
