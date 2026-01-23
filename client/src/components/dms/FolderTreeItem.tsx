@@ -206,10 +206,12 @@ export const FolderTreeItem = ({
                   <Pencil className="h-4 w-4 mr-2" />
                   Renombrar
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setAllowedUsers(folder)}>
-                  <Shield className="h-4 w-4 mr-2" />
-                  Permisos
-                </DropdownMenuItem>
+                {currentUser?.role === 'SUPER_ADMIN' && (
+                  <DropdownMenuItem onClick={() => setAllowedUsers(folder)}>
+                    <Shield className="h-4 w-4 mr-2" />
+                    Permisos
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={(e) => {
