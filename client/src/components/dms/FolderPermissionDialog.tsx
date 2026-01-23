@@ -11,9 +11,12 @@ import {
   DialogTitle,
 } from '../ui/dialog';
 import { ScrollArea } from '../ui/scroll-area';
-import { useGroups } from '@/hooks/useGroups';
 import { Checkbox } from '../ui/checkbox';
+
+import { useGroups } from '@/hooks/useGroups';
 import { useFolderPermissions } from '@/hooks/useFolderPermissions';
+import { useAddGroupToFolder } from '@/hooks/useAddGroupToFolder';
+import { useRemoveGroupToFolder } from '@/hooks/useRemoveGroupToFolder';
 
 interface Props {
   isOpen: boolean;
@@ -28,26 +31,27 @@ export const FolderPermissionDialog = ({ isOpen, folder, onClose }: Props) => {
   const { data: groupsData } = useGroups();
   const groups = groupsData?.data || [];
 
-  // const addUserToGroup = useAddUserToGroup();
-  // const removeUserFromGroupMutation = useRemoveUserFromGroup();
+  const addGroupToFolder = useAddGroupToFolder();
+  const removeGroupToFolder = useRemoveGroupToFolder();
 
   const handleToggleAllow = (group: Group) => {
     if (!folder) return;
 
-    console.log('Toggle allow for group:', group, 'on folder:', folder);
-    // const isAllowed = membersGroup.some((member) => member.userId === user.id);
+    const isAllowed = folderPermissions.some(
+      (permission) => permission.groupId === group.id,
+    );
 
-    // if (isMember && group) {
-    //   removeUserFromGroupMutation.mutate({
-    //     groupId: group.id,
-    //     userId: user.id,
-    //   });
-    // } else {
-    //   addUserToGroup.mutate({
-    //     groupId: group.id,
-    //     userId: user.id,
-    //   });
-    // }
+    if (isAllowed && folder) {
+      removeGroupToFolder.mutate({
+        groupId: group.id,
+        folderId: folder.id,
+      });
+    } else {
+      addGroupToFolder.mutate({
+        groupId: group.id,
+        folderId: folder.id,
+      });
+    }
   };
 
   return (

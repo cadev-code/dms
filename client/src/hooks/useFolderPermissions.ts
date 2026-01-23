@@ -14,7 +14,7 @@ export const useFolderPermissions = (folderId: number | null) => {
     FolderPermissionsResponse,
     AxiosError<{ message: string; error: string }>
   >({
-    queryKey: ['group-folders', folderId],
+    queryKey: ['folder-permissions', folderId],
     queryFn: () => fetcher(`/folder-permissions/${folderId}`),
     enabled,
     retry: 2,
