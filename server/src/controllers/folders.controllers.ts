@@ -72,11 +72,33 @@ export const getAllFolders = async (
   try {
     const user = await prisma.user.findUnique({
       where: { id: req.userId },
+      include: { groups: true },
     });
 
-    const folders = await prisma.folder.findMany({
-      orderBy: { folderName: 'asc' },
-    });
+    let folders = [];
+
+    if (user?.role !== 'USER') {
+      // si el usuario es admin
+      folders = await prisma.folder.findMany({
+        orderBy: { folderName: 'asc' },
+      });
+    } else {
+      // si el usuario es user
+      const groupsIds = user.groups.map(({ groupId }) => groupId);
+
+      const folderPermissions = await prisma.folderGroupPermission.findMany({
+        where: { groupId: { in: groupsIds } },
+      });
+
+      const foldersIds = folderPermissions.map(({ folderId }) => folderId);
+
+      folders = await prisma.folder.findMany({
+        where: {
+          id: { in: foldersIds },
+        },
+        orderBy: { folderName: 'asc' },
+      });
+    }
 
     // Árbol de carpetas a partir de una lista plana
     type FolderNode = (typeof folders)[number] & { children: FolderNode[] };
@@ -106,7 +128,7 @@ export const getAllFolders = async (
     });
 
     logger.info(
-      `Todas las carpetas obtenidas exitosamente (Solicitado por: ${user?.username})`,
+      `Carpetas obtenidas exitosamente (Solicitado por: ${user?.username})`,
     );
 
     res.status(200).json({ error: null, data: rootFolders });
