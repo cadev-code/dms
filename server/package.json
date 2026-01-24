@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "NODE_ENV=development nodemon",
-    "build": "NODE_ENV=production tsc",
-    "start": "NODE_ENV=production node dist/app.js",
+    "dev": "cross-env NODE_ENV=development nodemon",
+    "build": "cross-env NODE_ENV=production tsc",
+    "start": "cross-env NODE_ENV=production node dist/app.js",
     "lint": "eslint . --ext .ts",
     "format": "prettier --write .",
     "migrate": "prisma migrate dev",
@@ -26,6 +26,7 @@
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.3",
     "multer": "^2.0.2",
+    "node-windows": "^1.0.0-beta.8",
     "winston": "^3.19.0"
   },
   "devDependencies": {
@@ -45,6 +46,7 @@
     "prettier": "^3.5.3",
     "prisma": "^6.14.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "cross-env": "^7.0.3"
   }
 }
