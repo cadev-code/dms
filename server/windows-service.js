@@ -14,6 +14,12 @@ const svc = new Service({
   name: 'DMS-Server', // Nombre que verás en Servicios de Windows
   description: 'Servicio Node.js para el servidor DMS en producción',
   script: scriptPath,
+  env: [
+    {
+      name: 'NODE_ENV',
+      value: 'production',
+    },
+  ],
   // Opcional: ejecuta con una cuenta específica de Windows
   // uncomment y ajusta si lo necesitas
   // ,

@@ -1,4 +1,6 @@
 import winston from 'winston';
+import fs from 'fs';
+import path from 'path';
 
 const env = process.env.NODE_ENV || 'development';
 
@@ -8,23 +10,29 @@ const logFormat = printf(({ level, message, timestamp }) => {
   return `[${timestamp}] ${level}: ${message}`;
 });
 
+const logsDir = path.resolve(__dirname, '../../logs');
+
+if (!fs.existsSync(logsDir)) {
+  fs.mkdirSync(logsDir, { recursive: true });
+}
+
 const transports =
   env === 'production'
     ? [
         new winston.transports.File({
-          filename: 'logs/error.log',
+          filename: path.join(logsDir, 'error.log'),
           level: 'error',
         }),
         new winston.transports.File({
-          filename: 'logs/warn.log',
+          filename: path.join(logsDir, 'warn.log'),
           level: 'warn',
         }),
         new winston.transports.File({
-          filename: 'logs/info.log',
+          filename: path.join(logsDir, 'info.log'),
           level: 'info',
         }),
         new winston.transports.File({
-          filename: 'logs/combined.log',
+          filename: path.join(logsDir, 'combined.log'),
         }),
       ]
     : [
