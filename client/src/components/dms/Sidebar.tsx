@@ -72,7 +72,7 @@ export const Sidebar = ({
   const navigate = useNavigate();
 
   return (
-    <aside className="w-64 bg-sidebar text-sidebar-foreground flex flex-col h-screen sticky top-0">
+    <aside className="w-80 bg-sidebar text-sidebar-foreground flex flex-col h-screen sticky top-0">
       {/* Logo */}
       <div className="p-6">
         <div className="flex items-center gap-3">
@@ -125,7 +125,7 @@ export const Sidebar = ({
       <Separator className="bg-sidebar-border" />
 
       {/* Filters */}
-      <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+      <nav className="flex-1 p-4 space-y-1 overflow-y-auto custom-scrollbar">
         <p className="text-xs font-semibold text-sidebar-foreground/50 uppercase tracking-wider mb-2">
           Tipos de archivo
         </p>
