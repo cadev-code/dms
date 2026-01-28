@@ -5,7 +5,7 @@ import { useFileDeletion } from '@/hooks/useFileDeletion';
 import { useFileEditor } from '@/hooks/useFileEditor';
 import { useFileViewer } from '@/hooks/useFileViewer';
 
-import { FileText, Plus, Shield } from 'lucide-react';
+import { FileText, FolderOpen, Plus, Shield } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -16,6 +16,7 @@ import { PdfViewer } from '@/components/dms/PdfViewer';
 import { Sidebar } from '@/components/dms/Sidebar';
 import { useDocumentsDashboard } from '@/hooks/useDocumentsDashboard';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { useAllFolders } from '@/hooks/useAllFolders';
 
 export const Dashboard = () => {
   const { data: currentUser } = useCurrentUser();
@@ -55,6 +56,18 @@ export const Dashboard = () => {
 
   const handleDownload = (document: Document) => {
     downloadFile.mutate(document);
+  };
+
+  const { data: allFoldersData } = useAllFolders();
+  const allFolders = allFoldersData?.data || [];
+
+  const folderSelected = () => {
+    const folderId = activeFilter.replace('folder:', '');
+
+    return (
+      allFolders.find((folder) => folder.id === Number(folderId))?.folderName ||
+      ''
+    );
   };
 
   return (
@@ -106,6 +119,12 @@ export const Dashboard = () => {
                 )}
             </div>
           </div>
+          {activeFilter.startsWith('folder:') && (
+            <div className="flex items-center gap-2 mt-2 ">
+              <FolderOpen size={16} />
+              <p className="text-sm font-semibold">{folderSelected()}</p>
+            </div>
+          )}
         </header>
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
           <DocumentList
