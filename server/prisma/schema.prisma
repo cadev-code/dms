@@ -19,6 +19,7 @@ model User {
   username     String   @unique
   passwordHash String
   createdAt    DateTime @default(now())
+  mustChangePassword Boolean  @default(false)
 
   role   UserRole    @default(USER)
   groups UserGroup[]
