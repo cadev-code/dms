@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router';
 import { useForm } from '@tanstack/react-form';
+
 import { useLogin } from '@/hooks/useLogin';
 
 import { Eye, EyeOff, FolderOpen, Lock, Mail } from 'lucide-react';
-
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -31,6 +32,8 @@ const formSchema = z.object({
 export const Login = () => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
+  const navigate = useNavigate();
+
   const login = useLogin();
 
   const form = useForm({
@@ -43,7 +46,11 @@ export const Login = () => {
       onChange: formSchema,
     },
     onSubmit: (values) => {
-      login.mutate(values.value);
+      login.mutate(values.value, {
+        onSuccess: () => {
+          navigate('/');
+        },
+      });
     },
   });
 
