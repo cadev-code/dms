@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { UserManagement } from '@/components/admin/UserManagement';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 
-export default function Settings() {
+export const Settings = () => {
   const { data: currentUser } = useCurrentUser();
   const navigate = useNavigate();
 
@@ -70,4 +70,4 @@ export default function Settings() {
       </div>
     </div>
   );
-}
+};
