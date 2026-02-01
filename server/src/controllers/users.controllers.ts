@@ -1,7 +1,11 @@
 import { NextFunction, Request, Response } from 'express';
 import prisma from '../prisma_client';
 import { logger } from '../helpers/logger';
-import { CreateUserBody } from '../schemas/users.schema';
+import {
+  CreateUserBody,
+  ResetPasswordBody,
+  userIdSchema,
+} from '../schemas/users.schema';
 import { AppError } from '../utils/AppError';
 import { encryptPassword } from '../helpers/encryptPassword';
 
@@ -77,6 +81,56 @@ export const createUser = async (
     res.status(201).json({
       error: null,
       message: 'Usuario creado exitosamente.',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const resetPassword = async (
+  req: Request<object, object, ResetPasswordBody>,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.userId },
+    });
+
+    const { userId } = userIdSchema.parse(req.params);
+
+    const existingUser = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!existingUser) {
+      throw new AppError(
+        `El usuario con ID ${userId} no existe.`,
+        404,
+        'USER_NOT_FOUND',
+        `Intento de restablecimiento de contraseña fallido - Usuario no encontrado (ID: ${userId})`,
+      );
+    }
+
+    const { password, mustChangePassword } = req.body;
+
+    const newPasswordHash = await encryptPassword(password);
+
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        passwordHash: newPasswordHash,
+        mustChangePassword,
+      },
+    });
+
+    logger.info(
+      `Contraseña del usuario "${existingUser.username}" restablecida exitosamente${mustChangePassword ? ' con cambio obligatorio de contraseña' : ''} (Restablecido por: ${user?.username || 'Unknown'})`,
+    );
+
+    res.status(200).json({
+      error: null,
+      message: 'Se aplico el restablecimiento de contraseña exitosamente.',
     });
   } catch (error) {
     next(error);
