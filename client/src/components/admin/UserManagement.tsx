@@ -60,14 +60,9 @@ import {
 } from '../ui/alert-dialog';
 import { useUsers } from '@/hooks/useUsers';
 import { useCreateUser } from '@/hooks/useCreateUser';
+import { UserResetPasswordDialog } from './UserResetPasswordDialog';
 
 export const UserManagement = () => {
-  const [changePasswordUser, setChangePasswordUser] = useState<UserType | null>(
-    null,
-  );
-  const [newPassword, setNewPassword] = useState('');
-  const [newPasswordConfirmation, setNewPasswordConfirmation] = useState('');
-
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [editUser, setEditUser] = useState<UserType | null>(null);
   const [editFullName, setEditFullName] = useState('');
@@ -75,24 +70,16 @@ export const UserManagement = () => {
   const [editRole, setEditRole] = useState<UserType['role']>('USER');
   const [editPassword, setEditPassword] = useState('');
 
+  const [changePasswordUser, setChangePasswordUser] = useState<UserType | null>(
+    null,
+  );
   const [disableUser, setDisableUser] = useState<UserType | null>(null);
 
+  const [sorting, setSorting] = useState<SortingState>([]);
+
   const { data } = useUsers();
-  const createUser = useCreateUser();
-
   const users = data?.data || [];
-
-  const handleChangePassword = () => {
-    console.log('Changing password for user:', {
-      id: changePasswordUser?.id,
-      newPassword,
-      newPasswordConfirmation,
-    });
-
-    setChangePasswordUser(null);
-    setNewPassword('');
-    setNewPasswordConfirmation('');
-  };
+  const createUser = useCreateUser();
 
   const closeEditor = () => {
     setIsEditorOpen(false);
@@ -221,8 +208,6 @@ export const UserManagement = () => {
       ),
     },
   ];
-
-  const [sorting, setSorting] = useState<SortingState>([]);
 
   const table = useReactTable({
     data: users,
@@ -376,58 +361,10 @@ export const UserManagement = () => {
         </DialogContent>
       </Dialog>
 
-      <Dialog
-        open={!!changePasswordUser}
-        onOpenChange={() => setChangePasswordUser(null)}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Cambiar contraseña</DialogTitle>
-            <DialogDescription>
-              Cambiar la contraseña del usuario{' '}
-              <strong>{changePasswordUser?.fullname}</strong>
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="new-password">Nueva Contraseña</Label>
-              <Input
-                id="new-password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="new-password-confirmation">
-                Confirmar Nueva Contraseña
-              </Label>
-              <Input
-                id="new-password-confirmation"
-                value={newPasswordConfirmation}
-                onChange={(e) => setNewPasswordConfirmation(e.target.value)}
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setChangePasswordUser(null)}
-            >
-              Cancelar
-            </Button>
-            <Button
-              onClick={handleChangePassword}
-              disabled={
-                !newPassword.trim() ||
-                !newPasswordConfirmation.trim() ||
-                newPassword !== newPasswordConfirmation
-              }
-            >
-              Guardar
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <UserResetPasswordDialog
+        changePasswordUser={changePasswordUser}
+        setChangePasswordUser={setChangePasswordUser}
+      />
 
       {/* Delete Confirmation */}
       <AlertDialog
