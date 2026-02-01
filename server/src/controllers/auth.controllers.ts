@@ -63,6 +63,7 @@ export const login = async (
       })
       .json({
         userId: user.id,
+        mustChangePassword: user.mustChangePassword,
       });
   } catch (error) {
     next(error);
