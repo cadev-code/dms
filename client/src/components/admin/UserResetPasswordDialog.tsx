@@ -16,6 +16,7 @@ import {
 } from '../ui/dialog';
 import { Input } from '../ui/input';
 import { Field, FieldError, FieldGroup, FieldLabel } from '../ui/field';
+import { useResetPassword } from '@/hooks/useResetPassword';
 
 interface Props {
   changePasswordUser: User | null;
@@ -44,6 +45,8 @@ export const UserResetPasswordDialog = ({
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
 
+  const resetPassword = useResetPassword();
+
   const form = useForm({
     defaultValues: {
       password: '',
@@ -54,13 +57,20 @@ export const UserResetPasswordDialog = ({
       onChange: formSchema,
     },
     onSubmit: (values) => {
-      console.log('Changing password for user:', {
-        id: changePasswordUser?.id,
-        newPassword: values.value.password,
-        newPasswordConfirmation: values.value.passwordConfirmation,
-      });
+      if (!changePasswordUser) return;
 
-      form.reset();
+      resetPassword.mutate(
+        {
+          userId: changePasswordUser.id,
+          password: values.value.password,
+        },
+        {
+          onSuccess: () => {
+            form.reset();
+            setChangePasswordUser(null);
+          },
+        },
+      );
     },
   });
 
