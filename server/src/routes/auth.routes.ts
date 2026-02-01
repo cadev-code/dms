@@ -21,7 +21,6 @@ router.get(
     try {
       const user = await prisma.user.findUnique({
         where: { id: req.userId },
-        select: { id: true, fullname: true, role: true },
       });
 
       if (!user) {
@@ -36,6 +35,7 @@ router.get(
         userId: user.id,
         fullname: user.fullname,
         role: user.role,
+        mustChangePassword: user.mustChangePassword,
       });
     } catch (error) {
       next(error);
