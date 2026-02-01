@@ -1,9 +1,11 @@
+import { createBrowserRouter, Navigate } from 'react-router';
+
 import { Dashboard } from '@/pages/Dashboard';
 import { Login } from '@/pages/Login';
-import { createBrowserRouter, Navigate } from 'react-router';
-import { PublicRoute } from './PublicRoute';
+import { Settings } from '@/pages/Settings';
+
 import { PrivateRoute } from './PrivateRoute';
-import Settings from '@/pages/Settings';
+import { PublicRoute } from './PublicRoute';
 
 export const appRouter = createBrowserRouter([
   {
