@@ -8,6 +8,7 @@ import {
 } from '../schemas/users.schema';
 import { AppError } from '../utils/AppError';
 import { encryptPassword } from '../helpers/encryptPassword';
+import { compareEncryptedPassword } from '../helpers/compareEncryptedPassword';
 
 export const getUsers = async (
   req: Request,
@@ -113,6 +114,20 @@ export const resetPassword = async (
     }
 
     const { password, mustChangePassword } = req.body;
+
+    const isNewPasswordSameAsOld = await compareEncryptedPassword(
+      password,
+      existingUser.passwordHash,
+    );
+
+    if (isNewPasswordSameAsOld) {
+      throw new AppError(
+        'La nueva contraseña no puede ser igual a la contraseña anterior.',
+        400,
+        'SAME_PASSWORD_ERROR',
+        `Intento de restablecimiento de contraseña fallido - Nueva contraseña igual a la anterior (Usuario: ${existingUser.username || 'Unknown'})`,
+      );
+    }
 
     const newPasswordHash = await encryptPassword(password);
 
