@@ -12,7 +12,6 @@ import {
   userIdSchema,
 } from '../schemas/users.schema';
 import { requireRole } from '../middlewares/requireRole';
-import { validateRole } from '../middlewares/validateRole';
 import { validateParam } from '../middlewares/validateParam';
 
 const router = Router();
@@ -29,7 +28,6 @@ router.post(
 router.put(
   '/users/:userId/reset-password',
   authMiddleware,
-  validateRole('SUPER_ADMIN'),
   validateParam(userIdSchema),
   validateInput(resetPasswordSchema),
   resetPassword,
