@@ -1,5 +1,6 @@
 import { createBrowserRouter, Navigate } from 'react-router';
 
+import { ChangePassword } from '@/pages/ChangePassword';
 import { Dashboard } from '@/pages/Dashboard';
 import { Login } from '@/pages/Login';
 import { Settings } from '@/pages/Settings';
@@ -15,6 +16,10 @@ export const appRouter = createBrowserRouter([
   {
     path: '/login',
     element: <PublicRoute element={<Login />} />,
+  },
+  {
+    path: '/change-password',
+    element: <PrivateRoute element={<ChangePassword />} />,
   },
   {
     path: '/settings',

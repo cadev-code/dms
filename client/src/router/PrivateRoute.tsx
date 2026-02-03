@@ -22,5 +22,12 @@ export const PrivateRoute = ({ element }: Props) => {
     return <Navigate to="/login" replace />;
   }
 
+  if (
+    user.mustChangePassword &&
+    window.location.pathname !== '/change-password'
+  ) {
+    return <Navigate to="/change-password" replace />;
+  }
+
   return element;
 };
