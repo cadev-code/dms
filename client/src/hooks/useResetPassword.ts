@@ -1,4 +1,5 @@
 import { putter } from '@/api/queryHelpers';
+import { queryClient } from '@/config/queryClient';
 import { useAlertStore } from '@/store/useAlertStore';
 import { useMutation } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
@@ -32,6 +33,7 @@ export const useResetPassword = () => {
       showAlert(error.response?.data.message, 'error');
     },
     onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['currentUser'] });
       showAlert(data.message, 'success');
     },
   });
