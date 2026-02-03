@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useForm } from '@tanstack/react-form';
+import z from 'zod';
 
 import { useLogin } from '@/hooks/useLogin';
 
-import { Eye, EyeOff, FolderOpen, Lock, Mail } from 'lucide-react';
+import { Eye, EyeOff, Lock, Mail } from 'lucide-react';
+import { Branding } from '@/components/auth/Branding';
+import { LegalNotice } from '@/components/auth/LegalNotice';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -13,9 +16,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import z from 'zod';
 import { FieldGroup, Field, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
 
 const formSchema = z.object({
   username: z
@@ -62,16 +64,7 @@ export const Login = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5 flex items-center justify-center p-4">
       <div className="w-full max-w-md space-y-6">
-        {/* Logo */}
-        <div className="text-center">
-          <div className="inline-flex items-center justify-center p-4 rounded-2xl bg-primary/10 mb-4">
-            <FolderOpen className="h-12 w-12 text-primary" />
-          </div>
-          <h1 className="text-3xl font-bold text-foreground">DMS</h1>
-          <p className="text-muted-foreground mt-1">
-            Sistema de Gestión Documental
-          </p>
-        </div>
+        <Branding />
 
         {/* Auth Card */}
         <Card className="border-0 shadow-xl">
@@ -162,9 +155,7 @@ export const Login = () => {
           </CardContent>
         </Card>
 
-        <p className="text-center text-sm text-muted-foreground">
-          © 2026 DMS. Sistema de Gestión Documental.
-        </p>
+        <LegalNotice />
       </div>
     </div>
   );

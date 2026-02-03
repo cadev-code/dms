@@ -6,7 +6,9 @@ import z from 'zod';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { useResetPassword } from '@/hooks/useResetPassword';
 
-import { Lock, Eye, EyeOff, KeyRound, FolderOpen } from 'lucide-react';
+import { Lock, Eye, EyeOff, KeyRound } from 'lucide-react';
+import { Branding } from '@/components/auth/Branding';
+import { LegalNotice } from '@/components/auth/LegalNotice';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -85,15 +87,7 @@ export const ChangePassword = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5 flex items-center justify-center p-4">
       <div className="w-full max-w-md space-y-6">
-        <div className="text-center">
-          <div className="inline-flex items-center justify-center p-4 rounded-2xl bg-primary/10 mb-4">
-            <FolderOpen className="h-12 w-12 text-primary" />
-          </div>
-          <h1 className="text-3xl font-bold text-foreground">DMS</h1>
-          <p className="text-muted-foreground mt-1">
-            Sistema de Gestión Documental
-          </p>
-        </div>
+        <Branding />
 
         <Card className="border-0 shadow-xl">
           <CardHeader>
@@ -232,9 +226,7 @@ export const ChangePassword = () => {
           </CardFooter>
         </Card>
 
-        <p className="text-center text-sm text-muted-foreground">
-          © 2026 DMS. Sistema de Gestión Documental.
-        </p>
+        <LegalNotice />
       </div>
     </div>
   );
