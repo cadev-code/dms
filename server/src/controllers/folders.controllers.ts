@@ -20,7 +20,7 @@ export const createFolder = async (
 
     const { folderName, parentId } = req.body;
 
-    const existingFolder = await prisma.folder.findUnique({
+    const existingFolder = await prisma.folder.findFirst({
       where: { folderName, parentId },
     });
 
