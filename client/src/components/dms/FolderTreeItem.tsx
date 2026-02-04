@@ -190,7 +190,10 @@ export const FolderTreeItem = ({
                   onClick={(e) => {
                     e.stopPropagation();
                     setIsAddingSubfolder(true);
-                    onFolderExpanded(folder);
+
+                    if (!isExpanded(folder.id)) {
+                      onFolderExpanded(folder);
+                    }
                   }}
                 >
                   <Plus className="h-4 w-4 mr-2" />
