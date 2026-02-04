@@ -20,9 +20,9 @@ axiosClient.interceptors.request.use((config) => {
   } else if (config.method === 'get') {
     config.timeout = 10000; // 10 segundos para GETs normales
   } else if (config.method === 'post' || config.method === 'put') {
-    config.timeout = 15000; // 15 segundos para POST/PUT
+    config.timeout = 60000; // 60 segundos para POST/PUT
   } else if (config.method === 'delete') {
-    config.timeout = 15000; // 15 segundos para POST/PUT
+    config.timeout = 60000; // 60 segundos para POST/PUT
   }
 
   return config;
