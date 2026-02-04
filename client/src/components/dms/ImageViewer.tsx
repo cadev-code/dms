@@ -1,6 +1,7 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Dialog, DialogContent } from '../ui/dialog';
 import { Document } from '@/types/document.types';
+import { axiosClient } from '@/lib/axiosClient';
 
 interface Props {
   fileName: Document['fileName'] | null;
@@ -13,12 +14,68 @@ export const ImageViewer = ({ fileName, isOpen, onClose }: Props) => {
   const [offsetX, setOffsetX] = useState(0);
   const [offsetY, setOffsetY] = useState(0);
   const [isPanning, setIsPanning] = useState(false);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const panStartRef = useRef<{
     mouseX: number;
     mouseY: number;
     startX: number;
     startY: number;
   } | null>(null);
+
+  useEffect(() => {
+    setScale(1);
+    setOffsetX(0);
+    setOffsetY(0);
+  }, [isOpen]);
+
+  // Cargar la imagen como blob (similar a cómo PdfViewer carga el PDF)
+  useEffect(() => {
+    let cancelled = false;
+    let objectUrl: string | null = null;
+
+    const loadImage = async () => {
+      if (!fileName || !isOpen) {
+        setImageUrl(null);
+        setLoadError(null);
+        return;
+      }
+
+      setIsLoading(true);
+      setLoadError(null);
+
+      try {
+        const response = await axiosClient.get(`/documents/${fileName}`, {
+          responseType: 'blob',
+        });
+
+        if (cancelled) return;
+
+        objectUrl = URL.createObjectURL(response.data);
+        setImageUrl(objectUrl);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (error) {
+        if (!cancelled) {
+          setLoadError('No se pudo cargar la imagen.');
+          setImageUrl(null);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    loadImage();
+
+    return () => {
+      cancelled = true;
+      if (objectUrl) {
+        URL.revokeObjectURL(objectUrl);
+      }
+    };
+  }, [fileName, isOpen]);
 
   const handleWheel: React.WheelEventHandler<HTMLDivElement> = (e) => {
     if (!fileName) return;
@@ -27,7 +84,7 @@ export const ImageViewer = ({ fileName, isOpen, onClose }: Props) => {
     const delta = e.deltaY > 0 ? -0.1 : 0.1;
 
     setScale((prev) => {
-      const next = Math.min(Math.max(prev + delta, 1), 4);
+      const next = Math.min(Math.max(prev + delta, 1), 2.5);
 
       if (next === 1) {
         setOffsetX(0);
@@ -94,20 +151,28 @@ export const ImageViewer = ({ fileName, isOpen, onClose }: Props) => {
                   scale > 1 ? (isPanning ? 'grabbing' : 'grab') : 'default',
               }}
             >
-              <img
-                className="max-h-full max-w-full object-contain rounded-md border-2"
-                src={`${
-                  import.meta.env.DEV
-                    ? 'http://localhost:8080'
-                    : import.meta.env.VITE_API_URL || 'http://localhost:8080'
-                }/documents/${fileName}`}
-                alt="Imagen del documento"
-                style={{
-                  transform: `translate3d(${offsetX}px, ${offsetY}px, 0) scale(${scale})`,
-                  transition: isPanning ? 'none' : 'transform 0.1s ease-out',
-                }}
-                draggable={false}
-              />
+              {isLoading && !imageUrl && !loadError && (
+                <p className="text-muted-foreground text-sm">
+                  Cargando imagen...
+                </p>
+              )}
+
+              {loadError && (
+                <p className="text-destructive text-sm">{loadError}</p>
+              )}
+
+              {!isLoading && !loadError && imageUrl && (
+                <img
+                  className="max-h-full max-w-full object-contain rounded-md border-2"
+                  src={imageUrl}
+                  alt="Imagen del documento"
+                  style={{
+                    transform: `translate3d(${offsetX}px, ${offsetY}px, 0) scale(${scale})`,
+                    transition: isPanning ? 'none' : 'transform 0.1s ease-out',
+                  }}
+                  draggable={false}
+                />
+              )}
             </div>
 
             <div className="flex justify-end gap-2 text-xs text-muted-foreground">
