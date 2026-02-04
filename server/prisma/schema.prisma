@@ -67,7 +67,7 @@ model File {
 
 model Folder {
   id         Int      @id @default(autoincrement())
-  folderName String   @unique
+  folderName String   
   parentId   Int?
   createdAt  DateTime @default(now())
 
@@ -76,6 +76,8 @@ model Folder {
   files    File[]
 
   groupPerms FolderGroupPermission[]
+
+  @@unique([folderName, parentId])
 }
 
 model FolderGroupPermission {
