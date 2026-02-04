@@ -51,7 +51,7 @@ model UserGroup {
 
 model File {
   id              Int      @id @default(autoincrement())
-  documentName    String   @unique
+  documentName    String  
   fileName        String
   previewFileName String?
   type            String
@@ -63,6 +63,7 @@ model File {
   folder   Folder? @relation(fields: [folderId], references: [id], onDelete: Cascade)
 
   groupPerms FileGroupPermission[]
+  @@unique([documentName, folderId])
 }
 
 model Folder {
