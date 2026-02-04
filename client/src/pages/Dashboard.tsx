@@ -17,6 +17,7 @@ import { Sidebar } from '@/components/dms/Sidebar';
 import { useDocumentsDashboard } from '@/hooks/useDocumentsDashboard';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { useAllFolders } from '@/hooks/useAllFolders';
+import { ImageViewer } from '@/components/dms/ImageViewer';
 
 export const Dashboard = () => {
   const { data: currentUser } = useCurrentUser();
@@ -45,9 +46,13 @@ export const Dashboard = () => {
   } = useFileDeletion();
 
   const {
+    imageToShow,
+    isImageViewerOpen,
     isPdfViewerOpen,
     pdfToShow,
     handleView,
+    setImageToShow,
+    setIsImageViewerOpen,
     setIsPdfViewerOpen,
     setPdfToShow,
   } = useFileViewer();
@@ -157,6 +162,15 @@ export const Dashboard = () => {
         onClose={() => {
           setPdfToShow(null);
           setIsPdfViewerOpen(false);
+        }}
+      />
+
+      <ImageViewer
+        isOpen={isImageViewerOpen}
+        fileName={imageToShow}
+        onClose={() => {
+          setImageToShow(null);
+          setIsImageViewerOpen(false);
         }}
       />
     </div>

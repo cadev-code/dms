@@ -190,7 +190,7 @@ export function DocumentList({
             size="icon"
             onClick={() => {
               if (
-                ['pdf', 'word', 'excel', 'powerpoint'].includes(
+                ['pdf', 'word', 'excel', 'powerpoint', 'image'].includes(
                   row.original.type,
                 )
               ) {
