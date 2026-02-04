@@ -163,7 +163,7 @@ export const renameFolder = async (
       );
     }
 
-    const existingFolderWithName = await prisma.folder.findUnique({
+    const existingFolderWithName = await prisma.folder.findFirst({
       where: { folderName, parentId: existingFolder.parentId },
     });
 
