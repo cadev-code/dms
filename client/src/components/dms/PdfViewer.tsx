@@ -95,7 +95,12 @@ export const PdfViewer = ({ fileName, isOpen, onClose }: Props) => {
                 <Viewer
                   fileUrl={
                     fileName
-                      ? `${import.meta.env.VITE_API_URL || 'http://localhost:8080'}/documents/${fileName}`
+                      ? `${
+                          import.meta.env.DEV
+                            ? 'http://localhost:8080'
+                            : import.meta.env.VITE_API_URL ||
+                              'http://localhost:8080'
+                        }/documents/${fileName}`
                       : ''
                   }
                   renderError={renderError}
