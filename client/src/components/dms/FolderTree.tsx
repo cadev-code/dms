@@ -9,6 +9,7 @@ import { Input } from '../ui/input';
 import { FolderTreeItem } from './FolderTreeItem';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
+import { useReportAllDocuments } from '@/hooks/useReportAllDocuments';
 
 interface FolderTreeProps {
   activeFilter: string;
@@ -32,6 +33,7 @@ export const FolderTree = ({
   });
 
   const createFolder = useCreateFolder();
+  const reportAllDocuments = useReportAllDocuments();
 
   const isExpanded = (folderId: number) => {
     return expandedFolders.has(folderId);
@@ -103,7 +105,7 @@ export const FolderTree = ({
                   variant="ghost"
                   size="icon"
                   className="h-6 w-6 text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-black"
-                  onClick={() => console.log('Descargar reporte de carpetas')}
+                  onClick={() => reportAllDocuments.mutate()}
                 >
                   <Download className="h-4 w-4" />
                 </Button>
