@@ -4,10 +4,11 @@ import { Button } from '@/components/ui/button';
 
 import type { Folder as FolderType } from '@/types/folder.types';
 import { useCreateFolder } from '@/hooks/useCreateFolder';
-import { Folder, Plus } from 'lucide-react';
+import { ChevronsDownUp, Download, Folder, Plus } from 'lucide-react';
 import { Input } from '../ui/input';
 import { FolderTreeItem } from './FolderTreeItem';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 
 interface FolderTreeProps {
   activeFilter: string;
@@ -72,18 +73,63 @@ export const FolderTree = ({
   return (
     <>
       <div className="flex justify-between items-center mb-2">
-        <p className="text-xs font-semibold text-sidebar-foreground/50 uppercase tracking-wider">
-          Repositorio
-        </p>
-        {currentUser?.role !== 'USER' && !isAddingRoot && (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-6 w-6 text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-green-500"
-            onClick={() => setIsAddingRoot(true)}
-          >
-            <Plus className="h-4 w-4" />
-          </Button>
+        <div className="flex gap-2 items-center">
+          <p className="text-xs font-semibold text-sidebar-foreground/50 uppercase tracking-wider">
+            Repositorio
+          </p>
+          {expandedFolders.size > 0 && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6 text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-black"
+                  onClick={() => setExpandedFolders(new Set())}
+                >
+                  <ChevronsDownUp className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="top">
+                <p>Colapsar Carpetas</p>
+              </TooltipContent>
+            </Tooltip>
+          )}
+        </div>
+        {currentUser?.role !== 'USER' && (
+          <div className="flex gap-2">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6 text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-black"
+                  onClick={() => console.log('Descargar reporte de carpetas')}
+                >
+                  <Download className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="top">
+                <p>Descargar Reporte</p>
+              </TooltipContent>
+            </Tooltip>
+            {!isAddingRoot && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6 text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-green-500"
+                    onClick={() => setIsAddingRoot(true)}
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="top">
+                  <p>Nueva carpeta</p>
+                </TooltipContent>
+              </Tooltip>
+            )}
+          </div>
         )}
       </div>
 
