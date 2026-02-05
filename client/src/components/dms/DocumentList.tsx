@@ -70,6 +70,8 @@ export function DocumentList({
         return <Image className="h-5 w-5 text-sky-500" />;
       case 'powerpoint':
         return <Presentation className="h-5 w-5 text-orange-500" />;
+      case 'text':
+        return <FileText className="h-5 w-5 text-gray-500" />;
       default:
         return <File className="h-5 w-5 text-muted-foreground" />;
     }
@@ -87,6 +89,8 @@ export function DocumentList({
         return 'Imagen';
       case 'powerpoint':
         return 'PowerPoint';
+      case 'text':
+        return 'Texto Plano';
       default:
         return 'Archivo';
     }
@@ -190,9 +194,14 @@ export function DocumentList({
             size="icon"
             onClick={() => {
               if (
-                ['pdf', 'word', 'excel', 'powerpoint', 'image'].includes(
-                  row.original.type,
-                )
+                [
+                  'pdf',
+                  'word',
+                  'excel',
+                  'powerpoint',
+                  'image',
+                  'text',
+                ].includes(row.original.type)
               ) {
                 onView(row.original);
               }

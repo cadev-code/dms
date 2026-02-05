@@ -88,6 +88,7 @@ export const Dashboard = () => {
           powerpoint:
             allDocuments.filter((doc) => doc.type === 'powerpoint').length || 0,
           image: allDocuments.filter((doc) => doc.type === 'image').length || 0,
+          text: allDocuments.filter((doc) => doc.type === 'text').length || 0,
           other: 15,
         }}
       />

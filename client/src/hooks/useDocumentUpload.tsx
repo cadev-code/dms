@@ -23,6 +23,7 @@ export const ALLOWED_EXTENSIONS = [
   '.jpg',
   '.jpeg',
   '.gif',
+  '.txt',
 ];
 
 export const useDocumentUpload = (
@@ -77,6 +78,8 @@ export const useDocumentUpload = (
       case 'pptx':
       case 'ppt':
         return 'powerpoint';
+      case 'txt':
+        return 'text';
       default:
         return 'other';
     }
@@ -140,6 +143,8 @@ export const useDocumentUpload = (
         return <Image className="h-12 w-12 text-sky-500" />;
       case 'powerpoint':
         return <Presentation className="h-12 w-12 text-orange-500" />;
+      case 'text':
+        return <FileText className="h-12 w-12 text-gray-500" />;
       default:
         return <FileIcon className="h-12 w-12 text-muted-foreground" />;
     }

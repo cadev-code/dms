@@ -64,6 +64,12 @@ export const Sidebar = ({
       icon: Image,
       count: documentCounts.image || 0,
     },
+    {
+      id: 'text',
+      label: 'Texto Plano',
+      icon: FileText,
+      count: documentCounts.text || 0,
+    },
   ];
 
   const logout = useLogout();

@@ -4,6 +4,7 @@ export type DocumentType =
   | 'excel'
   | 'image'
   | 'powerpoint'
+  | 'text'
   | 'other';
 
 export interface Document {
