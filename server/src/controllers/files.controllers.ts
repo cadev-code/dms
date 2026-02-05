@@ -34,6 +34,7 @@ const getType = (mimetype: string) => {
       'application/vnd.openxmlformats-officedocument.presentationml.presentation'
   )
     return 'powerpoint';
+  if (mimetype === 'text/plain') return 'text';
   return 'other';
 };
 
@@ -100,7 +101,12 @@ export const uploadFile = async (
 
     let previewFileName: string | null = null;
 
-    if (type === 'word' || type === 'excel' || type === 'powerpoint') {
+    if (
+      type === 'word' ||
+      type === 'excel' ||
+      type === 'powerpoint' ||
+      type === 'text'
+    ) {
       try {
         const pdfFileName = await convertToPdf(filePath, uploadsDir);
         previewFileName = pdfFileName;

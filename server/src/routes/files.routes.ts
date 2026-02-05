@@ -33,6 +33,7 @@ router.post(
       'application/pdf',
       'image/png',
       'image/jpeg',
+      'text/plain',
       'application/msword',
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
       'application/vnd.ms-excel',

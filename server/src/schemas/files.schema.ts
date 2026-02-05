@@ -12,7 +12,7 @@ export const uploadFileSchema = z.object({
 export type UploadFileBody = z.infer<typeof uploadFileSchema>;
 
 export const filesByTypeParamSchema = z.object({
-  type: z.enum(['pdf', 'image', 'word', 'excel', 'powerpoint'], {
+  type: z.enum(['pdf', 'image', 'word', 'excel', 'powerpoint', 'text'], {
     errorMap: () => ({ message: 'Tipo de archivo inválido' }),
   }),
 });
