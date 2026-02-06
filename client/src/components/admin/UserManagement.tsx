@@ -6,6 +6,7 @@ import {
   ArrowDownUp,
   ArrowUp,
   Ban,
+  CircleCheckBig,
   KeyRound,
   Pencil,
   Plus,
@@ -61,6 +62,7 @@ import {
 import { useUsers } from '@/hooks/useUsers';
 import { useCreateUser } from '@/hooks/useCreateUser';
 import { UserResetPasswordDialog } from './UserResetPasswordDialog';
+import { useDisableUser } from '@/hooks/useDisableUser';
 
 export const UserManagement = () => {
   const [isEditorOpen, setIsEditorOpen] = useState(false);
@@ -73,13 +75,16 @@ export const UserManagement = () => {
   const [changePasswordUser, setChangePasswordUser] = useState<UserType | null>(
     null,
   );
-  const [disableUser, setDisableUser] = useState<UserType | null>(null);
+  const [userToDisable, setUserToDisable] = useState<UserType | null>(null);
 
   const [sorting, setSorting] = useState<SortingState>([]);
 
   const { data } = useUsers();
   const users = data?.data || [];
   const createUser = useCreateUser();
+  const disableUser = useDisableUser();
+
+  console.log(users);
 
   const closeEditor = () => {
     setIsEditorOpen(false);
@@ -97,7 +102,9 @@ export const UserManagement = () => {
   };
 
   const handleDisableConfirm = () => {
-    console.log('Disabling user:', disableUser?.fullname);
+    if (userToDisable) {
+      disableUser.mutate({ userId: userToDisable.id });
+    }
   };
 
   const handleSave = async () => {
@@ -198,14 +205,26 @@ export const UserManagement = () => {
           >
             <Pencil className="h-4 w-4" />
           </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setDisableUser(row.original)}
-            title="Deshabilitar usuario"
-          >
-            <Ban className="h-4 w-4 text-destructive" />
-          </Button>
+          {row.original.role !== 'SUPER_ADMIN' &&
+            (row.original.isActive ? (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setUserToDisable(row.original)}
+                title="Deshabilitar usuario"
+              >
+                <Ban className="h-4 w-4 text-destructive" />
+              </Button>
+            ) : (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => console.log('Enable user')}
+                title="Habilitar usuario"
+              >
+                <CircleCheckBig className="h-4 w-4 text-green-500" />
+              </Button>
+            ))}
         </div>
       ),
     },
@@ -370,16 +389,16 @@ export const UserManagement = () => {
 
       {/* Delete Confirmation */}
       <AlertDialog
-        open={!!disableUser}
-        onOpenChange={() => setDisableUser(null)}
+        open={!!userToDisable}
+        onOpenChange={() => setUserToDisable(null)}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>¿Deshabilitar usuario?</AlertDialogTitle>
             <AlertDialogDescription>
               Esta acción deshabilitará al usuario{' '}
-              <strong>{disableUser?.fullname}</strong> y no podrá iniciar sesión
-              en el sistema.
+              <strong>{userToDisable?.fullname}</strong> y no podrá iniciar
+              sesión en el sistema.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
