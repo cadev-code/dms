@@ -200,24 +200,26 @@ export const UserManagement = () => {
       header: () => <div className="text-end pr-2">Acciones</div>,
       cell: ({ row }) => (
         <div className="flex items-center justify-end gap-1">
-          {row.original.role !== 'SUPER_ADMIN' && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setChangePasswordUser(row.original)}
-              title="Cambiar contraseña"
-            >
-              <KeyRound className="h-4 w-4" />
-            </Button>
+          {row.original.role !== 'SUPER_ADMIN' && row.original.isActive && (
+            <>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setChangePasswordUser(row.original)}
+                title="Cambiar contraseña"
+              >
+                <KeyRound className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => handleEdit(row.original)}
+                title="Editar usuario"
+              >
+                <Pencil className="h-4 w-4" />
+              </Button>
+            </>
           )}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => handleEdit(row.original)}
-            title="Editar usuario"
-          >
-            <Pencil className="h-4 w-4" />
-          </Button>
           {row.original.role !== 'SUPER_ADMIN' &&
             (row.original.isActive ? (
               <Button
