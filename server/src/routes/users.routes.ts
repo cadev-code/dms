@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { authMiddleware } from '../middlewares/authMiddleware';
 import {
   createUser,
+  disableUser,
   getUsers,
   resetPassword,
 } from '../controllers/users.controllers';
@@ -31,6 +32,14 @@ router.put(
   validateParam(userIdSchema),
   validateInput(resetPasswordSchema),
   resetPassword,
+);
+
+router.put(
+  '/users/:userId/disable',
+  authMiddleware,
+  requireRole(['SUPER_ADMIN']),
+  validateParam(userIdSchema),
+  disableUser,
 );
 
 export default router;

@@ -151,3 +151,55 @@ export const resetPassword = async (
     next(error);
   }
 };
+
+export const disableUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.userId },
+    });
+
+    const { userId } = userIdSchema.parse(req.params);
+
+    const existingUser = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!existingUser) {
+      throw new AppError(
+        `El usuario no existe.`,
+        404,
+        'USER_NOT_FOUND',
+        `Intento de deshabilitar usuario fallido - Usuario no encontrado (ID: ${userId}) (Intentado por: ${user?.username || 'Unknown'})`,
+      );
+    }
+
+    if (!existingUser.isActive) {
+      throw new AppError(
+        `El usuario ya está deshabilitado.`,
+        400,
+        'USER_ALREADY_DISABLED',
+        `Intento de deshabilitar usuario fallido - Usuario ya deshabilitado: ${existingUser.username} (Intentado por: ${user?.username || 'Unknown'})`,
+      );
+    }
+
+    await prisma.user.update({
+      where: { id: existingUser.id },
+      data: { isActive: false, disableAt: new Date() },
+    });
+
+    logger.info(
+      `Usuario "${existingUser.username}" deshabilitado exitosamente (Deshabilitado por: ${user?.username || 'Unknown'})`,
+    );
+
+    res.status(200).json({
+      error: null,
+      message: 'Usuario deshabilitado exitosamente.',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
