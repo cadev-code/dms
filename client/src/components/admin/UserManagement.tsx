@@ -1,4 +1,17 @@
 import { useState } from 'react';
+
+import { useCreateUser } from '@/hooks/useCreateUser';
+import { useDisableUser } from '@/hooks/useDisableUser';
+import { UserResetPasswordDialog } from './UserResetPasswordDialog';
+import { useUsers } from '@/hooks/useUsers';
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  getSortedRowModel,
+  SortingState,
+  useReactTable,
+} from '@tanstack/react-table';
 import type { User as UserType } from '@/types/user.types';
 
 import {
@@ -15,41 +28,6 @@ import {
   Users,
 } from 'lucide-react';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '../ui/table';
-import { Badge } from '../ui/badge';
-import { Button } from '../ui/button';
-import { Dialog } from '@radix-ui/react-dialog';
-import {
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '../ui/dialog';
-import { Label } from '../ui/label';
-import { Input } from '../ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '../ui/select';
-import {
-  ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  getSortedRowModel,
-  SortingState,
-  useReactTable,
-} from '@tanstack/react-table';
-import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -59,10 +37,33 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '../ui/alert-dialog';
-import { useUsers } from '@/hooks/useUsers';
-import { useCreateUser } from '@/hooks/useCreateUser';
-import { UserResetPasswordDialog } from './UserResetPasswordDialog';
-import { useDisableUser } from '@/hooks/useDisableUser';
+import { Badge } from '../ui/badge';
+import { Button } from '../ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '../ui/dialog';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../ui/select';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '../ui/table';
 
 export const UserManagement = () => {
   const [isEditorOpen, setIsEditorOpen] = useState(false);
@@ -146,11 +147,15 @@ export const UserManagement = () => {
           <div className="p-1.5 rounded-full bg-muted">
             {row.original.role !== 'USER' ? (
               <Shield className="h-4 w-4 text-primary" />
-            ) : (
+            ) : row.original.isActive ? (
               <User className="h-4 w-4 text-muted-foreground" />
+            ) : (
+              <Ban className="h-4 w-4 text-muted-foreground" />
             )}
           </div>
-          {row.original.fullname}
+          <p className={!row.original.isActive ? 'text-gray-500' : ''}>
+            {row.original.fullname}
+          </p>
         </div>
       ),
     },
@@ -168,12 +173,20 @@ export const UserManagement = () => {
           )}
         </Button>
       ),
+      cell: ({ row }) => (
+        <p className={!row.original.isActive ? 'text-gray-500' : ''}>
+          {row.original.username}
+        </p>
+      ),
     },
     {
       accessorKey: 'role',
       header: 'Rol',
       cell: ({ row }) => (
-        <Badge variant={row.original.role === 'USER' ? 'secondary' : 'default'}>
+        <Badge
+          className={!row.original.isActive ? 'text-gray-500' : ''}
+          variant={row.original.role === 'USER' ? 'secondary' : 'default'}
+        >
           {row.original.role === 'SUPER_ADMIN'
             ? 'Super Administrador'
             : row.original.role === 'CONTENT_ADMIN'
