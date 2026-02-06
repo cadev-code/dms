@@ -27,6 +27,7 @@ export const getUsers = async (
       fullname: user.fullname,
       username: user.username,
       role: user.role,
+      isActive: user.isActive,
     }));
 
     logger.info(
