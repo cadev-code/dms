@@ -116,6 +116,15 @@ export const resetPassword = async (
       );
     }
 
+    if (!existingUser.isActive) {
+      throw new AppError(
+        `El usuario está deshabilitado.`,
+        400,
+        'USER_DISABLED',
+        `Intento de restablecimiento de contraseña fallido - Usuario deshabilitado (username: ${existingUser.username || 'Unknown'}) (Intentado por: ${user?.username || 'Unknown'})`,
+      );
+    }
+
     const { password, mustChangePassword } = req.body;
 
     const isNewPasswordSameAsOld = await compareEncryptedPassword(
