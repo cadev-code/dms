@@ -29,6 +29,15 @@ export const login = async (
       );
     }
 
+    if (!user.isActive) {
+      throw new AppError(
+        'Error al autenticar, reportar a soporte',
+        403,
+        'USER_DISABLED',
+        `Intento de autenticación fallido - El usuario '${username}' está deshabilitado`,
+      );
+    }
+
     const isPasswordValid = await compareEncryptedPassword(
       password,
       user.passwordHash,
