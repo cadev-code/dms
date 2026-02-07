@@ -66,7 +66,6 @@ export const UserManagement = () => {
   const users = data?.data || [];
   const disableUser = useDisableUser();
   const enableUser = useEnableUser();
-  console.log(users);
 
   const handleEdit = (user: UserType) => {
     setIsEditorOpen(true);
