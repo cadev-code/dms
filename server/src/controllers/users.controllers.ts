@@ -4,6 +4,7 @@ import { logger } from '../helpers/logger';
 import {
   CreateUserBody,
   ResetPasswordBody,
+  UpdateUserBody,
   userIdSchema,
 } from '../schemas/users.schema';
 import { AppError } from '../utils/AppError';
@@ -85,6 +86,63 @@ export const createUser = async (
     res.status(201).json({
       error: null,
       message: 'Usuario creado exitosamente.',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateUser = async (
+  req: Request<object, object, UpdateUserBody>,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.userId },
+    });
+
+    const { userId } = userIdSchema.parse(req.params);
+
+    const existingUser = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!existingUser) {
+      throw new AppError(
+        `El usuario no existe.`,
+        404,
+        'USER_NOT_FOUND',
+        `Intento de actualización de usuario fallido - Usuario no encontrado (ID: ${userId}) (Intentado por: ${user?.username || 'Unknown'})`,
+      );
+    }
+
+    if (!existingUser.isActive) {
+      throw new AppError(
+        `El usuario está deshabilitado.`,
+        400,
+        'USER_DISABLED',
+        `Intento de actualización de usuario fallido - Usuario deshabilitado (username: ${existingUser.username || 'Unknown'}) (Intentado por: ${user?.username || 'Unknown'})`,
+      );
+    }
+
+    const { fullname, role } = req.body;
+
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        fullname,
+        role,
+      },
+    });
+
+    logger.info(
+      `Usuario "${existingUser.username}" actualizado exitosamente (Actualizado por: ${user?.username || 'Unknown'})`,
+    );
+
+    res.status(200).json({
+      error: null,
+      message: 'Usuario actualizado exitosamente.',
     });
   } catch (error) {
     next(error);

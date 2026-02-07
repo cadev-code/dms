@@ -6,11 +6,13 @@ import {
   enableUser,
   getUsers,
   resetPassword,
+  updateUser,
 } from '../controllers/users.controllers';
 import { validateInput } from '../middlewares/validateInput';
 import {
   createUserSchema,
   resetPasswordSchema,
+  updateUserSchema,
   userIdSchema,
 } from '../schemas/users.schema';
 import { requireRole } from '../middlewares/requireRole';
@@ -19,12 +21,22 @@ import { validateParam } from '../middlewares/validateParam';
 const router = Router();
 
 router.get('/users', authMiddleware, requireRole(['SUPER_ADMIN']), getUsers);
+
 router.post(
   '/users',
   authMiddleware,
   requireRole(['SUPER_ADMIN']),
   validateInput(createUserSchema),
   createUser,
+);
+
+router.put(
+  '/users/:userId/update',
+  authMiddleware,
+  requireRole(['SUPER_ADMIN']),
+  validateParam(userIdSchema),
+  validateInput(updateUserSchema),
+  updateUser,
 );
 
 router.put(
