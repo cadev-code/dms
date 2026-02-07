@@ -1,10 +1,20 @@
 import z from 'zod';
 
 export const createUserSchema = z.object({
-  fullname: z.string().min(8),
-  username: z.string().min(3),
+  fullname: z
+    .string()
+    .min(8, 'Debe tener al menos 8 caracteres')
+    .regex(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/, 'Solo se permiten letras y espacios'),
+  username: z
+    .string()
+    .regex(/^[a-z0-9.@-]{4,}$/, 'Nombre de usuario inválido.'),
   role: z.enum(['SUPER_ADMIN', 'CONTENT_ADMIN', 'USER']),
-  password: z.string().min(8),
+  password: z
+    .string()
+    .regex(
+      /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#$%&*]).{8,}$/,
+      'Contraseña inválida o incorrecta.',
+    ),
 });
 
 export type CreateUserBody = z.infer<typeof createUserSchema>;
