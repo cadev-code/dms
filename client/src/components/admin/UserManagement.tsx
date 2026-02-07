@@ -1,6 +1,5 @@
 import { useState } from 'react';
 
-import { useCreateUser } from '@/hooks/useCreateUser';
 import { useDisableUser } from '@/hooks/useDisableUser';
 import { UserResetPasswordDialog } from './UserResetPasswordDialog';
 import { useUsers } from '@/hooks/useUsers';
@@ -40,23 +39,6 @@ import {
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '../ui/dialog';
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '../ui/select';
-import {
   Table,
   TableBody,
   TableCell,
@@ -66,14 +48,11 @@ import {
 } from '../ui/table';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 import { useEnableUser } from '@/hooks/useEnableUser';
+import { UserEditorDialog } from './UserEditorDialog';
 
 export const UserManagement = () => {
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [editUser, setEditUser] = useState<UserType | null>(null);
-  const [editFullName, setEditFullName] = useState('');
-  const [editUserName, setEditUserName] = useState('');
-  const [editRole, setEditRole] = useState<UserType['role']>('USER');
-  const [editPassword, setEditPassword] = useState('');
 
   const [changePasswordUser, setChangePasswordUser] = useState<UserType | null>(
     null,
@@ -85,24 +64,13 @@ export const UserManagement = () => {
 
   const { data } = useUsers();
   const users = data?.data || [];
-  const createUser = useCreateUser();
   const disableUser = useDisableUser();
   const enableUser = useEnableUser();
   console.log(users);
 
-  const closeEditor = () => {
-    setIsEditorOpen(false);
-    setEditUser(null);
-    setEditFullName('');
-    setEditUserName('');
-    setEditRole('USER');
-  };
-
   const handleEdit = (user: UserType) => {
     setIsEditorOpen(true);
     setEditUser(user);
-    setEditFullName(user.fullname);
-    setEditRole(user.role);
   };
 
   const handleDisableConfirm = () => {
@@ -115,25 +83,6 @@ export const UserManagement = () => {
     if (userToEnable) {
       enableUser.mutate({ userId: userToEnable.id });
     }
-  };
-
-  const handleSave = async () => {
-    if (editUser === null) {
-      createUser.mutate({
-        fullname: editFullName,
-        username: editUserName,
-        role: editRole,
-        password: editPassword,
-      });
-    } else {
-      console.log('Updating user:', {
-        id: editUser.id,
-        fullname: editFullName,
-        role: editRole,
-      });
-    }
-
-    closeEditor();
   };
 
   const columns: ColumnDef<UserType>[] = [
@@ -347,82 +296,14 @@ export const UserManagement = () => {
         </Table>
       </div>
 
-      <Dialog open={isEditorOpen} onOpenChange={closeEditor}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              {editUser ? 'Editar Usuario' : 'Nuevo Usuario'}
-            </DialogTitle>
-            <DialogDescription>
-              {editUser ? (
-                <>
-                  Modificar los datos de <strong>{editUser.fullname}</strong>
-                </>
-              ) : (
-                'Crear un nuevo usuario en el sistema'
-              )}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="fullname">Nombre</Label>
-              <Input
-                id="fullname"
-                value={editFullName}
-                onChange={(e) => setEditFullName(e.target.value)}
-              />
-            </div>
-            {editUser === null && (
-              <>
-                <div className="space-y-2">
-                  <Label htmlFor="username">Usuario</Label>
-                  <Input
-                    id="username"
-                    value={editUserName}
-                    onChange={(e) => setEditUserName(e.target.value)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="password">Contraseña</Label>
-                  <Input
-                    id="password"
-                    value={editPassword}
-                    onChange={(e) => setEditPassword(e.target.value)}
-                  />
-                </div>
-              </>
-            )}
-            <div className="space-y-2">
-              <Label htmlFor="role">Rol</Label>
-              <Select
-                value={editRole}
-                onValueChange={(v: UserType['role']) => setEditRole(v)}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="SUPER_ADMIN">
-                    Super Administrador
-                  </SelectItem>
-                  <SelectItem value="CONTENT_ADMIN">
-                    Administrador de Contenido
-                  </SelectItem>
-                  <SelectItem value="USER">Usuario</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={closeEditor}>
-              Cancelar
-            </Button>
-            <Button onClick={handleSave} disabled={!editFullName.trim()}>
-              Guardar
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <UserEditorDialog
+        isOpen={isEditorOpen}
+        onClose={() => {
+          setIsEditorOpen(false);
+          setEditUser(null);
+        }}
+        editUser={editUser}
+      />
 
       <UserResetPasswordDialog
         changePasswordUser={changePasswordUser}
