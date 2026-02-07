@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import { AppError } from '../utils/AppError';
 import jwt from 'jsonwebtoken';
+import prisma from '../prisma_client';
 
-export const authMiddleware = (
+export const authMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction,
@@ -24,8 +25,18 @@ export const authMiddleware = (
       process.env.JWT_SECRET || 'default_secret',
     ) as { id: number };
 
-    req.userId = decoded.id;
+    const user = await prisma.user.findUnique({ where: { id: decoded.id } });
 
+    if (!user || !user.isActive) {
+      throw new AppError(
+        'Usuario deshabilitado o inexistente',
+        401,
+        'USER_DISABLED',
+        'Intento de acción con usuario deshabilitado o inexistente',
+      );
+    }
+
+    req.userId = decoded.id;
     next();
   } catch {
     throw new AppError(
