@@ -24,6 +24,7 @@ import {
 } from '../ui/select';
 import { Field, FieldError, FieldGroup, FieldLabel } from '../ui/field';
 import { Eye, EyeOff, Lock } from 'lucide-react';
+import { useUpdateUser } from '@/hooks/useUpdateUser';
 
 interface Props {
   editUser: User | null;
@@ -57,6 +58,7 @@ export const UserEditorDialog = ({ editUser, isOpen, onClose }: Props) => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const createUser = useCreateUser();
+  const updateUser = useUpdateUser();
 
   const form = useForm({
     defaultValues: {
@@ -71,7 +73,18 @@ export const UserEditorDialog = ({ editUser, isOpen, onClose }: Props) => {
     },
     onSubmit: (values) => {
       if (isEdit) {
-        console.log('Editando usuario con datos:', values.value);
+        updateUser.mutate(
+          {
+            userId: editUser.id,
+            fullname: values.value.fullname,
+            role: values.value.role,
+          },
+          {
+            onSuccess: () => {
+              onClose();
+            },
+          },
+        );
       } else {
         createUser.mutate(values.value, {
           onSuccess: () => {
