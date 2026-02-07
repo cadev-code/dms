@@ -299,7 +299,7 @@ export const editFile = async (
     });
 
     const { documentId } = mutateFileParamsSchema.parse(req.params);
-    const { documentName, ticketNumber } = req.body;
+    const { documentName, ticketNumber, version } = req.body;
 
     const existingFile = await prisma.file.findUnique({
       where: { id: documentId },
@@ -333,7 +333,7 @@ export const editFile = async (
 
     await prisma.file.update({
       where: { id: documentId },
-      data: { documentName, ticketNumber },
+      data: { documentName, ticketNumber, version },
     });
 
     logger.info(

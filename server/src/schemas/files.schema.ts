@@ -36,6 +36,10 @@ export const mutateFileParamsSchema = z.object({
 export const editFileSchema = z.object({
   documentName: z.string().min(1, 'Nombre de carpeta es obligatorio'),
   ticketNumber: z.string().min(1, 'Número de ticket es obligatorio'),
+  version: z
+    .string()
+    .min(1, 'La versión es obligatoria')
+    .regex(/^\d+(\.\d+)*$/, 'Formato de versión inválido.'),
 });
 
 export type EditFileBody = z.infer<typeof editFileSchema>;
