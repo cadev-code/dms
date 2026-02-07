@@ -50,7 +50,7 @@ export const uploadFile = async (
       },
     });
 
-    const { documentName, folderId, ticketNumber } = req.body;
+    const { documentName, folderId, ticketNumber, version } = req.body;
 
     const existingFolder = await prisma.folder.findUnique({
       where: { id: folderId },
@@ -126,6 +126,7 @@ export const uploadFile = async (
         size,
         folderId,
         ticketNumber,
+        version,
       },
     });
 
