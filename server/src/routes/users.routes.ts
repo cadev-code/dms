@@ -3,6 +3,7 @@ import { authMiddleware } from '../middlewares/authMiddleware';
 import {
   createUser,
   disableUser,
+  enableUser,
   getUsers,
   resetPassword,
 } from '../controllers/users.controllers';
@@ -40,6 +41,14 @@ router.put(
   requireRole(['SUPER_ADMIN']),
   validateParam(userIdSchema),
   disableUser,
+);
+
+router.put(
+  '/users/:userId/enable',
+  authMiddleware,
+  requireRole(['SUPER_ADMIN']),
+  validateParam(userIdSchema),
+  enableUser,
 );
 
 export default router;

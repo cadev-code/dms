@@ -215,3 +215,55 @@ export const disableUser = async (
     next(error);
   }
 };
+
+export const enableUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.userId },
+    });
+
+    const { userId } = userIdSchema.parse(req.params);
+
+    const existingUser = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!existingUser) {
+      throw new AppError(
+        `El usuario no existe.`,
+        404,
+        'USER_NOT_FOUND',
+        `Intento de habilitar usuario fallido - Usuario no encontrado (ID: ${userId}) (Intentado por: ${user?.username || 'Unknown'})`,
+      );
+    }
+
+    if (existingUser.isActive) {
+      throw new AppError(
+        `El usuario ya está habilitado.`,
+        400,
+        'USER_ALREADY_ENABLED',
+        `Intento de habilitar usuario fallido - Usuario ya habilitado: ${existingUser.username} (Intentado por: ${user?.username || 'Unknown'})`,
+      );
+    }
+
+    await prisma.user.update({
+      where: { id: existingUser.id },
+      data: { isActive: true },
+    });
+
+    logger.info(
+      `Usuario "${existingUser.username}" habilitado exitosamente (Habilitado por: ${user?.username || 'Unknown'})`,
+    );
+
+    res.status(200).json({
+      error: null,
+      message: 'Usuario habilitado exitosamente.',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
