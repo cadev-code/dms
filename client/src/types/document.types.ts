@@ -15,4 +15,5 @@ export interface Document {
   type: DocumentType;
   size: number;
   ticketNumber: string;
+  version: string;
 }

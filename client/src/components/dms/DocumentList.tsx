@@ -129,6 +129,10 @@ export function DocumentList({
       ),
     },
     {
+      accessorKey: 'version',
+      header: 'Version',
+    },
+    {
       accessorKey: 'type',
       header: ({ column }) => (
         <Button variant="ghost" onClick={() => column.toggleSorting()}>
