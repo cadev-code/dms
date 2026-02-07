@@ -65,6 +65,7 @@ import {
   TableRow,
 } from '../ui/table';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
+import { useEnableUser } from '@/hooks/useEnableUser';
 
 export const UserManagement = () => {
   const [isEditorOpen, setIsEditorOpen] = useState(false);
@@ -78,6 +79,7 @@ export const UserManagement = () => {
     null,
   );
   const [userToDisable, setUserToDisable] = useState<UserType | null>(null);
+  const [userToEnable, setUserToEnable] = useState<UserType | null>(null);
 
   const [sorting, setSorting] = useState<SortingState>([]);
 
@@ -85,7 +87,7 @@ export const UserManagement = () => {
   const users = data?.data || [];
   const createUser = useCreateUser();
   const disableUser = useDisableUser();
-
+  const enableUser = useEnableUser();
   console.log(users);
 
   const closeEditor = () => {
@@ -106,6 +108,12 @@ export const UserManagement = () => {
   const handleDisableConfirm = () => {
     if (userToDisable) {
       disableUser.mutate({ userId: userToDisable.id });
+    }
+  };
+
+  const handleEnableConfirm = () => {
+    if (userToEnable) {
+      enableUser.mutate({ userId: userToEnable.id });
     }
   };
 
@@ -242,7 +250,7 @@ export const UserManagement = () => {
                   onClick={() =>
                     row.original.isActive
                       ? setUserToDisable(row.original)
-                      : console.log('Enable user')
+                      : setUserToEnable(row.original)
                   }
                 >
                   {row.original.isActive ? (
@@ -421,7 +429,6 @@ export const UserManagement = () => {
         setChangePasswordUser={setChangePasswordUser}
       />
 
-      {/* Delete Confirmation */}
       <AlertDialog
         open={!!userToDisable}
         onOpenChange={() => setUserToDisable(null)}
@@ -442,6 +449,31 @@ export const UserManagement = () => {
               className="bg-destructive text-white hover:bg-destructive/90"
             >
               Deshabilitar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog
+        open={!!userToEnable}
+        onOpenChange={() => setUserToEnable(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Habilitar usuario?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción habilitará al usuario{' '}
+              <strong>{userToEnable?.fullname}</strong> y podrá iniciar sesión
+              en el sistema.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleEnableConfirm}
+              className="bg-green-500 text-white hover:bg-green-500/90"
+            >
+              Habilitar
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
