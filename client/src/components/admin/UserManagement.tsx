@@ -64,6 +64,7 @@ import {
   TableHeader,
   TableRow,
 } from '../ui/table';
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 
 export const UserManagement = () => {
   const [isEditorOpen, setIsEditorOpen] = useState(false);
@@ -202,44 +203,62 @@ export const UserManagement = () => {
         <div className="flex items-center justify-end gap-1">
           {row.original.role !== 'SUPER_ADMIN' && row.original.isActive && (
             <>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setChangePasswordUser(row.original)}
-                title="Cambiar contraseña"
-              >
-                <KeyRound className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => handleEdit(row.original)}
-                title="Editar usuario"
-              >
-                <Pencil className="h-4 w-4" />
-              </Button>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    className="cursor-pointer"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setChangePasswordUser(row.original)}
+                  >
+                    <KeyRound className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Cambiar contraseña</TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    className="cursor-pointer"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleEdit(row.original)}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Editar usuario</TooltipContent>
+              </Tooltip>
             </>
           )}
-          {row.original.role !== 'SUPER_ADMIN' &&
-            (row.original.isActive ? (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setUserToDisable(row.original)}
-                title="Deshabilitar usuario"
-              >
-                <Ban className="h-4 w-4 text-destructive" />
-              </Button>
-            ) : (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => console.log('Enable user')}
-                title="Habilitar usuario"
-              >
-                <CircleCheckBig className="h-4 w-4 text-green-500" />
-              </Button>
-            ))}
+          {row.original.role !== 'SUPER_ADMIN' && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  className="cursor-pointer"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() =>
+                    row.original.isActive
+                      ? setUserToDisable(row.original)
+                      : console.log('Enable user')
+                  }
+                >
+                  {row.original.isActive ? (
+                    <Ban className="h-4 w-4 text-destructive" />
+                  ) : (
+                    <CircleCheckBig className="h-4 w-4 text-green-500" />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {row.original.isActive
+                  ? 'Deshabilitar usuario'
+                  : 'Habilitar usuario'}
+              </TooltipContent>
+            </Tooltip>
+          )}
         </div>
       ),
     },
