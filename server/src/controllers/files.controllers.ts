@@ -337,12 +337,12 @@ export const editFile = async (
     });
 
     logger.info(
-      `Archivo renombrado exitosamente - ID: ${documentId}, Nuevo Nombre: ${documentName} (Renombrado por: ${user?.username || 'Unknown'})`,
+      `Archivo editado exitosamente - ID: ${documentId}, Nuevo Nombre: ${documentName} (Editado por: ${user?.username || 'Unknown'})`,
     );
 
     res
       .status(200)
-      .json({ error: null, message: 'Archivo renombrado exitosamente' });
+      .json({ error: null, message: 'Archivo editado exitosamente' });
   } catch (error) {
     next(error);
   }
