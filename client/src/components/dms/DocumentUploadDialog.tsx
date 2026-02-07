@@ -36,6 +36,7 @@ export const DocumentUploadDialog = ({
     name,
     selectedFile,
     ticketNumber,
+    version,
     getFileIcon,
     handleCancel,
     handleDrag,
@@ -45,6 +46,7 @@ export const DocumentUploadDialog = ({
     setName,
     setSelectedFile,
     setTicketNumber,
+    setVersion,
   } = useDocumentUpload(activeFilter, editDocument, isOpen, onClose);
 
   return (
@@ -130,6 +132,15 @@ export const DocumentUploadDialog = ({
               value={ticketNumber}
               onChange={(e) => setTicketNumber(e.target.value)}
               placeholder="Número de Solicitud"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="version">Versión</Label>
+            <Input
+              id="version"
+              value={version}
+              onChange={(e) => setVersion(e.target.value)}
+              placeholder="Versión del documento (ej. 1.0)"
             />
           </div>
         </div>

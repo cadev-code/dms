@@ -6,8 +6,9 @@ import { poster } from '@/api/queryHelpers';
 interface UploadPayload {
   documentName: string;
   file: File;
-  ticketNumber: string;
   folderId: number;
+  ticketNumber: string;
+  version: string;
 }
 
 interface UploadResponse {
@@ -31,6 +32,7 @@ export const useUploadFile = (onClose: () => void) => {
       formData.append('ticketNumber', data.ticketNumber);
       formData.append('file', data.file);
       formData.append('folderId', data.folderId.toString());
+      formData.append('version', data.version);
 
       return poster('/files', formData);
     },

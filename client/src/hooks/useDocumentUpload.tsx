@@ -39,6 +39,7 @@ export const useDocumentUpload = (
   const [ticketNumber, setTicketNumber] = useState<string>(
     editDocument?.ticketNumber || '',
   );
+  const [version, setVersion] = useState<string>('1.0');
 
   useEffect(() => {
     if (editDocument) {
@@ -172,6 +173,7 @@ export const useDocumentUpload = (
         documentName: name.trim(),
         ticketNumber: ticketNumber.trim(),
         folderId,
+        version,
       });
 
       return;
@@ -192,6 +194,7 @@ export const useDocumentUpload = (
     name,
     selectedFile,
     ticketNumber,
+    version,
     getFileIcon,
     handleCancel,
     handleDrag,
@@ -201,5 +204,6 @@ export const useDocumentUpload = (
     setName,
     setSelectedFile,
     setTicketNumber,
+    setVersion,
   };
 };
