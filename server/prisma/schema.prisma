@@ -14,11 +14,11 @@ enum UserRole {
 }
 
 model User {
-  id           Int      @id @default(autoincrement())
-  fullname     String
-  username     String   @unique
-  passwordHash String
-  createdAt    DateTime @default(now())
+  id                 Int      @id @default(autoincrement())
+  fullname           String
+  username           String   @unique
+  passwordHash       String
+  createdAt          DateTime @default(now())
   mustChangePassword Boolean  @default(false)
 
   role   UserRole    @default(USER)
@@ -51,24 +51,26 @@ model UserGroup {
 
 model File {
   id              Int      @id @default(autoincrement())
-  documentName    String  
+  documentName    String
   fileName        String
   previewFileName String?
   type            String
   size            Int
   createdAt       DateTime @default(now())
   ticketNumber    String?
+  version         String   @default("1.0")
 
   folderId Int?
   folder   Folder? @relation(fields: [folderId], references: [id], onDelete: Cascade)
 
   groupPerms FileGroupPermission[]
+
   @@unique([documentName, folderId])
 }
 
 model Folder {
   id         Int      @id @default(autoincrement())
-  folderName String   
+  folderName String
   parentId   Int?
   createdAt  DateTime @default(now())
 

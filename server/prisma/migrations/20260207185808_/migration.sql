@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `File` ADD COLUMN `version` VARCHAR(191) NOT NULL DEFAULT '1.0';
