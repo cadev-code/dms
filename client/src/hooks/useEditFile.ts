@@ -8,6 +8,7 @@ interface RenameFilePayload {
   documentId: number;
   documentName: string;
   ticketNumber: string;
+  version: string;
 }
 
 interface RenameFileResponse {
@@ -27,6 +28,7 @@ export const useEditFile = (onClose: () => void) => {
       return putter(`/files/${data.documentId}`, {
         documentName: data.documentName,
         ticketNumber: data.ticketNumber,
+        version: data.version,
       });
     },
     onError: (error) => {

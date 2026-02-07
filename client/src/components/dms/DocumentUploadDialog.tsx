@@ -157,7 +157,7 @@ export const DocumentUploadDialog = ({
               isLoading
             }
           >
-            Subir Documento
+            {editDocument ? 'Guardar Cambios' : 'Subir Documento'}
           </Button>
         </DialogFooter>
       </DialogContent>

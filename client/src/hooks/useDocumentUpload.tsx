@@ -45,6 +45,7 @@ export const useDocumentUpload = (
     if (editDocument) {
       setName(editDocument.documentName);
       setTicketNumber(editDocument.ticketNumber);
+      setVersion(editDocument.version);
     } else {
       setName('');
       setTicketNumber('');
@@ -160,6 +161,7 @@ export const useDocumentUpload = (
         documentId: editDocument.id,
         documentName: name.trim(),
         ticketNumber: ticketNumber.trim(),
+        version: version.trim(),
       });
       return;
     }
