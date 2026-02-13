@@ -23,6 +23,7 @@ import {
   Pencil,
   Plus,
   Shield,
+  Trash,
   User,
   Users,
 } from 'lucide-react';
@@ -189,31 +190,46 @@ export const UserManagement = () => {
             </>
           )}
           {row.original.role !== 'SUPER_ADMIN' && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  className="cursor-pointer"
-                  variant="ghost"
-                  size="icon"
-                  onClick={() =>
-                    row.original.isActive
-                      ? setUserToDisable(row.original)
-                      : setUserToEnable(row.original)
-                  }
-                >
-                  {row.original.isActive ? (
-                    <Ban className="h-4 w-4 text-destructive" />
-                  ) : (
-                    <CircleCheckBig className="h-4 w-4 text-green-500" />
-                  )}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                {row.original.isActive
-                  ? 'Deshabilitar usuario'
-                  : 'Habilitar usuario'}
-              </TooltipContent>
-            </Tooltip>
+            <>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    className="cursor-pointer text-destructive"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => console.log('eliminar', row.original)}
+                  >
+                    <Trash className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Eliminar Usuario</TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    className="cursor-pointer"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() =>
+                      row.original.isActive
+                        ? setUserToDisable(row.original)
+                        : setUserToEnable(row.original)
+                    }
+                  >
+                    {row.original.isActive ? (
+                      <Ban className="h-4 w-4 text-destructive" />
+                    ) : (
+                      <CircleCheckBig className="h-4 w-4 text-green-500" />
+                    )}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  {row.original.isActive
+                    ? 'Deshabilitar usuario'
+                    : 'Habilitar usuario'}
+                </TooltipContent>
+              </Tooltip>
+            </>
           )}
         </div>
       ),
