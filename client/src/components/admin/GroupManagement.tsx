@@ -52,6 +52,7 @@ import { useGroups } from '@/hooks/useGroups';
 import { useCreateGroup } from '@/hooks/useCreateGroup';
 import { GroupMembersDialog } from './GroupMembersDialog';
 import { useUpdateGroup } from '@/hooks/useUpdateGroup';
+import { useDeleteGroup } from '@/hooks/useDeleteGroup';
 // import { Checkbox } from '@/components/ui/checkbox';
 
 export const GroupManagement = () => {
@@ -66,6 +67,7 @@ export const GroupManagement = () => {
   const { data } = useGroups();
   const groups = data?.data || [];
   const updateGroup = useUpdateGroup();
+  const deleteGroup = useDeleteGroup();
 
   const handleEdit = (group: Group) => {
     setEditGroup(group);
@@ -75,7 +77,8 @@ export const GroupManagement = () => {
   const handleDelete = async () => {
     if (!deleteGroupId) return;
 
-    console.log('Deleting group with id:', deleteGroupId);
+    await deleteGroup.mutate({ groupId: deleteGroupId });
+
     setDeleteGroupId(null);
   };
 
