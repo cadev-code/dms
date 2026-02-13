@@ -74,7 +74,7 @@ export const createGroup = async (
 };
 
 export const updateGroup = async (
-  req: Request,
+  req: Request<object, object, GroupBody>,
   res: Response,
   next: NextFunction,
 ) => {
@@ -91,7 +91,7 @@ export const updateGroup = async (
 
     if (!existingGroup) {
       throw new AppError(
-        `No se encontró un grupo.`,
+        `No se encontró el grupo.`,
         404,
         'GROUP_NOT_FOUND',
         `Intento de actualización de grupo fallido - Grupo no encontrado (ID: ${groupId}) (Intentado por: ${user?.username || 'Unknown'})`,
@@ -128,6 +128,48 @@ export const updateGroup = async (
     res.status(200).json({
       error: null,
       message: 'Grupo actualizado exitosamente.',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteGroup = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.userId },
+    });
+
+    const { groupId } = groupIdSchema.parse(req.params);
+
+    const existingGroup = await prisma.group.findUnique({
+      where: { id: groupId },
+    });
+
+    if (!existingGroup) {
+      throw new AppError(
+        `No se encontró el grupo.`,
+        404,
+        'GROUP_NOT_FOUND',
+        `Intento de eliminación de grupo fallido - Grupo no encontrado (ID: ${groupId}) (Intentado por: ${user?.username || 'Unknown'})`,
+      );
+    }
+
+    await prisma.group.delete({
+      where: { id: groupId },
+    });
+
+    logger.info(
+      `Grupo "${existingGroup.name}" eliminado exitosamente (Eliminado por: ${user?.username || 'Unknown'})`,
+    );
+
+    res.status(200).json({
+      error: null,
+      message: 'Grupo eliminado exitosamente.',
     });
   } catch (error) {
     next(error);

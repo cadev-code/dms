@@ -9,6 +9,7 @@ import { groupIdSchema, groupSchema } from '../schemas/groups.schema';
 
 import {
   createGroup,
+  deleteGroup,
   getGroups,
   updateGroup,
 } from '../controllers/groups.controllers';
@@ -32,6 +33,14 @@ router.put(
   validateInput(groupSchema),
   requireRole(['SUPER_ADMIN']),
   updateGroup,
+);
+
+router.delete(
+  '/groups/:groupId',
+  authMiddleware,
+  validateParam(groupIdSchema),
+  requireRole(['SUPER_ADMIN']),
+  deleteGroup,
 );
 
 export default router;
