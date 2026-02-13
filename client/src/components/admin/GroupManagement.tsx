@@ -51,6 +51,7 @@ import {
 import { useGroups } from '@/hooks/useGroups';
 import { useCreateGroup } from '@/hooks/useCreateGroup';
 import { GroupMembersDialog } from './GroupMembersDialog';
+import { useUpdateGroup } from '@/hooks/useUpdateGroup';
 // import { Checkbox } from '@/components/ui/checkbox';
 
 export const GroupManagement = () => {
@@ -64,6 +65,7 @@ export const GroupManagement = () => {
   const createGroup = useCreateGroup();
   const { data } = useGroups();
   const groups = data?.data || [];
+  const updateGroup = useUpdateGroup();
 
   const handleEdit = (group: Group) => {
     setEditGroup(group);
@@ -91,32 +93,17 @@ export const GroupManagement = () => {
   const handleUpdate = async () => {
     if (!editGroup || !formName.trim()) return;
 
-    console.log('Updating group:', editGroup.id, formName);
+    if (editGroup.name === formName.trim()) {
+      setEditGroup(null);
+      setFormName('');
+      return;
+    }
+
+    await updateGroup.mutate({ groupId: editGroup.id, name: formName });
 
     setEditGroup(null);
     setFormName('');
   };
-
-  // const handleToggleMember = async (userId: string) => {
-  //   if (!membersGroup) return;
-
-  //   const members = getGroupMembers(membersGroup.id);
-  //   const isMember = members.some((m) => m.user_id === userId);
-
-  //   if (isMember) {
-  //     await removeMember(membersGroup.id, userId);
-  //   } else {
-  //     await addMember(membersGroup.id, userId);
-  //   }
-  // };
-
-  // if (loading) {
-  //   return (
-  //     <div className="flex items-center justify-center py-12">
-  //       <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-  //     </div>
-  //   );
-  // }
 
   const columns: ColumnDef<Group>[] = [
     {
