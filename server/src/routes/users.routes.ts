@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { authMiddleware } from '../middlewares/authMiddleware';
 import {
   createUser,
+  deleteUser,
   disableUser,
   enableUser,
   getUsers,
@@ -61,6 +62,14 @@ router.put(
   requireRole(['SUPER_ADMIN']),
   validateParam(userIdSchema),
   enableUser,
+);
+
+router.delete(
+  '/users/:userId',
+  authMiddleware,
+  requireRole(['SUPER_ADMIN']),
+  validateParam(userIdSchema),
+  deleteUser,
 );
 
 export default router;

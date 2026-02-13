@@ -325,3 +325,45 @@ export const enableUser = async (
     next(error);
   }
 };
+
+export const deleteUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.userId },
+    });
+
+    const { userId } = userIdSchema.parse(req.params);
+
+    const existingUser = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!existingUser) {
+      throw new AppError(
+        `El usuario no existe.`,
+        404,
+        'USER_NOT_FOUND',
+        `Intento de eliminar usuario fallido - Usuario no encontrado (ID: ${userId}) (Intentado por: ${user?.username || 'Unknown'})`,
+      );
+    }
+
+    await prisma.user.delete({
+      where: { id: existingUser.id },
+    });
+
+    logger.info(
+      `Usuario "${existingUser.fullname}" - "${existingUser.username}" eliminado exitosamente (Eliminado por: ${user?.username || 'Unknown'})`,
+    );
+
+    res.status(200).json({
+      error: null,
+      message: 'Usuario eliminado exitosamente.',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
