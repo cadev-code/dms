@@ -50,6 +50,7 @@ import {
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 import { useEnableUser } from '@/hooks/useEnableUser';
 import { UserEditorDialog } from './UserEditorDialog';
+import { useDeleteUser } from '@/hooks/useDeleteUser';
 
 export const UserManagement = () => {
   const [isEditorOpen, setIsEditorOpen] = useState(false);
@@ -60,6 +61,7 @@ export const UserManagement = () => {
   );
   const [userToDisable, setUserToDisable] = useState<UserType | null>(null);
   const [userToEnable, setUserToEnable] = useState<UserType | null>(null);
+  const [userToDelete, setUserToDelete] = useState<UserType | null>(null);
 
   const [sorting, setSorting] = useState<SortingState>([]);
 
@@ -67,6 +69,7 @@ export const UserManagement = () => {
   const users = data?.data || [];
   const disableUser = useDisableUser();
   const enableUser = useEnableUser();
+  const deleteUser = useDeleteUser();
 
   const handleEdit = (user: UserType) => {
     setIsEditorOpen(true);
@@ -82,6 +85,12 @@ export const UserManagement = () => {
   const handleEnableConfirm = () => {
     if (userToEnable) {
       enableUser.mutate({ userId: userToEnable.id });
+    }
+  };
+
+  const handleDeleteConfirm = () => {
+    if (userToDelete) {
+      deleteUser.mutate({ userId: userToDelete.id });
     }
   };
 
@@ -197,7 +206,7 @@ export const UserManagement = () => {
                     className="cursor-pointer text-destructive"
                     variant="ghost"
                     size="icon"
-                    onClick={() => console.log('eliminar', row.original)}
+                    onClick={() => setUserToDelete(row.original)}
                   >
                     <Trash className="h-4 w-4" />
                   </Button>
@@ -370,6 +379,31 @@ export const UserManagement = () => {
               className="bg-green-500 text-white hover:bg-green-500/90"
             >
               Habilitar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog
+        open={!!userToDelete}
+        onOpenChange={() => setUserToDelete(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Eliminar usuario?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción eliminará al usuario{' '}
+              <strong>{userToDelete?.fullname}</strong>, no se puede deshacer y
+              el usuario perderá acceso al sistema.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteConfirm}
+              className="bg-destructive text-white hover:bg-destructive/90"
+            >
+              Eliminar
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
