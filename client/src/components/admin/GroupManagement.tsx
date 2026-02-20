@@ -10,7 +10,6 @@ import {
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import {
   Table,
   TableBody,
@@ -19,14 +18,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -37,7 +28,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Label } from '@/components/ui/label';
 import { useState } from 'react';
 import { Group } from '@/types/group.types';
 import {
@@ -49,29 +39,25 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { useGroups } from '@/hooks/useGroups';
-import { useCreateGroup } from '@/hooks/useCreateGroup';
 import { GroupMembersDialog } from './GroupMembersDialog';
-import { useUpdateGroup } from '@/hooks/useUpdateGroup';
 import { useDeleteGroup } from '@/hooks/useDeleteGroup';
-// import { Checkbox } from '@/components/ui/checkbox';
+import { GroupEditorDialog } from './GroupEditorDialog';
 
 export const GroupManagement = () => {
   const [membersGroup, setMembersGroup] = useState<Group | null>(null);
 
-  const [formName, setFormName] = useState('');
+  const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [editGroup, setEditGroup] = useState<Group | null>(null);
 
   const [deleteGroupId, setDeleteGroupId] = useState<number | null>(null);
 
-  const createGroup = useCreateGroup();
   const { data } = useGroups();
   const groups = data?.data || [];
-  const updateGroup = useUpdateGroup();
   const deleteGroup = useDeleteGroup();
 
   const handleEdit = (group: Group) => {
+    setIsEditorOpen(true);
     setEditGroup(group);
-    setFormName(group.name);
   };
 
   const handleDelete = async () => {
@@ -80,32 +66,6 @@ export const GroupManagement = () => {
     await deleteGroup.mutate({ groupId: deleteGroupId });
 
     setDeleteGroupId(null);
-  };
-
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
-
-  const handleCreate = async () => {
-    if (!formName.trim()) return;
-
-    await createGroup.mutate({ name: formName });
-
-    setIsCreateOpen(false);
-    setFormName('');
-  };
-
-  const handleUpdate = async () => {
-    if (!editGroup || !formName.trim()) return;
-
-    if (editGroup.name === formName.trim()) {
-      setEditGroup(null);
-      setFormName('');
-      return;
-    }
-
-    await updateGroup.mutate({ groupId: editGroup.id, name: formName });
-
-    setEditGroup(null);
-    setFormName('');
   };
 
   const columns: ColumnDef<Group>[] = [
@@ -183,7 +143,7 @@ export const GroupManagement = () => {
             Crea y administra grupos de usuarios
           </p>
         </div>
-        <Button onClick={() => setIsCreateOpen(true)}>
+        <Button onClick={() => setIsEditorOpen(true)}>
           <Plus className="h-4 w-4 mr-2" />
           Nuevo Grupo
         </Button>
@@ -235,68 +195,14 @@ export const GroupManagement = () => {
         </Table>
       </div>
 
-      {/* Create Dialog */}
-      <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Crear Nuevo Grupo</DialogTitle>
-            <DialogDescription>
-              Crea un grupo para asignar permisos a múltiples usuarios
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Nombre del Grupo</Label>
-              <Input
-                id="name"
-                value={formName}
-                onChange={(e) => setFormName(e.target.value)}
-                placeholder="Ej: Recursos Humanos"
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsCreateOpen(false)}>
-              Cancelar
-            </Button>
-            <Button onClick={handleCreate} disabled={!formName.trim()}>
-              {/* {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />} */}
-              Crear Grupo
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Edit Dialog */}
-      <Dialog open={!!editGroup} onOpenChange={() => setEditGroup(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Editar Grupo</DialogTitle>
-            <DialogDescription>
-              Modifica la información del grupo
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="edit-name">Nombre del Grupo</Label>
-              <Input
-                id="edit-name"
-                value={formName}
-                onChange={(e) => setFormName(e.target.value)}
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setEditGroup(null)}>
-              Cancelar
-            </Button>
-            <Button onClick={handleUpdate} disabled={!formName.trim()}>
-              {/* {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />} */}
-              Guardar
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <GroupEditorDialog
+        isOpen={isEditorOpen}
+        editGroup={editGroup}
+        onClose={() => {
+          setIsEditorOpen(false);
+          setEditGroup(null);
+        }}
+      />
 
       <GroupMembersDialog
         isOpen={!!membersGroup}
