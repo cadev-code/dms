@@ -5,6 +5,47 @@ import prisma from '../prisma_client';
 import { inheritancePermissionsSchema } from '../schemas/inheritancePermissions.schema';
 import { logger } from '../helpers/logger';
 
+const getAllDescendantFolderIds = async (
+  folderId: number,
+): Promise<number[]> => {
+  const allFolderIds: number[] = [];
+  const queue: number[] = [folderId];
+
+  while (queue.length > 0) {
+    const currentId = queue.shift()!; // Obtiene el primer id de la cola y lo elimina de la cola
+
+    // Evitar duplicados si el árbol no está perfectamente limpio
+    if (allFolderIds.includes(currentId)) continue;
+    allFolderIds.push(currentId);
+
+    const children = await prisma.folder.findMany({
+      where: { parentId: currentId },
+      select: { id: true },
+    });
+
+    queue.push(...children.map((c) => c.id));
+  }
+
+  return allFolderIds;
+};
+
+const getAllDescendantFileIds = async (
+  allFolderIds: number[],
+): Promise<number[]> => {
+  const allFileIds: number[] = [];
+
+  for (const folderId of allFolderIds) {
+    const files = await prisma.file.findMany({
+      where: { folderId },
+      select: { id: true },
+    });
+
+    allFileIds.push(...files.map((f) => f.id));
+  }
+
+  return allFileIds;
+};
+
 export const applyInheritanceToTree = async (
   req: Request,
   res: Response,
@@ -15,34 +56,9 @@ export const applyInheritanceToTree = async (
       req.params,
     );
 
-    const allFolderIds: number[] = [];
-    const queue: number[] = [folderId];
+    const allFolderIds: number[] = await getAllDescendantFolderIds(folderId);
 
-    while (queue.length > 0) {
-      const currentId = queue.shift()!; // Obtiene el primer id de la cola y lo elimina de la cola
-
-      // Evitar duplicados si el árbol no está perfectamente limpio
-      if (allFolderIds.includes(currentId)) continue;
-      allFolderIds.push(currentId);
-
-      const children = await prisma.folder.findMany({
-        where: { parentId: currentId },
-        select: { id: true },
-      });
-
-      queue.push(...children.map((c) => c.id));
-    }
-
-    const allFilesIds: number[] = [];
-
-    for (const id of allFolderIds) {
-      const files = await prisma.file.findMany({
-        where: { folderId: id },
-        select: { id: true },
-      });
-
-      allFilesIds.push(...files.map((f) => f.id));
-    }
+    const allFileIds: number[] = await getAllDescendantFileIds(allFolderIds);
 
     for (const folderId of allFolderIds) {
       const existingPermission = await prisma.folderGroupPermission.findFirst({
@@ -62,7 +78,7 @@ export const applyInheritanceToTree = async (
       });
     }
 
-    for (const fileId of allFilesIds) {
+    for (const fileId of allFileIds) {
       const existingPermission = await prisma.fileGroupPermission.findFirst({
         where: {
           fileId,
@@ -84,16 +100,8 @@ export const applyInheritanceToTree = async (
       where: { id: req.userId },
     });
 
-    const group = await prisma.group.findUnique({
-      where: { id: groupId },
-    });
-
-    const folder = await prisma.folder.findUnique({
-      where: { id: folderId },
-    });
-
     logger.info(
-      `Usuario "${user?.username}" aplicó permisos de herencia al grupo ${group?.name} (id: ${groupId}) para la carpeta ${folder?.folderName} (id: ${folderId}) y sus subcarpetas y archivos.`,
+      `Usuario "${user?.username}" aplicó permisos de herencia al grupo ${groupId} para la carpeta ${folderId} y sus subcarpetas y archivos.`,
     );
 
     res.status(201).json({
