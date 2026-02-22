@@ -112,3 +112,73 @@ export const applyInheritanceToTree = async (
     next(error);
   }
 };
+
+export const removeInheritanceToTree = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { folderId, groupId } = inheritancePermissionsSchema.parse(
+      req.params,
+    );
+
+    const allFolderIds = await getAllDescendantFolderIds(folderId);
+    const allFileIds = await getAllDescendantFileIds(allFolderIds);
+
+    for (const folderId of allFolderIds) {
+      const existingPermission = await prisma.folderGroupPermission.findFirst({
+        where: {
+          folderId,
+          groupId,
+        },
+      });
+
+      if (!existingPermission) continue;
+
+      await prisma.folderGroupPermission.delete({
+        where: {
+          folderId_groupId: {
+            folderId,
+            groupId,
+          },
+        },
+      });
+    }
+
+    for (const fileId of allFileIds) {
+      const existingPermission = await prisma.fileGroupPermission.findFirst({
+        where: {
+          fileId,
+          groupId,
+        },
+      });
+
+      if (!existingPermission) continue;
+
+      await prisma.fileGroupPermission.delete({
+        where: {
+          fileId_groupId: {
+            fileId,
+            groupId,
+          },
+        },
+      });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: req.userId },
+    });
+
+    logger.info(
+      `Usuario "${user?.username}" eliminó permisos de herencia al grupo ${groupId} para la carpeta ${folderId} y sus subcarpetas y archivos.`,
+    );
+
+    res.status(201).json({
+      error: null,
+      message: 'Permisos de herencia eliminados correctamente',
+    });
+  } catch (error) {
+    next(error);
+  }
+};

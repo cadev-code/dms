@@ -1,6 +1,9 @@
 import { Router } from 'express';
 
-import { applyInheritanceToTree } from '../controllers/inheritancePermissions.controllers';
+import {
+  applyInheritanceToTree,
+  removeInheritanceToTree,
+} from '../controllers/inheritancePermissions.controllers';
 import { authMiddleware } from '../middlewares/authMiddleware';
 import { requireRole } from '../middlewares/requireRole';
 import { validateParam } from '../middlewares/validateParam';
@@ -14,6 +17,14 @@ router.post(
   requireRole(['SUPER_ADMIN']),
   validateParam(inheritancePermissionsSchema),
   applyInheritanceToTree,
+);
+
+router.delete(
+  '/folder/:folderId/group/:groupId/inheritance',
+  authMiddleware,
+  requireRole(['SUPER_ADMIN']),
+  validateParam(inheritancePermissionsSchema),
+  removeInheritanceToTree,
 );
 
 export default router;
