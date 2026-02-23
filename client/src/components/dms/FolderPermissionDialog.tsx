@@ -17,6 +17,8 @@ import { useGroups } from '@/hooks/useGroups';
 import { useFolderPermissions } from '@/hooks/useFolderPermissions';
 import { useAddGroupToFolder } from '@/hooks/useAddGroupToFolder';
 import { useRemoveGroupToFolder } from '@/hooks/useRemoveGroupToFolder';
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
+import { CopyPlus, SquaresSubtract } from 'lucide-react';
 
 interface Props {
   isOpen: boolean;
@@ -62,10 +64,12 @@ export const FolderPermissionDialog = ({ isOpen, folder, onClose }: Props) => {
             Grupos con acceso a la carpeta{' '}
             <span className="text-primary">{folder?.folderName}</span>
           </DialogTitle>
+
           <DialogDescription>
             Selecciona los grupos que tendrán acceso a esta carpeta.
           </DialogDescription>
         </DialogHeader>
+
         <ScrollArea className="h-[300px] pr-4">
           <div className="space-y-2">
             {groups.map((group) => {
@@ -76,18 +80,55 @@ export const FolderPermissionDialog = ({ isOpen, folder, onClose }: Props) => {
               return (
                 <div
                   key={group.id}
-                  className="flex items-center space-x-3 p-3 rounded-lg border hover:bg-accent/50 cursor-pointer"
+                  className="flex items-center p-3 justify-between rounded-lg border hover:bg-accent/50 cursor-pointer"
                   onClick={() => handleToggleAllow(group)}
                 >
-                  <Checkbox checked={isAllowed} />
-                  <div className="flex-1">
-                    <p className="font-medium text-sm">{group.name}</p>
+                  <div className="flex items-center gap-3">
+                    <Checkbox checked={isAllowed} />
+                    <div className="flex-1">
+                      <p className="font-medium text-sm">{group.name}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-1">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          className="bg-red-500 text-white hover:bg-red-600 hover:text-white"
+                          variant="ghost"
+                          size="icon-sm"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <SquaresSubtract />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent side="top">
+                        Remover herencia
+                      </TooltipContent>
+                    </Tooltip>
+
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          className="bg-green-500 text-white hover:bg-green-600 hover:text-white"
+                          variant="ghost"
+                          size="icon-sm"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <CopyPlus />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent side="top">
+                        Aplicar herencia
+                      </TooltipContent>
+                    </Tooltip>
                   </div>
                 </div>
               );
             })}
           </div>
         </ScrollArea>
+
         <DialogFooter>
           <Button onClick={onClose}>Cerrar</Button>
         </DialogFooter>
