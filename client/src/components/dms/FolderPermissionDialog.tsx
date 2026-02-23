@@ -1,6 +1,15 @@
+import { MouseEvent } from 'react';
+
 import type { Folder } from '@/types/folder.types';
 import type { Group } from '@/types/group.types';
 
+import { CopyPlus, SquaresSubtract } from 'lucide-react';
+
+import { useGroups } from '@/hooks/useGroups';
+import { useFolderPermissions } from '@/hooks/useFolderPermissions';
+import { useAddGroupToFolder } from '@/hooks/useAddGroupToFolder';
+import { useApplyInheritanceToTree } from '@/hooks/useApplyInheritanceToTree';
+import { useRemoveGroupToFolder } from '@/hooks/useRemoveGroupToFolder';
 import { Button } from '../ui/button';
 import {
   Dialog,
@@ -11,14 +20,8 @@ import {
   DialogTitle,
 } from '../ui/dialog';
 import { ScrollArea } from '../ui/scroll-area';
-import { Checkbox } from '../ui/checkbox';
-
-import { useGroups } from '@/hooks/useGroups';
-import { useFolderPermissions } from '@/hooks/useFolderPermissions';
-import { useAddGroupToFolder } from '@/hooks/useAddGroupToFolder';
-import { useRemoveGroupToFolder } from '@/hooks/useRemoveGroupToFolder';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
-import { CopyPlus, SquaresSubtract } from 'lucide-react';
+import { Checkbox } from '../ui/checkbox';
 
 interface Props {
   isOpen: boolean;
@@ -35,6 +38,7 @@ export const FolderPermissionDialog = ({ isOpen, folder, onClose }: Props) => {
 
   const addGroupToFolder = useAddGroupToFolder();
   const removeGroupToFolder = useRemoveGroupToFolder();
+  const applyInheritanceToTree = useApplyInheritanceToTree();
 
   const handleToggleAllow = (group: Group) => {
     if (!folder) return;
@@ -52,6 +56,20 @@ export const FolderPermissionDialog = ({ isOpen, folder, onClose }: Props) => {
       addGroupToFolder.mutate({
         groupId: group.id,
         folderId: folder.id,
+      });
+    }
+  };
+
+  const handleApplyInheritance = (
+    e: MouseEvent<HTMLButtonElement>,
+    group: Group,
+  ) => {
+    e.stopPropagation();
+
+    if (folder) {
+      applyInheritanceToTree.mutate({
+        folderId: folder.id,
+        groupId: group.id,
       });
     }
   };
@@ -113,7 +131,7 @@ export const FolderPermissionDialog = ({ isOpen, folder, onClose }: Props) => {
                           className="bg-green-500 text-white hover:bg-green-600 hover:text-white"
                           variant="ghost"
                           size="icon-sm"
-                          onClick={(e) => e.stopPropagation()}
+                          onClick={(e) => handleApplyInheritance(e, group)}
                         >
                           <CopyPlus />
                         </Button>
