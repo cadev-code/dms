@@ -22,6 +22,7 @@ import {
 import { ScrollArea } from '../ui/scroll-area';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 import { Checkbox } from '../ui/checkbox';
+import { useRemoveInheritanceToTree } from '@/hooks/useRemoveInheritanceToTree';
 
 interface Props {
   isOpen: boolean;
@@ -39,6 +40,7 @@ export const FolderPermissionDialog = ({ isOpen, folder, onClose }: Props) => {
   const addGroupToFolder = useAddGroupToFolder();
   const removeGroupToFolder = useRemoveGroupToFolder();
   const applyInheritanceToTree = useApplyInheritanceToTree();
+  const removeInheritanceToTree = useRemoveInheritanceToTree();
 
   const handleToggleAllow = (group: Group) => {
     if (!folder) return;
@@ -68,6 +70,20 @@ export const FolderPermissionDialog = ({ isOpen, folder, onClose }: Props) => {
 
     if (folder) {
       applyInheritanceToTree.mutate({
+        folderId: folder.id,
+        groupId: group.id,
+      });
+    }
+  };
+
+  const handleRemoveInheritance = (
+    e: MouseEvent<HTMLButtonElement>,
+    group: Group,
+  ) => {
+    e.stopPropagation();
+
+    if (folder) {
+      removeInheritanceToTree.mutate({
         folderId: folder.id,
         groupId: group.id,
       });
@@ -115,7 +131,7 @@ export const FolderPermissionDialog = ({ isOpen, folder, onClose }: Props) => {
                           className="bg-red-500 text-white hover:bg-red-600 hover:text-white"
                           variant="ghost"
                           size="icon-sm"
-                          onClick={(e) => e.stopPropagation()}
+                          onClick={(e) => handleRemoveInheritance(e, group)}
                         >
                           <SquaresSubtract />
                         </Button>
