@@ -22,6 +22,7 @@ import {
   Presentation,
   Pencil,
   Shield,
+  FileOutput,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -36,6 +37,7 @@ import {
 } from '../ui/table';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { DocumentPermissionDialog } from './DocumentPermissionDialog';
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 
 interface DocumentListProps {
   documents: Document[];
@@ -185,58 +187,96 @@ export function DocumentList({
       cell: ({ row }) => (
         <div className="flex items-center justify-end gap-1">
           {currentUser?.role === 'SUPER_ADMIN' && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setAllowedUsers(row.original)}
-            >
-              <Shield className="h-4 w-4" />
-            </Button>
+            <Tooltip>
+              <TooltipTrigger>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setAllowedUsers(row.original)}
+                >
+                  <Shield className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Administrar Permisos</TooltipContent>
+            </Tooltip>
           )}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => {
-              if (
-                [
-                  'pdf',
-                  'word',
-                  'excel',
-                  'powerpoint',
-                  'image',
-                  'text',
-                ].includes(row.original.type)
-              ) {
-                onView(row.original);
-              }
-            }}
-          >
-            <Eye className="h-4 w-4" />
-          </Button>
+
+          <Tooltip>
+            <TooltipTrigger>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => {
+                  if (
+                    [
+                      'pdf',
+                      'word',
+                      'excel',
+                      'powerpoint',
+                      'image',
+                      'text',
+                    ].includes(row.original.type)
+                  ) {
+                    onView(row.original);
+                  }
+                }}
+              >
+                <Eye className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Ver Documento</TooltipContent>
+          </Tooltip>
+
           {currentUser?.role !== 'USER' && (
             <>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => onDownload?.(row.original)}
-              >
-                <Download className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => onEdit?.(row.original)}
-              >
-                <Pencil className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => onDelete?.(row.original)}
-                className="text-destructive hover:text-destructive"
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onDownload?.(row.original)}
+                  >
+                    <Download className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Descargar Documento</TooltipContent>
+              </Tooltip>
+
+              {/* TODO: Implementar función para mover documento */}
+              <Tooltip>
+                <TooltipTrigger>
+                  <Button variant="ghost" size="icon" onClick={() => {}}>
+                    <FileOutput className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Mover Documento</TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onEdit?.(row.original)}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Editar Documento</TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onDelete?.(row.original)}
+                    className="text-destructive hover:text-destructive"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Eliminar Documento</TooltipContent>
+              </Tooltip>
             </>
           )}
         </div>
