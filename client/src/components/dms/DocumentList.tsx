@@ -38,6 +38,7 @@ import {
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { DocumentPermissionDialog } from './DocumentPermissionDialog';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
+import { MoveDocumentDialog } from './MoveDocumentDialog';
 
 interface DocumentListProps {
   documents: Document[];
@@ -54,11 +55,11 @@ export function DocumentList({
   onEdit,
   onView,
 }: DocumentListProps) {
-  const { data: currentUser } = useCurrentUser();
-
+  const [allowedUsers, setAllowedUsers] = useState<Document | null>(null);
+  const [documentToMove, setDocumentToMove] = useState<Document | null>(null);
   const [sorting, setSorting] = useState<SortingState>([]);
 
-  const [allowedUsers, setAllowedUsers] = useState<Document | null>(null);
+  const { data: currentUser } = useCurrentUser();
 
   const getDocumentIcon = (type: Document['type']) => {
     switch (type) {
@@ -242,10 +243,15 @@ export function DocumentList({
                 <TooltipContent>Descargar Documento</TooltipContent>
               </Tooltip>
 
-              {/* TODO: Implementar función para mover documento */}
               <Tooltip>
                 <TooltipTrigger>
-                  <Button variant="ghost" size="icon" onClick={() => {}}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      setDocumentToMove(row.original);
+                    }}
+                  >
                     <FileOutput className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
@@ -341,6 +347,11 @@ export function DocumentList({
         isOpen={allowedUsers !== null}
         onClose={() => setAllowedUsers(null)}
         document={allowedUsers}
+      />
+      <MoveDocumentDialog
+        document={documentToMove}
+        isOpen={documentToMove !== null}
+        onClose={() => setDocumentToMove(null)}
       />
     </>
   );
