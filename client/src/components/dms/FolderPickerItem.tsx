@@ -81,7 +81,7 @@ export const FolderPickerItem = ({
         <span
           className={cn(
             'ml-1 text-sm',
-            isSelected?.id === folder.id && 'text-blue-700 font-semibold',
+            isSelected?.id === folder.id && 'text-blue-700 font-medium',
           )}
         >
           {folder.folderName}
