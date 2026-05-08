@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 
 import type { Folder as FolderType } from '@/types/folder.types';
 import { useCreateFolder } from '@/hooks/useCreateFolder';
-import { ChevronsDownUp, Download, Folder, Plus } from 'lucide-react';
+import { Download, Folder, FoldVertical, Plus } from 'lucide-react';
 import { Input } from '../ui/input';
 import { FolderTreeItem } from './FolderTreeItem';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
@@ -88,7 +88,7 @@ export const FolderTree = ({
                   className="h-6 w-6 text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-black"
                   onClick={() => setExpandedFolders(new Set())}
                 >
-                  <ChevronsDownUp className="h-4 w-4" />
+                  <FoldVertical className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="top">
