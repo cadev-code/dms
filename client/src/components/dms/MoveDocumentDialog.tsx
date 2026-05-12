@@ -15,6 +15,7 @@ import {
 import { Folder as FolderType } from '@/types/folder.types';
 import { FolderPickerItem } from './FolderPickerItem';
 import { ScrollArea } from '../ui/scroll-area';
+import { useMoveFile } from '@/hooks/useMoveFile';
 
 interface Props {
   document: Document | null;
@@ -24,7 +25,18 @@ interface Props {
 
 export const MoveDocumentDialog = ({ document, isOpen, onClose }: Props) => {
   const [isSelected, setIsSelected] = useState<FolderType | null>(null);
+
   const { data: folders } = useAllFolders();
+  const moveFile = useMoveFile(onClose);
+
+  const handleConfirm = () => {
+    if (!document || !isSelected) return;
+
+    moveFile.mutate({
+      documentId: document.id,
+      newFolderId: isSelected.id,
+    });
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -51,7 +63,10 @@ export const MoveDocumentDialog = ({ document, isOpen, onClose }: Props) => {
           </div>
         </ScrollArea>
         <DialogFooter>
-          <Button onClick={onClose}>Cerrar</Button>
+          <Button variant="outline" onClick={onClose}>
+            Cerrar
+          </Button>
+          <Button onClick={handleConfirm}>Confirmar</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
