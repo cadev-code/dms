@@ -43,3 +43,10 @@ export const editFileSchema = z.object({
 });
 
 export type EditFileBody = z.infer<typeof editFileSchema>;
+
+export const moveFileParamsSchema = mutateFileParamsSchema.extend({
+  newFolderId: z.coerce
+    .number({ invalid_type_error: 'newFolderId debe ser un número' })
+    .int('newFolderId debe ser un número entero')
+    .positive('newFolderId debe ser un entero positivo'),
+});

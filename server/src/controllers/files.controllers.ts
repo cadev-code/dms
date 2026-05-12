@@ -8,6 +8,7 @@ import { logger } from '../helpers/logger';
 
 import {
   EditFileBody,
+  moveFileParamsSchema,
   mutateFileParamsSchema,
   UploadFileBody,
 } from '../schemas/files.schema';
@@ -343,6 +344,87 @@ export const editFile = async (
     res
       .status(200)
       .json({ error: null, message: 'Archivo editado exitosamente' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const moveFile = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.userId },
+    });
+
+    const { documentId, newFolderId } = moveFileParamsSchema.parse(req.params);
+
+    const existingFile = await prisma.file.findUnique({
+      where: { id: documentId },
+    });
+
+    if (!existingFile) {
+      throw new AppError(
+        `El archivo no existe.`,
+        400,
+        'FILE_NOT_FOUND',
+        `Intento de mover archivo fallido - Archivo no encontrado - documentId: ${documentId} (Intentado por: ${user?.username || 'Unknown'})`,
+      );
+    }
+
+    const existingFolder = await prisma.folder.findUnique({
+      where: { id: newFolderId },
+    });
+
+    if (!existingFolder) {
+      throw new AppError(
+        `La carpeta de destino no existe.`,
+        400,
+        'FOLDER_NOT_FOUND',
+        `Intento de mover archivo fallido - Carpeta de destino no encontrada - newFolderId: ${newFolderId} (Intentado por: ${user?.username || 'Unknown'})`,
+      );
+    }
+
+    if (existingFile.folderId === newFolderId) {
+      throw new AppError(
+        `El archivo ya se encuentra en la carpeta especificada.`,
+        400,
+        'FILE_ALREADY_IN_FOLDER',
+        `Intento de mover archivo fallido - El archivo ya se encuentra en la carpeta especificada - documentId: ${documentId}, folderId: ${newFolderId} (Intentado por: ${user?.username || 'Unknown'})`,
+      );
+    }
+
+    const existingFileWithName = await prisma.file.findFirst({
+      where: {
+        documentName: existingFile.documentName,
+        folderId: newFolderId,
+        NOT: { id: documentId },
+      },
+    });
+
+    if (existingFileWithName) {
+      throw new AppError(
+        `Ya existe un archivo con el nombre "${existingFile.documentName}" en la carpeta de destino.`,
+        400,
+        'FILE_ALREADY_EXISTS_IN_DESTINATION',
+        `Intento de mover archivo fallido - Nombre de archivo duplicado en carpeta de destino - documentId: ${documentId}, newFolderId: ${newFolderId} (Intentado por: ${user?.username || 'Unknown'})`,
+      );
+    }
+
+    await prisma.file.update({
+      where: { id: documentId },
+      data: { folderId: newFolderId },
+    });
+
+    logger.info(
+      `Archivo movido exitosamente - ID: ${documentId}, Anterior Carpeta ID: ${existingFile.folderId}, Nueva Carpeta ID: ${newFolderId} (Movido por: ${user?.username || 'Unknown'})`,
+    );
+
+    res
+      .status(200)
+      .json({ error: null, message: 'Archivo movido exitosamente' });
   } catch (error) {
     next(error);
   }

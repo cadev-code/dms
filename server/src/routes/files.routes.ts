@@ -8,6 +8,7 @@ import {
   uploadFileSchema,
   mutateFileParamsSchema,
   editFileSchema,
+  moveFileParamsSchema,
 } from '../schemas/files.schema';
 import { validateParam } from '../middlewares/validateParam';
 import {
@@ -17,6 +18,7 @@ import {
   getAllFiles,
   getFilesByFolder,
   getFilesByType,
+  moveFile,
   uploadFile,
 } from '../controllers/files.controllers';
 import { requireRole } from '../middlewares/requireRole';
@@ -69,6 +71,14 @@ router.put(
   validateParam(mutateFileParamsSchema),
   validateInput(editFileSchema),
   editFile,
+);
+
+router.put(
+  '/files/:documentId/move/:newFolderId',
+  authMiddleware,
+  requireRole(['SUPER_ADMIN', 'CONTENT_ADMIN']),
+  validateParam(moveFileParamsSchema),
+  moveFile,
 );
 
 router.delete(
